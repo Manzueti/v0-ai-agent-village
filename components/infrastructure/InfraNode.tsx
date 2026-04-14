@@ -1,7 +1,7 @@
 'use client';
 
 import { InfraNode as InfraNodeType } from '@/lib/types';
-import { Database, Server, Shield, Globe, Cloud, HardDrive, Router, Layers, Lock, Wifi } from 'lucide-react';
+import { Database, Server, Shield, Globe, Cloud, HardDrive, Router, Layers, Lock, Wifi, Activity } from 'lucide-react';
 
 interface InfraNodeProps {
   node: InfraNodeType;
@@ -25,49 +25,49 @@ const nodeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   'dns': Wifi,
 };
 
-const statusColors: Record<string, { bg: string; border: string; glow: string }> = {
+const statusConfig: Record<string, { color: string; glow: string; border: string }> = {
   healthy: {
-    bg: 'bg-emerald-500',
-    border: 'border-emerald-400',
-    glow: 'shadow-emerald-500/50',
+    color: '#10b981',
+    glow: 'rgba(16, 185, 129, 0.5)',
+    border: 'border-emerald-500/50',
   },
   warning: {
-    bg: 'bg-amber-500',
-    border: 'border-amber-400',
-    glow: 'shadow-amber-500/50',
+    color: '#f59e0b',
+    glow: 'rgba(245, 158, 11, 0.5)',
+    border: 'border-amber-500/50',
   },
   critical: {
-    bg: 'bg-red-500',
-    border: 'border-red-400',
-    glow: 'shadow-red-500/50',
+    color: '#ef4444',
+    glow: 'rgba(239, 68, 68, 0.6)',
+    border: 'border-red-500/50',
   },
   offline: {
-    bg: 'bg-gray-500',
-    border: 'border-gray-400',
-    glow: 'shadow-gray-500/30',
+    color: '#64748b',
+    glow: 'rgba(100, 116, 139, 0.3)',
+    border: 'border-slate-500/50',
   },
   failover: {
-    bg: 'bg-blue-500',
-    border: 'border-blue-400',
-    glow: 'shadow-blue-500/50',
+    color: '#3b82f6',
+    glow: 'rgba(59, 130, 246, 0.5)',
+    border: 'border-blue-500/50',
   },
 };
 
-const zoneColors: Record<string, string> = {
-  'data-center': 'from-blue-600 to-blue-800',
-  'network': 'from-violet-600 to-violet-800',
-  'cloud': 'from-cyan-600 to-cyan-800',
-  'security': 'from-red-600 to-red-800',
-  'edge': 'from-emerald-600 to-emerald-800',
+const zoneGradients: Record<string, { from: string; to: string }> = {
+  'data-center': { from: '#3b82f6', to: '#1d4ed8' },
+  'network': { from: '#8b5cf6', to: '#6d28d9' },
+  'cloud': { from: '#06b6d4', to: '#0891b2' },
+  'security': { from: '#ef4444', to: '#dc2626' },
+  'edge': { from: '#22c55e', to: '#16a34a' },
 };
 
 export default function InfraNode({ node, isSelected, onClick, scale = 1 }: InfraNodeProps) {
   const Icon = nodeIcons[node.type] || Server;
-  const status = statusColors[node.status] || statusColors.healthy;
-  const zoneGradient = zoneColors[node.zone] || 'from-gray-600 to-gray-800';
+  const status = statusConfig[node.status] || statusConfig.healthy;
+  const zoneGradient = zoneGradients[node.zone] || { from: '#64748b', to: '#475569' };
   
-  const nodeSize = 70 * scale;
-  const roofHeight = 20 * scale;
+  const nodeWidth = 80 * scale;
+  const nodeHeight = 60 * scale;
   
   return (
     <div
@@ -75,96 +75,149 @@ export default function InfraNode({ node, isSelected, onClick, scale = 1 }: Infr
       style={{
         left: node.position.x,
         top: node.position.y,
-        transform: `scale(${isSelected ? 1.1 : 1})`,
+        transform: `scale(${isSelected ? 1.15 : 1})`,
         zIndex: isSelected ? 50 : 10,
       }}
       onClick={() => onClick?.(node)}
     >
-      {/* Isometric 3D Building */}
-      <div className="relative" style={{ width: nodeSize, height: nodeSize + roofHeight }}>
-        {/* Roof */}
-        <div 
-          className={`absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-br ${zoneGradient}`}
+      {/* Main holographic container */}
+      <div 
+        className="relative"
+        style={{ width: nodeWidth, height: nodeHeight + 30 }}
+      >
+        {/* Glow effect underneath */}
+        <div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full blur-md transition-all duration-300"
           style={{
-            width: nodeSize * 0.9,
-            height: roofHeight,
-            clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
+            width: nodeWidth * 0.8,
+            height: 12,
+            backgroundColor: status.glow,
+            opacity: isSelected ? 0.8 : 0.4,
           }}
         />
         
-        {/* Main Building Body */}
+        {/* Holographic base platform */}
+        <svg
+          className="absolute"
+          style={{ top: nodeHeight + 5, left: -5, width: nodeWidth + 10, height: 25 }}
+          viewBox="0 0 100 30"
+        >
+          {/* Platform shadow */}
+          <ellipse cx="50" cy="20" rx="40" ry="8" fill="rgba(0,0,0,0.3)" />
+          {/* Platform */}
+          <ellipse 
+            cx="50" 
+            cy="15" 
+            rx="40" 
+            ry="8" 
+            fill={`url(#platform-${node.id})`}
+            className={isSelected ? 'animate-glow' : ''}
+          />
+          <defs>
+            <linearGradient id={`platform-${node.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={zoneGradient.from} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={zoneGradient.to} stopOpacity="0.1" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        {/* Main node body */}
         <div
-          className={`absolute bg-gradient-to-b from-slate-700 to-slate-900 border-2 ${status.border} rounded-sm flex items-center justify-center transition-all duration-300 ${isSelected ? `shadow-lg ${status.glow}` : ''} ${node.status === 'critical' ? 'animate-pulse' : ''}`}
+          className={`relative rounded-lg border backdrop-blur-sm transition-all duration-300 overflow-hidden ${status.border} ${
+            isSelected ? 'shadow-lg' : ''
+          } ${node.status === 'critical' ? 'animate-pulse' : ''}`}
           style={{
-            top: roofHeight - 2,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: nodeSize * 0.85,
-            height: nodeSize * 0.7,
+            width: nodeWidth,
+            height: nodeHeight,
+            background: `linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%)`,
+            boxShadow: isSelected ? `0 0 30px ${status.glow}, inset 0 0 20px rgba(6, 182, 212, 0.1)` : `0 0 10px ${status.glow}`,
           }}
         >
-          <Icon className="text-white/90" style={{ width: nodeSize * 0.35, height: nodeSize * 0.35 }} />
+          {/* Scanline effect */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div 
+              className="absolute w-full h-8 bg-gradient-to-b from-white/5 to-transparent animate-scan"
+              style={{ animationDuration: '3s' }}
+            />
+          </div>
           
-          {/* Status LED */}
+          {/* Top accent bar */}
           <div 
-            className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${status.bg} ${node.status === 'warning' || node.status === 'critical' ? 'animate-pulse' : ''}`}
-            style={{ boxShadow: `0 0 8px ${status.glow}` }}
+            className="absolute top-0 left-0 right-0 h-1"
+            style={{ background: `linear-gradient(90deg, ${zoneGradient.from}, ${zoneGradient.to})` }}
           />
           
-          {/* Primary/Replica Badge */}
-          <div 
-            className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${node.isPrimary ? 'bg-amber-500 text-amber-950' : 'bg-slate-500 text-slate-100'}`}
-          >
-            {node.isPrimary ? 'P' : 'R'}
+          {/* Icon */}
+          <div className="flex items-center justify-center h-full">
+            <Icon 
+              className="text-white/80 transition-all duration-300 group-hover:text-white group-hover:scale-110" 
+              style={{ width: nodeWidth * 0.4, height: nodeWidth * 0.4 }}
+            />
           </div>
+          
+          {/* Status LED */}
+          <div className="absolute top-2 right-2">
+            <div 
+              className={`w-2.5 h-2.5 rounded-full ${node.status === 'warning' || node.status === 'critical' ? 'animate-pulse' : ''}`}
+              style={{ 
+                backgroundColor: status.color,
+                boxShadow: `0 0 8px ${status.glow}`,
+              }}
+            />
+          </div>
+          
+          {/* Primary/Replica badge */}
+          <div 
+            className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider font-mono ${
+              node.isPrimary 
+                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+            }`}
+          >
+            {node.isPrimary ? 'PRIMARY' : 'REPLICA'}
+          </div>
+          
+          {/* Corner accents */}
+          <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-cyan-500/30" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-cyan-500/30" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-cyan-500/30" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-cyan-500/30" />
         </div>
-        
-        {/* 3D Side Effect (Left) */}
-        <div
-          className="absolute bg-slate-950/50"
-          style={{
-            top: roofHeight + nodeSize * 0.1,
-            left: '50%',
-            transform: 'translateX(-50%) translateX(-43%)',
-            width: nodeSize * 0.12,
-            height: nodeSize * 0.5,
-            clipPath: 'polygon(100% 0, 100% 100%, 0 90%, 0 10%)',
-          }}
-        />
-        
-        {/* Shadow */}
-        <div
-          className="absolute bg-black/20 rounded-full blur-sm"
-          style={{
-            bottom: -5,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: nodeSize * 0.8,
-            height: 8,
-          }}
-        />
       </div>
       
-      {/* Hover Tooltip */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-        <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2 min-w-[160px] shadow-xl">
-          <div className="text-xs font-semibold text-white mb-1">{node.name}</div>
-          <div className="text-[10px] text-slate-400 mb-2 capitalize">{node.type.replace('-', ' ')}</div>
+      {/* Hover tooltip */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 translate-y-2 group-hover:translate-y-0">
+        <div className="glass-strong rounded-lg px-4 py-3 min-w-[180px] shadow-xl">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm font-semibold text-white">{node.name}</div>
+            <div 
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: status.color }}
+            />
+          </div>
+          <div className="text-[10px] text-cyan-400 uppercase tracking-wider font-mono mb-3">
+            {node.type.replace('-', ' ')}
+          </div>
           
           {/* Metrics */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <MetricBar label="CPU" value={node.metrics.cpu} />
             <MetricBar label="MEM" value={node.metrics.memory} />
             <MetricBar label="NET" value={node.metrics.network} />
           </div>
           
-          <div className="mt-2 pt-2 border-t border-slate-700 flex items-center justify-between">
-            <span className="text-[10px] text-slate-500">Latency</span>
-            <span className="text-[10px] text-white font-mono">{node.metrics.latency}ms</span>
+          {/* Footer stats */}
+          <div className="mt-3 pt-2 border-t border-border flex items-center justify-between text-[10px]">
+            <div className="flex items-center gap-1">
+              <Activity className="w-3 h-3 text-cyan-400" />
+              <span className="text-muted-foreground">{node.metrics.latency}ms</span>
+            </div>
+            <div className="font-mono text-emerald-400">{node.metrics.uptime}% uptime</div>
           </div>
         </div>
         
-        {/* Tooltip Arrow */}
+        {/* Tooltip arrow */}
         <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900/95" />
       </div>
     </div>
@@ -173,21 +226,23 @@ export default function InfraNode({ node, isSelected, onClick, scale = 1 }: Infr
 
 function MetricBar({ label, value }: { label: string; value: number }) {
   const getColor = (v: number) => {
-    if (v < 50) return 'bg-emerald-500';
-    if (v < 75) return 'bg-amber-500';
-    return 'bg-red-500';
+    if (v < 50) return { bg: 'bg-emerald-500', text: 'text-emerald-400' };
+    if (v < 75) return { bg: 'bg-amber-500', text: 'text-amber-400' };
+    return { bg: 'bg-red-500', text: 'text-red-400' };
   };
+  
+  const colors = getColor(value);
   
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[9px] text-slate-500 w-6">{label}</span>
-      <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+      <span className="text-[9px] text-muted-foreground w-7 font-mono">{label}</span>
+      <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden">
         <div 
-          className={`h-full ${getColor(value)} transition-all duration-500`}
+          className={`h-full ${colors.bg} transition-all duration-500`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-[9px] text-white font-mono w-7 text-right">{value}%</span>
+      <span className={`text-[9px] font-mono w-8 text-right ${colors.text}`}>{value}%</span>
     </div>
   );
 }
