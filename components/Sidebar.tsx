@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Shield, Settings } from 'lucide-react';
+import { Home, Users, Shield, Settings, Server, Brain } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -10,7 +10,8 @@ export default function Sidebar() {
   const navItems = [
     { name: 'Village', href: '/', icon: Home },
     { name: 'Agents', href: '/agent-management', icon: Users },
-    { name: 'Clan', href: '#', icon: Shield },
+    { name: 'Infra', href: '/infrastructure', icon: Server },
+    { name: 'AI Control', href: '/ai-control', icon: Brain },
     { name: 'Settings', href: '#', icon: Settings },
   ];
 

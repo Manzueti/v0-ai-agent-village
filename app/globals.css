@@ -144,3 +144,39 @@
 .animate-slide-in {
   animation: slide-in 0.3s ease-out forwards;
 }
+
+/* ── Infrastructure Map Styles ── */
+
+@keyframes dash-flow {
+  to { stroke-dashoffset: -20; }
+}
+
+.animate-dash {
+  animation: dash-flow 1s linear infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+  50% { filter: drop-shadow(0 0 8px currentColor); }
+}
+
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-status-blink {
+  animation: status-blink 1s ease-in-out infinite;
+}
+
+/* Infrastructure Grid */
+.infra-grid {
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
