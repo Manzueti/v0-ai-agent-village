@@ -3,80 +3,69 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FUTURISTIC THEME - AI Infrastructure Control Center
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+:root {
+  /* Base colors - Dark futuristic */
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.95 0.01 260);
+  
+  /* Cards and surfaces */
+  --card: oklch(0.12 0.015 260);
+  --card-foreground: oklch(0.95 0.01 260);
+  --popover: oklch(0.10 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 260);
+  
+  /* Primary - Cyan accent */
+  --primary: oklch(0.75 0.18 195);
+  --primary-foreground: oklch(0.12 0.02 260);
+  
+  /* Secondary - Muted slate */
+  --secondary: oklch(0.18 0.02 260);
+  --secondary-foreground: oklch(0.85 0.02 260);
+  
+  /* Muted backgrounds */
+  --muted: oklch(0.15 0.015 260);
+  --muted-foreground: oklch(0.55 0.02 260);
+  
+  /* Accent - Purple/Violet glow */
+  --accent: oklch(0.65 0.22 285);
+  --accent-foreground: oklch(0.98 0.01 260);
+  
+  /* Destructive - Red alert */
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.01 0);
+  
+  /* Borders and inputs */
+  --border: oklch(0.22 0.03 260);
+  --input: oklch(0.18 0.025 260);
+  --ring: oklch(0.65 0.18 195);
+  
+  /* Charts - Futuristic palette */
+  --chart-1: oklch(0.75 0.18 195);
+  --chart-2: oklch(0.65 0.22 285);
+  --chart-3: oklch(0.70 0.20 145);
+  --chart-4: oklch(0.80 0.15 80);
+  --chart-5: oklch(0.60 0.22 25);
+  
+  --radius: 0.75rem;
+  
+  /* Sidebar - Dark with glow */
+  --sidebar: oklch(0.10 0.02 260);
+  --sidebar-foreground: oklch(0.85 0.02 260);
+  --sidebar-primary: oklch(0.75 0.18 195);
+  --sidebar-primary-foreground: oklch(0.12 0.02 260);
+  --sidebar-accent: oklch(0.18 0.03 260);
+  --sidebar-accent-foreground: oklch(0.95 0.01 260);
+  --sidebar-border: oklch(0.25 0.04 260);
+  --sidebar-ring: oklch(0.65 0.18 195);
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -124,23 +113,249 @@
   }
 }
 
-/* ── AI Agent Village Game Styles ── */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FUTURISTIC UI ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
-.grass-bg {
-  background-color: #16a34a;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2315803d' fill-opacity='0.5'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+/* Glowing border effect */
+@keyframes border-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.3), 
+                inset 0 0 5px rgba(6, 182, 212, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.6), 
+                inset 0 0 10px rgba(6, 182, 212, 0.2);
+  }
 }
 
-@keyframes bounce-slow {
+.animate-border-glow {
+  animation: border-glow 3s ease-in-out infinite;
+}
+
+/* Scanning line effect */
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.animate-scan {
+  animation: scan-line 3s linear infinite;
+}
+
+/* Data flow animation */
+@keyframes data-flow {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-data-flow {
+  animation: data-flow 1s linear infinite;
+}
+
+/* Pulse ring effect */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+/* Hologram flicker */
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+.animate-hologram {
+  animation: hologram-flicker 4s linear infinite;
+}
+
+/* Typing cursor */
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-cursor {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
+/* Float effect */
+@keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
 
-@keyframes slide-in {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out forwards;
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INFRASTRUCTURE MAP STYLES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Connection line flow */
+@keyframes dash-flow {
+  to { stroke-dashoffset: -20; }
+}
+
+.animate-dash {
+  animation: dash-flow 1s linear infinite;
+}
+
+/* Node glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+  50% { filter: drop-shadow(0 0 12px currentColor); }
+}
+
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Status blink for warnings */
+@keyframes status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-status-blink {
+  animation: status-blink 1s ease-in-out infinite;
+}
+
+/* Grid background pattern */
+.futuristic-grid {
+  background-image: 
+    linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Hex pattern overlay */
+.hex-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2306b6d4' fill-opacity='0.02'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Scanline overlay */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03),
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+/* Neon text glow */
+.neon-text {
+  text-shadow: 
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 20px currentColor;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+.glass-strong {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* Gradient borders */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.5), rgba(139, 92, 246, 0.5));
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Terminal-style text */
+.terminal-text {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* Cyber button */
+.cyber-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(6, 182, 212, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+/* Status indicator pulse */
+.status-online {
+  position: relative;
+}
+
+.status-online::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.5;
+  animation: pulse-ring 2s ease-out infinite;
 }
