@@ -1,7 +1,9 @@
 import { streamText } from 'ai';
-import { xai } from '@ai-sdk/xai';
+import { createXai } from '@ai-sdk/xai';
 import type { NextRequest } from 'next/server';
 import { InfraNode, SystemHealth } from '@/lib/types';
+
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,17 +35,26 @@ Always respond in a structured format with clear sections.`;
       ? `User query: ${query}\n\nCurrent Infrastructure State:\n${JSON.stringify({ nodes, health }, null, 2)}`
       : `Analyze the following infrastructure state and provide recommendations:\n\n${JSON.stringify({ nodes, health, zoneId }, null, 2)}`;
 
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: 'XAI_API_KEY not configured. Please check your environment variables.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const xaiClient = createXai({ apiKey });
+    
     const result = streamText({
-      model: xai('grok-4', {
-        apiKey: process.env.XAI_API_KEY,
-      }),
+      model: xaiClient('grok-4'),
       system: systemPrompt,
       prompt: userPrompt,
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('Error analyzing infrastructure:', error);
-    return new Response('Failed to analyze infrastructure', { status: 500 });
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error analyzing infrastructure:', errorMessage);
+    return new Response(`Failed to analyze infrastructure: ${errorMessage}`, { status: 500 });
   }
 }

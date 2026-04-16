@@ -1,6 +1,8 @@
 import { streamText } from 'ai';
-import { xai } from '@ai-sdk/xai';
+import { createXai } from '@ai-sdk/xai';
 import type { NextRequest } from 'next/server';
+
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,17 +29,26 @@ When discussing nodes, always mention their Primary/Replica relationship and cur
 
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
     
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: 'XAI_API_KEY not configured. Please check your environment variables.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const xaiClient = createXai({ apiKey });
+    
     const result = streamText({
-      model: xai('grok-4', {
-        apiKey: process.env.XAI_API_KEY,
-      }),
+      model: xaiClient('grok-4'),
       system: systemPrompt,
       prompt: lastUserMessage?.content || 'Hello',
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('Error in infrastructure chat:', error);
-    return new Response('Failed to process chat message', { status: 500 });
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in infrastructure chat:', errorMessage);
+    return new Response(`Failed to process chat message: ${errorMessage}`, { status: 500 });
   }
 }

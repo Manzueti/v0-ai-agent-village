@@ -1,7 +1,9 @@
 import { streamText } from 'ai';
-import { xai } from '@ai-sdk/xai';
+import { createXai } from '@ai-sdk/xai';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
+
+export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,17 +44,26 @@ ${reason ? `Reason: ${reason}` : ''}
 
 Please validate the action, execute it, and report the outcome.`;
 
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: 'XAI_API_KEY not configured. Please check your environment variables.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const xaiClient = createXai({ apiKey });
+    
     const result = streamText({
-      model: xai('grok-4', {
-        apiKey: process.env.XAI_API_KEY,
-      }),
+      model: xaiClient('grok-4'),
       system: systemPrompt,
       prompt: userPrompt,
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('Error executing infrastructure action:', error);
-    return new Response('Failed to execute action', { status: 500 });
+  } catch (error: Error | unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error executing infrastructure action:', errorMessage);
+    return new Response(`Failed to execute action: ${errorMessage}`, { status: 500 });
   }
 }

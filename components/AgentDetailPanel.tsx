@@ -8,11 +8,12 @@ type Props = {
   agent: Employee;
   onClose: () => void;
   onUpdateAgent: (id: string, updates: Partial<Employee>) => void;
+  onToggleStatus: (id: string, newStatus: string) => void;
 };
 
 const MODELS = ['GPT-4o', 'GPT-4 Turbo', 'Claude 3.5', 'Gemini 1.5'];
 
-export default function AgentDetailPanel({ agent, onClose, onUpdateAgent }: Props) {
+export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onToggleStatus }: Props) {
   const [tab, setTab] = useState<'overview' | 'stats' | 'settings'>('overview');
   const [selectedModel, setSelectedModel] = useState('GPT-4o');
   const [memoryEnabled, setMemoryEnabled] = useState(true);

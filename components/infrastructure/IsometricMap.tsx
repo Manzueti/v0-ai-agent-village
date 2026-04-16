@@ -78,7 +78,9 @@ export default function IsometricMap({
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
+    return () => {
+      container.removeEventListener('wheel', handleWheel, { passive: false } as EventListenerOptions);
+    };
   }, []);
 
   return (

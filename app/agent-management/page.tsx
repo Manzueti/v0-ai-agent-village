@@ -73,6 +73,7 @@ export default function AgentVillage() {
           agent={selectedAgent}
           onClose={() => setSelectedAgentId(null)}
           onUpdateAgent={handleUpdateAgent}
+          onToggleStatus={handleToggleStatus}
         />
       )}
     </div>
