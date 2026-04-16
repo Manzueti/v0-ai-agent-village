@@ -2,95 +2,148 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Server, Brain, Settings, Activity, Hexagon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  Home, Users, Server, Brain, Settings, 
+  Activity, Cpu, ChevronRight, Terminal,
+  Zap, Shield, Wifi, Radio
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [systemStatus, setSystemStatus] = useState({ health: 97, active: 5 });
 
   const navItems = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Agents', href: '/agent-management', icon: Users },
-    { name: 'Infrastructure', href: '/infrastructure', icon: Server },
-    { name: 'AI Control', href: '/ai-control', icon: Brain },
-    { name: 'Settings', href: '#', icon: Settings },
+    { name: 'Home', href: '/', icon: Home, shortcut: '⌘1' },
+    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘2' },
+    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘3' },
+    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘4' },
+    { name: 'Settings', href: '#', icon: Settings, shortcut: '⌘,' },
   ];
 
   return (
-    <div className="w-20 bg-sidebar border-r border-sidebar-border h-screen flex flex-col items-center py-4 gap-2 flex-shrink-0 relative">
-      {/* Scanline overlay */}
-      <div className="absolute inset-0 pointer-events-none scanlines opacity-30" />
+    <motion.div 
+      initial={{ x: -80 }}
+      animate={{ x: 0 }}
+      className="w-20 bg-[#020408]/95 backdrop-blur-2xl border-r border-cyan-500/20 h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden"
+    >
+      {/* Background Effects */}
+      <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
       
-      {/* Gradient border right */}
-      <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 via-transparent to-violet-500/50" />
+      {/* Gradient Border */}
+      <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 via-violet-500/30 to-cyan-500/50" />
       
       {/* Logo */}
-      <div className="relative mb-6 group">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 transition-all duration-300 group-hover:shadow-cyan-500/50 group-hover:scale-105">
-          <Hexagon className="w-6 h-6 text-white" />
+      <motion.div 
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="relative mb-8 group"
+      >
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/40 flex items-center justify-center relative overflow-hidden">
+          <Terminal className="w-6 h-6 text-cyan-400 relative z-10" />
+          <div className="absolute inset-0 bg-cyan-500/10 animate-pulse" />
         </div>
         {/* Pulse ring */}
-        <div className="absolute inset-0 rounded-xl bg-cyan-500/20 animate-pulse-ring" />
-      </div>
+        <div className="absolute inset-0 rounded-xl bg-cyan-500/20 blur-xl animate-ping opacity-30" style={{ animationDuration: '3s' }} />
+      </motion.div>
 
-      {/* Status indicator */}
-      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4">
+      {/* Status Badge */}
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-6"
+      >
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-wider">Online</span>
-      </div>
+        <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-wider">ONLINE</span>
+      </motion.div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-2">
-        {navItems.map((item) => {
+      <nav className="flex flex-col gap-3 flex-1">
+        {navItems.map((item, index) => {
           const isActive = pathname === item.href;
+          const Icon = item.icon;
+          
           return (
-            <Link
+            <motion.div
               key={item.name}
-              href={item.href}
-              className={`relative w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-300 group ${
-                isActive
-                  ? 'bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/50 shadow-lg shadow-cyan-500/20'
-                  : 'bg-sidebar-accent/50 border border-transparent hover:border-sidebar-border hover:bg-sidebar-accent'
-              }`}
-              title={item.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 + index * 0.05 }}
+              onMouseEnter={() => setHoveredItem(item.name)}
+              onMouseLeave={() => setHoveredItem(null)}
             >
-              {/* Active glow */}
-              {isActive && (
-                <div className="absolute inset-0 rounded-xl bg-cyan-500/10 animate-border-glow" />
-              )}
-              
-              <item.icon
-                className={`w-5 h-5 relative z-10 transition-colors ${
-                  isActive ? 'text-cyan-400' : 'text-sidebar-foreground/60 group-hover:text-sidebar-foreground'
+              <Link
+                href={item.href}
+                className={`relative w-14 h-14 flex items-center justify-center rounded-xl transition-all duration-300 group ${
+                  isActive
+                    ? 'bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 border border-cyan-500/50 shadow-lg shadow-cyan-500/20'
+                    : 'border border-transparent hover:border-cyan-500/30 hover:bg-cyan-500/5'
                 }`}
-              />
-              
-              {/* Tooltip */}
-              <span className="absolute left-full ml-3 px-2 py-1 bg-popover border border-border rounded text-xs text-popover-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 font-mono">
-                {item.name}
-              </span>
-              
-              {/* Active indicator line */}
-              {isActive && (
-                <div className="absolute -right-px top-1/2 -translate-y-1/2 w-0.5 h-6 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-l" />
-              )}
-            </Link>
+              >
+                {/* Active glow */}
+                {isActive && (
+                  <div className="absolute inset-0 rounded-xl bg-cyan-500/10 animate-pulse" />
+                )}
+                
+                <Icon
+                  className={`w-5 h-5 relative z-10 transition-all duration-300 ${
+                    isActive ? 'text-cyan-400 scale-110' : 'text-slate-500 group-hover:text-cyan-400 group-hover:scale-110'
+                  }`}
+                />
+                
+                {/* Tooltip */}
+                <motion.span 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: hoveredItem === item.name ? 1 : 0, x: hoveredItem === item.name ? 0 : -10 }}
+                  className="absolute left-full ml-3 px-3 py-1.5 glass-ultron rounded-lg text-xs text-white whitespace-nowrap z-50 font-mono border border-cyan-500/20"
+                >
+                  <div className="flex items-center gap-2">
+                    <span>{item.name}</span>
+                    <span className="text-slate-500">{item.shortcut}</span>
+                  </div>
+                </motion.span>
+                
+                {/* Active indicator line */}
+                {isActive && (
+                  <div className="absolute -right-px top-1/2 -translate-y-1/2 w-0.5 h-8 bg-gradient-to-b from-cyan-400 to-violet-400 rounded-l" />
+                )}
+              </Link>
+            </motion.div>
           );
         })}
       </nav>
 
-      {/* Bottom section */}
-      <div className="mt-auto flex flex-col items-center gap-3">
-        {/* System activity */}
-        <div className="flex flex-col items-center gap-1">
-          <Activity className="w-4 h-4 text-cyan-400/60" />
-          <span className="text-[8px] font-mono text-muted-foreground">97%</span>
+      {/* Bottom Section */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="mt-auto flex flex-col items-center gap-4 pb-4"
+      >
+        {/* System Stats */}
+        <div className="glass-ultron rounded-lg p-3 w-14 flex flex-col items-center gap-2">
+          <Activity className="w-4 h-4 text-cyan-400" />
+          <div className="text-[10px] font-mono text-white">{systemStatus.health}%</div>
+          <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-full bg-cyan-400" style={{ width: `${systemStatus.health}%` }} />
+          </div>
+        </div>
+
+        {/* Network Status */}
+        <div className="flex items-center gap-1.5">
+          <Wifi className="w-3 h-3 text-violet-400" />
+          <span className="text-[8px] font-mono text-slate-500">{systemStatus.active}/5</span>
         </div>
         
         {/* Version */}
-        <div className="text-[8px] font-mono text-muted-foreground/50 tracking-wider">
+        <div className="text-[8px] font-mono text-slate-600 tracking-wider">
           v2.4.1
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

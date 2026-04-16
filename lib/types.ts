@@ -1,5 +1,66 @@
 export type AgentStatus = 'running' | 'paused' | 'error' | 'idle';
 
+// Revenue metrics for money-making agents
+export type RevenueMetrics = {
+  // Sales agents
+  leadsGenerated?: number;
+  dealsWon?: number;
+  dealsClosed?: number;
+  avgDealSize?: number;
+  winRate?: number;
+  commission?: number;
+  revenue?: number;
+  pipeline?: number;
+  
+  // Client success
+  activeClients?: number;
+  retentionRate?: number;
+  upsellRevenue?: number;
+  npsScore?: number;
+  
+  // Market intelligence
+  opportunitiesFound?: number;
+  marketSize?: number;
+  trendReports?: number;
+  actionableInsights?: number;
+  
+  // Pricing
+  experimentsRun?: number;
+  conversionLift?: number;
+  arpuIncrease?: number;
+  projectedAnnualImpact?: number;
+  
+  // Billing
+  invoicesSent?: number;
+  collectionRate?: number;
+  arDays?: number;
+  latePaymentsRecovered?: number;
+  
+  // Social/Content
+  followersGained?: number;
+  engagementRate?: number;
+  leadsFromSocial?: number;
+  conversionValue?: number;
+  
+  // SEO
+  organicTraffic?: number;
+  keywordsRanked?: number;
+  conversionsFromSEO?: number;
+  seoRevenue?: number;
+  
+  // Email
+  emailsSent?: number;
+  openRate?: number;
+  clickRate?: number;
+  emailRevenue?: number;
+  
+  // Chat
+  chatsHandled?: number;
+  chatConversionRate?: number;
+  avgOrderValue?: number;
+  chatRevenue?: number;
+};
+
 export type Employee = {
   id: string;
   name: string;
@@ -9,6 +70,7 @@ export type Employee = {
   status: AgentStatus;
   avatar: string;
   systemPrompt: string;
+  revenueMetrics?: RevenueMetrics;
 
   // Metrics
   tokenUsage: { used: number; limit: number };

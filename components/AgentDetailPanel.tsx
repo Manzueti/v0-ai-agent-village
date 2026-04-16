@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { Employee, AgentStatus } from '@/lib/types';
-import { X, TrendingUp, Zap, Shield, Clock, Activity, Cpu } from 'lucide-react';
+import { 
+  X, TrendingUp, Zap, Shield, Clock, Activity, Cpu,
+  DollarSign, Target, Users, BarChart3, CreditCard, Mail,
+  MessageSquare, Globe, Search, PieChart, ArrowUpRight,
+  Wallet, Percent, Calendar, Award
+} from 'lucide-react';
 
 type Props = {
   agent: Employee;
@@ -13,8 +18,10 @@ type Props = {
 
 const MODELS = ['GPT-4o', 'GPT-4 Turbo', 'Claude 3.5', 'Gemini 1.5'];
 
+type TabType = 'overview' | 'stats' | 'revenue' | 'settings';
+
 export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onToggleStatus }: Props) {
-  const [tab, setTab] = useState<'overview' | 'stats' | 'settings'>('overview');
+  const [tab, setTab] = useState<TabType>(agent.revenueMetrics ? 'revenue' : 'overview');
   const [selectedModel, setSelectedModel] = useState('GPT-4o');
   const [memoryEnabled, setMemoryEnabled] = useState(true);
 
@@ -24,120 +31,154 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
     : 0;
 
   const statusOptions: { value: AgentStatus; label: string; color: string }[] = [
-    { value: 'running', label: 'Running', color: 'bg-green-600 border-green-800' },
-    { value: 'paused', label: 'Paused', color: 'bg-yellow-600 border-yellow-800' },
-    { value: 'idle', label: 'Idle', color: 'bg-slate-500 border-slate-700' },
-    { value: 'error', label: 'Error', color: 'bg-red-700 border-red-900' },
+    { value: 'running', label: 'Running', color: 'bg-cyan-500 border-cyan-700' },
+    { value: 'paused', label: 'Paused', color: 'bg-amber-500 border-amber-700' },
+    { value: 'idle', label: 'Idle', color: 'bg-slate-600 border-slate-700' },
+    { value: 'error', label: 'Error', color: 'bg-red-500 border-red-700' },
   ];
 
-  return (
-    <div className="fixed top-0 right-0 h-full w-full md:w-[440px] z-50 animate-slide-in">
-      <div className="h-full bg-gradient-to-b from-slate-900 to-slate-800 border-l-4 border-yellow-700 shadow-2xl flex flex-col text-white overflow-hidden">
+  const hasRevenue = agent.revenueMetrics !== undefined;
 
-        {/* Wooden Header */}
-        <div className="bg-gradient-to-r from-amber-800 via-amber-600 to-amber-800 p-4 border-b-4 border-amber-900 flex justify-between items-center shadow-lg flex-shrink-0">
+  // Format currency
+  const formatCurrency = (val?: number) => {
+    if (!val) return '$0';
+    if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`;
+    return `$${val}`;
+  };
+
+  // Format percentage
+  const formatPct = (val?: number) => {
+    if (!val) return '0%';
+    return `${val}%`;
+  };
+
+  return (
+    <div className="fixed top-0 right-0 h-full w-full md:w-[480px] z-50">
+      <div className="h-full bg-[#020408] border-l border-cyan-500/30 shadow-2xl shadow-cyan-500/10 flex flex-col text-white overflow-hidden animate-slide-in">
+        
+        {/* Header */}
+        <div className="relative border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 p-5 flex justify-between items-center flex-shrink-0">
+          <div className="absolute inset-0 cyber-grid opacity-20 pointer-events-none" />
           <div>
-            <h2 className="text-xl font-bold tracking-wide" style={{ textShadow: '2px 2px 0 #000' }}>
+            <h2 className="text-xl font-bold tracking-wide text-cyan-400 font-mono">
               {agent.name}
             </h2>
-            <p className="text-amber-200 text-xs font-semibold mt-0.5">{agent.role} · {agent.office}</p>
+            <p className="text-xs text-cyan-200/60 font-mono mt-1 uppercase tracking-wider">
+              {agent.role} <span className="text-violet-400">//</span> {agent.office}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 bg-red-900 rounded-full border-2 border-black hover:bg-red-700 transition-colors"
+            className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all group"
             aria-label="Close panel"
           >
-            <X className="w-5 h-5 text-white" />
+            <X className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
           </button>
         </div>
 
         {/* Avatar Display */}
-        <div className="relative h-28 bg-slate-700/50 flex items-center justify-center flex-shrink-0">
-          <div className="text-7xl" style={{ animation: 'bounce-slow 3s infinite ease-in-out' }}>
-            {agent.avatar}
+        <div className="relative h-32 flex items-center justify-center flex-shrink-0 border-b border-cyan-500/10">
+          <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none" />
+          <div className="relative">
+            <div className="text-7xl animate-float-ultra" style={{ filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.5))' }}>
+              {agent.avatar}
+            </div>
+            <div className="absolute inset-0 bg-cyan-500/30 blur-xl rounded-full" />
           </div>
+          
           {/* Level Badge */}
-          <div className="absolute top-3 left-4 bg-yellow-400 text-black font-bold text-sm px-3 py-0.5 rounded-full border-2 border-yellow-700 shadow">
+          <div className="absolute top-4 left-5 bg-gradient-to-r from-violet-500/20 to-cyan-500/20 text-cyan-300 font-mono text-xs px-3 py-1 rounded-full border border-cyan-500/40 backdrop-blur-sm">
             LVL {agent.level}
           </div>
+          
           {/* Status Badge */}
-          <div className={`absolute top-3 right-4 px-3 py-0.5 rounded-full text-xs font-bold border-2 ${
-            agent.status === 'running' ? 'bg-green-500 border-green-900 text-white animate-pulse' :
-            agent.status === 'paused' ? 'bg-yellow-500 border-yellow-900 text-black' :
-            agent.status === 'error' ? 'bg-red-500 border-red-900 text-white' :
-            'bg-slate-400 border-slate-700 text-black'
+          <div className={`absolute top-4 right-5 px-3 py-1 rounded-full text-xs font-mono border backdrop-blur-sm ${
+            agent.status === 'running' ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 status-pulse-cyan' :
+            agent.status === 'paused' ? 'bg-amber-500/20 border-amber-500/50 text-amber-300' :
+            agent.status === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-300' :
+            'bg-slate-500/20 border-slate-500/50 text-slate-400'
           }`}>
             {agent.status.toUpperCase()}
           </div>
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900 to-transparent h-10" />
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-around px-3 py-2 bg-slate-800 border-b border-slate-600 flex-shrink-0">
-          {(['overview', 'stats', 'settings'] as const).map((t) => (
+        <div className="flex justify-around px-3 py-3 bg-[#020408] border-b border-cyan-500/10 flex-shrink-0">
+          {(['overview', 'stats', ...(hasRevenue ? ['revenue'] : []), 'settings'] as TabType[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-1.5 rounded-md font-bold uppercase text-xs border-b-4 transition-all ${
+              className={`px-4 py-2 rounded-lg font-mono uppercase text-xs transition-all relative overflow-hidden ${
                 tab === t
-                  ? 'bg-green-600 border-green-900 text-white scale-105 shadow'
-                  : 'bg-slate-600 border-slate-800 text-slate-300 hover:bg-slate-500'
+                  ? 'bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 shadow-lg shadow-cyan-500/20'
+                  : 'bg-transparent border border-transparent text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10'
               }`}
             >
               {t}
+              {tab === t && (
+                <div className="absolute bottom-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+              )}
             </button>
           ))}
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 relative">
+          
           {/* ── OVERVIEW TAB ── */}
           {tab === 'overview' && (
             <>
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600 shadow-inner">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-purple-300 font-bold flex items-center gap-2 text-sm">
-                    <Zap className="w-4 h-4" /> Elixir (Tokens)
+              {/* Token Usage */}
+              <div className="glass-ultron rounded-xl p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-cyan-400 font-mono text-sm flex items-center gap-2">
+                    <Zap className="w-4 h-4" /> TOKEN USAGE
                   </span>
-                  <span className="text-xs text-slate-300">{agent.tokenUsage.used.toLocaleString()} / {agent.tokenUsage.limit.toLocaleString()}</span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    {agent.tokenUsage.used.toLocaleString()} <span className="text-cyan-500/50">/</span> {agent.tokenUsage.limit.toLocaleString()}
+                  </span>
                 </div>
-                <div className="w-full h-4 bg-purple-950 rounded-full overflow-hidden border border-black">
-                  <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 transition-all duration-700" style={{ width: `${tokenPct}%` }} />
+                <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-cyan-500/20">
+                  <div className="h-full bg-gradient-to-r from-cyan-500 to-violet-500 transition-all duration-700" style={{ width: `${tokenPct}%` }} />
                 </div>
-                <p className="text-right text-xs text-slate-400 mt-1">{tokenPct.toFixed(1)}% used</p>
+                <p className="text-right text-xs text-slate-500 font-mono mt-2">{tokenPct.toFixed(1)}%</p>
               </div>
 
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600 shadow-inner">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-green-300 font-bold flex items-center gap-2 text-sm">
-                    <TrendingUp className="w-4 h-4" /> Success Rate
+              {/* Success Rate */}
+              <div className="glass-ultron rounded-xl p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-emerald-400 font-mono text-sm flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" /> SUCCESS RATE
                   </span>
-                  <span className="text-xs text-slate-300">{agent.successRate}%</span>
+                  <span className="text-xs text-slate-400 font-mono">{agent.successRate}%</span>
                 </div>
-                <div className="w-full h-4 bg-green-950 rounded-full overflow-hidden border border-black">
+                <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-emerald-500/20">
                   <div
-                    className={`h-full transition-all duration-700 ${agent.successRate > 80 ? 'bg-gradient-to-r from-green-400 to-green-600' : agent.successRate > 50 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gradient-to-r from-red-400 to-red-600'}`}
+                    className={`h-full transition-all duration-700 ${agent.successRate > 80 ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : agent.successRate > 50 ? 'bg-gradient-to-r from-amber-500 to-yellow-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
                     style={{ width: `${agent.successRate}%` }}
                   />
                 </div>
               </div>
 
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600 shadow-inner">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-yellow-300 font-bold flex items-center gap-2 text-sm">
-                    <Activity className="w-4 h-4" /> Concurrency
+              {/* Concurrency */}
+              <div className="glass-ultron rounded-xl p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-violet-400 font-mono text-sm flex items-center gap-2">
+                    <Activity className="w-4 h-4" /> CONCURRENCY
                   </span>
-                  <span className="text-xs text-slate-300">{agent.concurrency.current} / {agent.concurrency.max} threads</span>
+                  <span className="text-xs text-slate-400 font-mono">{agent.concurrency.current} / {agent.concurrency.max}</span>
                 </div>
-                <div className="w-full h-4 bg-yellow-950 rounded-full overflow-hidden border border-black">
-                  <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 transition-all duration-700" style={{ width: `${concurrencyPct}%` }} />
+                <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-violet-500/20">
+                  <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-700" style={{ width: `${concurrencyPct}%` }} />
                 </div>
               </div>
 
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600 shadow-inner">
-                <p className="text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">System Prompt Preview</p>
-                <p className="text-slate-400 text-xs leading-relaxed line-clamp-3">{agent.systemPrompt}</p>
+              {/* System Prompt */}
+              <div className="glass-ultron rounded-xl p-4">
+                <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <Cpu className="w-3 h-3" /> System Prompt
+                </p>
+                <p className="text-slate-400 text-xs leading-relaxed line-clamp-4 font-mono">{agent.systemPrompt}</p>
               </div>
             </>
           )}
@@ -146,26 +187,158 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
           {tab === 'stats' && (
             <>
               <div className="grid grid-cols-2 gap-3">
-                <StatCard icon={<Clock className="w-5 h-5 text-blue-400" />} label="Avg Latency" value={`${agent.latency}ms`} color="border-blue-800" />
-                <StatCard icon={<TrendingUp className="w-5 h-5 text-green-400" />} label="Success Rate" value={`${agent.successRate}%`} color="border-green-800" />
-                <StatCard icon={<Zap className="w-5 h-5 text-purple-400" />} label="Tokens Used" value={agent.tokenUsage.used.toLocaleString()} color="border-purple-800" />
-                <StatCard icon={<Activity className="w-5 h-5 text-yellow-400" />} label="Concurrency" value={`${agent.concurrency.current}/${agent.concurrency.max}`} color="border-yellow-800" />
+                <StatCard icon={<Clock className="w-5 h-5 text-cyan-400" />} label="Avg Latency" value={`${agent.latency}ms`} />
+                <StatCard icon={<TrendingUp className="w-5 h-5 text-emerald-400" />} label="Success Rate" value={`${agent.successRate}%`} />
+                <StatCard icon={<Zap className="w-5 h-5 text-violet-400" />} label="Tokens Used" value={agent.tokenUsage.used.toLocaleString()} />
+                <StatCard icon={<Activity className="w-5 h-5 text-amber-400" />} label="Concurrency" value={`${agent.concurrency.current}/${agent.concurrency.max}`} />
               </div>
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600">
-                <p className="text-slate-300 text-xs font-bold uppercase tracking-wider mb-3">Performance Grade</p>
+              
+              {/* Performance Grade */}
+              <div className="glass-ultron rounded-xl p-4">
+                <p className="text-slate-400 font-mono text-xs uppercase tracking-wider mb-3">Performance Grade</p>
                 <div className="flex items-center justify-center">
-                  <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center text-3xl font-black shadow-lg ${
-                    agent.successRate >= 90 ? 'border-green-500 text-green-400 bg-green-900/30' :
-                    agent.successRate >= 70 ? 'border-yellow-500 text-yellow-400 bg-yellow-900/30' :
-                    'border-red-500 text-red-400 bg-red-900/30'
+                  <div className={`w-24 h-24 rounded-2xl border-2 flex items-center justify-center text-4xl font-black shadow-lg ${
+                    agent.successRate >= 90 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10 shadow-emerald-500/20' :
+                    agent.successRate >= 70 ? 'border-amber-500 text-amber-400 bg-amber-500/10 shadow-amber-500/20' :
+                    'border-red-500 text-red-400 bg-red-500/10 shadow-red-500/20'
                   }`}>
                     {agent.successRate >= 90 ? 'A' : agent.successRate >= 70 ? 'B' : 'D'}
                   </div>
                 </div>
-                <p className="text-center text-slate-400 text-xs mt-2">
-                  {agent.successRate >= 90 ? 'Excellent performance' : agent.successRate >= 70 ? 'Acceptable performance' : 'Needs attention'}
+                <p className="text-center text-slate-500 text-xs mt-3 font-mono">
+                  {agent.successRate >= 90 ? 'EXCELLENT PERFORMANCE' : agent.successRate >= 70 ? 'ACCEPTABLE PERFORMANCE' : 'NEEDS ATTENTION'}
                 </p>
               </div>
+            </>
+          )}
+
+          {/* ── REVENUE TAB ── */}
+          {tab === 'revenue' && agent.revenueMetrics && (
+            <>
+              {/* Revenue Summary Card */}
+              <div className="glass-ultron rounded-xl p-5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
+                <p className="text-slate-500 font-mono text-xs uppercase tracking-wider mb-1">Total Revenue Generated</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-emerald-400 font-mono">
+                    {formatCurrency(agent.revenueMetrics.revenue || agent.revenueMetrics.emailRevenue || agent.revenueMetrics.chatRevenue || agent.revenueMetrics.seoRevenue || agent.revenueMetrics.conversionValue)}
+                  </span>
+                  {agent.revenueMetrics.projectedAnnualImpact && (
+                    <span className="text-xs text-emerald-500/70 font-mono">
+                      +{formatCurrency(agent.revenueMetrics.projectedAnnualImpact)}/yr
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Sales Metrics */}
+              {(agent.revenueMetrics.leadsGenerated !== undefined || agent.revenueMetrics.dealsClosed !== undefined) && (
+                <>
+                  <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mt-2 flex items-center gap-2">
+                    <Target className="w-3 h-3" /> Sales Performance
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {agent.revenueMetrics.leadsGenerated !== undefined && (
+                      <RevenueCard icon={<Target className="w-4 h-4 text-cyan-400" />} label="Leads" value={agent.revenueMetrics.leadsGenerated.toString()} />
+                    )}
+                    {agent.revenueMetrics.dealsClosed !== undefined && (
+                      <RevenueCard icon={<Award className="w-4 h-4 text-emerald-400" />} label="Deals Won" value={agent.revenueMetrics.dealsClosed.toString()} />
+                    )}
+                    {agent.revenueMetrics.avgDealSize !== undefined && (
+                      <RevenueCard icon={<DollarSign className="w-4 h-4 text-violet-400" />} label="Avg Deal" value={formatCurrency(agent.revenueMetrics.avgDealSize)} />
+                    )}
+                    {agent.revenueMetrics.winRate !== undefined && (
+                      <RevenueCard icon={<Percent className="w-4 h-4 text-amber-400" />} label="Win Rate" value={`${agent.revenueMetrics.winRate}%`} />
+                    )}
+                    {agent.revenueMetrics.pipeline !== undefined && (
+                      <RevenueCard icon={<BarChart3 className="w-4 h-4 text-fuchsia-400" />} label="Pipeline" value={formatCurrency(agent.revenueMetrics.pipeline)} />
+                    )}
+                    {agent.revenueMetrics.commission !== undefined && (
+                      <RevenueCard icon={<Wallet className="w-4 h-4 text-emerald-400" />} label="Commission" value={formatCurrency(agent.revenueMetrics.commission)} />
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Client Success Metrics */}
+              {agent.revenueMetrics.activeClients !== undefined && (
+                <>
+                  <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mt-2 flex items-center gap-2">
+                    <Users className="w-3 h-3" /> Client Health
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <RevenueCard icon={<Users className="w-4 h-4 text-cyan-400" />} label="Active Clients" value={agent.revenueMetrics.activeClients.toString()} />
+                    <RevenueCard icon={<Percent className="w-4 h-4 text-emerald-400" />} label="Retention" value={`${agent.revenueMetrics.retentionRate}%`} />
+                    <RevenueCard icon={<ArrowUpRight className="w-4 h-4 text-violet-400" />} label="Upsell Revenue" value={formatCurrency(agent.revenueMetrics.upsellRevenue)} />
+                    <RevenueCard icon={<Award className="w-4 h-4 text-amber-400" />} label="NPS Score" value={agent.revenueMetrics.npsScore?.toString() || 'N/A'} />
+                  </div>
+                </>
+              )}
+
+              {/* Marketing Metrics */}
+              {(agent.revenueMetrics.organicTraffic !== undefined || agent.revenueMetrics.emailsSent !== undefined || agent.revenueMetrics.followersGained !== undefined) && (
+                <>
+                  <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mt-2 flex items-center gap-2">
+                    <Globe className="w-3 h-3" /> Marketing Performance
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {agent.revenueMetrics.organicTraffic !== undefined && (
+                      <RevenueCard icon={<Search className="w-4 h-4 text-cyan-400" />} label="Organic Traffic" value={agent.revenueMetrics.organicTraffic.toLocaleString()} />
+                    )}
+                    {agent.revenueMetrics.keywordsRanked !== undefined && (
+                      <RevenueCard icon={<Target className="w-4 h-4 text-emerald-400" />} label="Keywords" value={agent.revenueMetrics.keywordsRanked.toString()} />
+                    )}
+                    {agent.revenueMetrics.conversionsFromSEO !== undefined && (
+                      <RevenueCard icon={<TrendingUp className="w-4 h-4 text-violet-400" />} label="SEO Conv." value={agent.revenueMetrics.conversionsFromSEO.toString()} />
+                    )}
+                    {agent.revenueMetrics.seoRevenue !== undefined && (
+                      <RevenueCard icon={<DollarSign className="w-4 h-4 text-fuchsia-400" />} label="SEO Revenue" value={formatCurrency(agent.revenueMetrics.seoRevenue)} />
+                    )}
+                    {agent.revenueMetrics.followersGained !== undefined && (
+                      <RevenueCard icon={<Users className="w-4 h-4 text-amber-400" />} label="Followers" value={`+${agent.revenueMetrics.followersGained}`} />
+                    )}
+                    {agent.revenueMetrics.engagementRate !== undefined && (
+                      <RevenueCard icon={<Percent className="w-4 h-4 text-cyan-400" />} label="Engagement" value={`${agent.revenueMetrics.engagementRate}%`} />
+                    )}
+                    {agent.revenueMetrics.emailsSent !== undefined && (
+                      <RevenueCard icon={<Mail className="w-4 h-4 text-emerald-400" />} label="Emails Sent" value={agent.revenueMetrics.emailsSent.toLocaleString()} />
+                    )}
+                    {agent.revenueMetrics.openRate !== undefined && (
+                      <RevenueCard icon={<PieChart className="w-4 h-4 text-violet-400" />} label="Open Rate" value={`${agent.revenueMetrics.openRate}%`} />
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Finance Metrics */}
+              {agent.revenueMetrics.invoicesSent !== undefined && (
+                <>
+                  <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mt-2 flex items-center gap-2">
+                    <CreditCard className="w-3 h-3" /> Collections
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <RevenueCard icon={<CreditCard className="w-4 h-4 text-cyan-400" />} label="Invoices" value={agent.revenueMetrics.invoicesSent.toString()} />
+                    <RevenueCard icon={<Percent className="w-4 h-4 text-emerald-400" />} label="Collection Rate" value={`${agent.revenueMetrics.collectionRate}%`} />
+                    <RevenueCard icon={<Calendar className="w-4 h-4 text-amber-400" />} label="AR Days" value={agent.revenueMetrics.arDays?.toString() || 'N/A'} />
+                    <RevenueCard icon={<Wallet className="w-4 h-4 text-violet-400" />} label="Recovered" value={formatCurrency(agent.revenueMetrics.latePaymentsRecovered)} />
+                  </div>
+                </>
+              )}
+
+              {/* Chat Metrics */}
+              {agent.revenueMetrics.chatsHandled !== undefined && (
+                <>
+                  <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mt-2 flex items-center gap-2">
+                    <MessageSquare className="w-3 h-3" /> Live Chat Sales
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <RevenueCard icon={<MessageSquare className="w-4 h-4 text-cyan-400" />} label="Chats" value={agent.revenueMetrics.chatsHandled.toString()} />
+                    <RevenueCard icon={<Percent className="w-4 h-4 text-emerald-400" />} label="Conv. Rate" value={`${agent.revenueMetrics.conversionRate}%`} />
+                    <RevenueCard icon={<DollarSign className="w-4 h-4 text-violet-400" />} label="AOV" value={formatCurrency(agent.revenueMetrics.avgOrderValue)} />
+                    <RevenueCard icon={<TrendingUp className="w-4 h-4 text-fuchsia-400" />} label="Chat Revenue" value={formatCurrency(agent.revenueMetrics.chatRevenue)} />
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -173,17 +346,17 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
           {tab === 'settings' && (
             <>
               {/* Status Control */}
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600">
-                <p className="text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">Agent Status</p>
+              <div className="glass-ultron rounded-xl p-4">
+                <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mb-3">Agent Status</p>
                 <div className="grid grid-cols-2 gap-2">
                   {statusOptions.map((opt) => (
                     <button
                       key={opt.value}
                       onClick={() => onUpdateAgent(agent.id, { status: opt.value })}
-                      className={`py-2 rounded-lg border-b-4 text-xs font-bold transition-all ${
+                      className={`py-2 rounded-lg border text-xs font-mono transition-all ${
                         agent.status === opt.value
-                          ? `${opt.color} text-white scale-105 shadow`
-                          : 'bg-slate-600 border-slate-800 text-slate-300 hover:bg-slate-500'
+                          ? `${opt.color} text-white shadow-lg`
+                          : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-cyan-500/30'
                       }`}
                     >
                       {opt.label}
@@ -193,21 +366,21 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
               </div>
 
               {/* Memory Toggle */}
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600 flex justify-between items-center">
-                <span className="font-bold text-sm flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-blue-400" /> Persistent Memory
+              <div className="glass-ultron rounded-xl p-4 flex justify-between items-center">
+                <span className="font-mono text-sm flex items-center gap-2 text-slate-300">
+                  <Shield className="w-4 h-4 text-cyan-400" /> Persistent Memory
                 </span>
                 <button
                   onClick={() => setMemoryEnabled(!memoryEnabled)}
-                  className={`w-12 h-6 rounded-full border-2 relative transition-colors duration-200 ${memoryEnabled ? 'bg-green-600 border-green-900' : 'bg-slate-600 border-slate-800'}`}
+                  className={`w-12 h-6 rounded-full border relative transition-colors duration-200 ${memoryEnabled ? 'bg-emerald-500/20 border-emerald-500/50' : 'bg-slate-800 border-slate-700'}`}
                 >
-                  <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${memoryEnabled ? 'right-0.5' : 'left-0.5'}`} />
+                  <div className={`absolute top-1 w-4 h-4 rounded-full transition-all duration-200 ${memoryEnabled ? 'right-1 bg-emerald-400' : 'left-1 bg-slate-500'}`} />
                 </button>
               </div>
 
               {/* Model Selector */}
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600">
-                <span className="font-bold text-sm flex items-center gap-2 mb-3">
+              <div className="glass-ultron rounded-xl p-4">
+                <span className="font-mono text-sm flex items-center gap-2 mb-3 text-slate-300">
                   <Cpu className="w-4 h-4 text-cyan-400" /> Model Selector
                 </span>
                 <div className="grid grid-cols-2 gap-2">
@@ -215,10 +388,10 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
                     <button
                       key={model}
                       onClick={() => setSelectedModel(model)}
-                      className={`p-2 rounded-lg text-center border-b-4 text-xs font-bold transition-all ${
+                      className={`p-2 rounded-lg text-center border text-xs font-mono transition-all ${
                         selectedModel === model
-                          ? 'bg-blue-600 border-blue-900 text-white scale-105 shadow'
-                          : 'bg-slate-600 border-slate-800 text-slate-300 hover:bg-slate-500'
+                          ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                          : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-cyan-500/30'
                       }`}
                     >
                       {model}
@@ -228,10 +401,10 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
               </div>
 
               {/* System Prompt Editor */}
-              <div className="bg-slate-700/60 p-3 rounded-lg border-2 border-slate-600">
-                <p className="text-slate-300 text-xs font-bold uppercase tracking-wider mb-2">System Prompt</p>
+              <div className="glass-ultron rounded-xl p-4">
+                <p className="text-cyan-400 font-mono text-xs uppercase tracking-wider mb-2">System Prompt</p>
                 <textarea
-                  className="w-full h-24 bg-slate-900 text-slate-300 text-xs rounded-md p-2 border border-slate-600 focus:border-yellow-600 outline-none resize-none leading-relaxed"
+                  className="w-full h-24 bg-[#020408] text-slate-300 text-xs rounded-lg p-3 border border-cyan-500/20 focus:border-cyan-500/50 outline-none resize-none font-mono leading-relaxed"
                   defaultValue={agent.systemPrompt}
                 />
               </div>
@@ -240,9 +413,9 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-slate-900 border-t border-slate-700 flex-shrink-0">
-          <button className="w-full py-3 bg-gradient-to-b from-green-500 to-green-700 rounded-lg font-bold text-base border-b-4 border-green-900 hover:from-green-400 hover:to-green-600 active:border-b-0 active:translate-y-1 shadow-lg text-white tracking-wide transition-all" style={{ textShadow: '1px 1px 0 #000' }}>
-            ⬆ UPGRADE AGENT
+        <div className="p-4 border-t border-cyan-500/20 flex-shrink-0 bg-[#020408]">
+          <button className="w-full py-3 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 rounded-lg font-mono text-sm border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/30 hover:border-cyan-500/60 transition-all uppercase tracking-wider">
+            Upgrade Agent
           </button>
         </div>
       </div>
@@ -250,12 +423,26 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
   );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className={`bg-slate-700/60 p-3 rounded-lg border-2 ${color} shadow-inner flex flex-col items-center gap-1`}>
+    <div className="glass-ultron rounded-xl p-3 flex flex-col items-center gap-2 border-cyan-500/20">
       {icon}
-      <span className="text-lg font-black text-white">{value}</span>
-      <span className="text-xs text-slate-400 font-semibold">{label}</span>
+      <span className="text-lg font-bold text-white font-mono">{value}</span>
+      <span className="text-xs text-slate-500 font-mono uppercase">{label}</span>
+    </div>
+  );
+}
+
+function RevenueCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="glass-ultron rounded-xl p-3 flex items-center gap-3">
+      <div className="p-2 bg-slate-800/50 rounded-lg border border-cyan-500/20">
+        {icon}
+      </div>
+      <div>
+        <span className="text-lg font-bold text-white font-mono">{value}</span>
+        <p className="text-xs text-slate-500 font-mono uppercase">{label}</p>
+      </div>
     </div>
   );
 }

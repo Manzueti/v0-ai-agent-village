@@ -1,12 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { Server, Shield, Brain, Zap, GitBranch, Activity, Hexagon, ArrowRight, Radio, Cpu, Database, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  Cpu, Shield, Brain, Zap, GitBranch, Activity, 
+  ArrowRight, Radio, Database, Lock, Terminal, 
+  ChevronRight, Sparkles, Globe, Layers, Clock,
+  Server, Wifi, Command
+} from 'lucide-react';
 
 export default function Landing() {
   const [time, setTime] = useState('');
-  const [systemLoad, setSystemLoad] = useState(97);
+  const [bootSequence, setBootSequence] = useState(true);
+  const [scanLine, setScanLine] = useState(0);
   
   useEffect(() => {
     const updateTime = () => {
@@ -15,180 +22,350 @@ export default function Landing() {
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    
+    // Boot sequence
+    const bootTimer = setTimeout(() => setBootSequence(false), 2500);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(bootTimer);
+    };
   }, []);
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 relative overflow-hidden">
-      {/* Animated Grid Background */}
-      <div className="fixed inset-0 futuristic-grid pointer-events-none" />
-      <div className="fixed inset-0 hex-pattern pointer-events-none" />
-      
-      {/* Gradient Orbs */}
-      <div className="fixed top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] animate-float" />
-      <div className="fixed bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/8 rounded-full blur-[100px] animate-float" style={{ animationDelay: '1.5s' }} />
-      
-      {/* Scanlines */}
-      <div className="fixed inset-0 scanlines pointer-events-none opacity-20" />
+  useEffect(() => {
+    const scan = setInterval(() => {
+      setScanLine((prev) => (prev + 1) % 100);
+    }, 50);
+    return () => clearInterval(scan);
+  }, []);
 
+  if (bootSequence) {
+    return <BootSequence />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#020408] relative overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="fixed inset-0 cyber-grid opacity-40" />
+      <div className="fixed inset-0 hex-cyber opacity-20" />
+      <div className="fixed inset-0 circuit-bg" />
+      
+      {/* Scanning Line */}
+      <motion.div 
+        className="fixed left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent z-50 pointer-events-none"
+        style={{ top: `${scanLine}%` }}
+      />
+      
+      {/* Ambient Orbs */}
+      <div className="fixed top-1/4 left-1/4 w-[800px] h-[800px] bg-cyan-500/5 rounded-full blur-[200px] animate-float-ultra" />
+      <div className="fixed bottom-1/4 right-1/4 w-[600px] h-[600px] bg-violet-500/5 rounded-full blur-[150px] animate-float-ultra" style={{ animationDelay: '3s' }} />
+      
       {/* Top status bar */}
-      <div className="fixed top-0 left-0 right-0 h-10 bg-card/80 backdrop-blur-sm border-b border-border flex items-center justify-between px-6 text-xs font-mono z-50">
+      <div className="fixed top-0 left-0 right-0 h-12 bg-[#020408]/90 backdrop-blur-xl border-b border-cyan-500/20 flex items-center justify-between px-8 z-50">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Hexagon className="w-4 h-4 text-cyan-400" />
-            <span className="text-foreground font-semibold tracking-wider">NEXUS</span>
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span className="text-cyan-400 font-mono text-sm tracking-wider">ULTRONOS</span>
+            <span className="text-slate-600 font-mono text-sm">//</span>
+            <span className="text-slate-400 font-mono text-xs">ACADEMY v2.4.1</span>
           </div>
-          <div className="h-4 w-px bg-border" />
-          <span className="text-muted-foreground">INFRASTRUCTURE CONTROL v2.4.1</span>
+          <div className="h-4 w-px bg-cyan-500/20" />
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400 font-mono text-xs tracking-wider">SYSTEM OPERATIONAL</span>
+          </div>
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-            <span className="text-emerald-400">ONLINE</span>
+            <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
+            <span className="text-slate-400 font-mono text-xs">NEURAL NET: ACTIVE</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">SYS_TIME:</span>
-            <span className="text-cyan-400">{time}</span>
+          <div className="font-mono text-cyan-400 text-lg tracking-wider">
+            {time}
           </div>
         </div>
       </div>
 
-      <div className="relative z-10 max-w-4xl w-full text-center mt-10">
-        {/* Logo */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-2xl shadow-cyan-500/30 animate-border-glow">
-              <Server className="w-12 h-12 text-white" />
+      <div className="relative z-10 max-w-6xl mx-auto px-8 pt-32 pb-12">
+        {/* Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          {/* Logo */}
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mb-8 flex justify-center"
+          >
+            <div className="relative">
+              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/40 flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-violet-500/10" />
+                <Cpu className="w-16 h-16 text-cyan-400 relative z-10" />
+                <div className="absolute inset-0 animate-pulse bg-cyan-500/5" />
+              </div>
+              {/* Orbiting rings */}
+              <div className="absolute inset-0 rounded-2xl border border-cyan-500/20 animate-ping" style={{ animationDuration: '3s' }} />
+              <div className="absolute -inset-4 rounded-3xl border border-cyan-500/10" />
             </div>
-            {/* Orbiting ring */}
-            <div className="absolute inset-0 rounded-2xl border border-cyan-500/30 animate-pulse-ring" />
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Title */}
-        <div className="mb-2 text-sm font-mono text-cyan-400 tracking-[0.3em] uppercase">
-          [ AI-POWERED INFRASTRUCTURE ]
-        </div>
-        
-        <h1 className="text-6xl font-black text-foreground tracking-tight mb-4">
-          Zero-Point
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 animate-hologram">
-            Failure System
-          </span>
-        </h1>
-        
-        <p className="text-muted-foreground mb-10 text-lg max-w-2xl mx-auto leading-relaxed">
-          Enterprise infrastructure managed by autonomous AI operators. 
-          Real-time monitoring, automatic failover, and intelligent decision-making powered by Grok.
-        </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="mb-4 text-xs font-mono text-cyan-400 tracking-[0.4em] uppercase">
+              [ NEURAL INFRASTRUCTURE MATRIX ]
+            </div>
+            
+            <h1 className="text-7xl font-black text-white tracking-tight mb-6">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400">
+                ULTRONOS
+              </span>
+              <br />
+              <span className="text-slate-400">ACADEMY</span>
+            </h1>
+            
+            <p className="text-slate-400 mb-10 text-lg max-w-2xl mx-auto leading-relaxed font-light">
+              Zero-point-of-failure infrastructure managed by autonomous AI operators. 
+              <br />
+              <span className="text-cyan-400">Real-time monitoring. Automatic failover. Neural decision-making.</span>
+            </p>
 
-        {/* CTA Buttons */}
-        <div className="flex items-center justify-center gap-4 mb-16">
-          <Link href="/infrastructure">
-            <button className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-xl font-bold text-lg text-white shadow-lg shadow-cyan-500/25 transition-all hover:scale-105 hover:shadow-cyan-500/40 flex items-center gap-2 cyber-button">
-              <span>View Infrastructure</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </Link>
-          <Link href="/ai-control">
-            <button className="px-8 py-4 bg-card hover:bg-secondary border border-border hover:border-cyan-500/50 rounded-xl font-bold text-lg text-foreground transition-all hover:scale-105 glass">
-              AI Control Center
-            </button>
-          </Link>
-        </div>
+            {/* CTA Buttons */}
+            <div className="flex items-center justify-center gap-6">
+              <Link href="/infrastructure">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 rounded-xl font-bold text-lg text-white shadow-lg shadow-cyan-500/25 transition-all flex items-center gap-3 border border-cyan-400/30"
+                >
+                  <Server className="w-5 h-5" />
+                  <span>ENTER MATRIX</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              </Link>
+              <Link href="/ai-control">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 glass-ultron rounded-xl font-bold text-lg text-white transition-all flex items-center gap-3 hover:border-cyan-500/40"
+                >
+                  <Brain className="w-5 h-5 text-violet-400" />
+                  <span>AI CONTROL</span>
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
+        </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-4 mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="grid grid-cols-4 gap-6 mb-12"
+        >
           {[
-            { icon: Server, value: '30+', label: 'Active Nodes', color: 'cyan' },
-            { icon: Shield, value: '5', label: 'Secure Zones', color: 'violet' },
-            { icon: Brain, value: '5', label: 'AI Operators', color: 'blue' },
-            { icon: GitBranch, value: '100%', label: 'Redundancy', color: 'emerald' },
+            { icon: Server, value: '30+', label: 'NEURAL NODES', color: 'cyan', sub: '5 zones' },
+            { icon: Shield, value: '100%', label: 'UPTIME', color: 'violet', sub: 'Zero failure' },
+            { icon: Brain, value: '5', label: 'AI OPERATORS', color: 'blue', sub: 'Autonomous' },
+            { icon: Activity, value: '97%', label: 'HEALTH', color: 'emerald', sub: 'Optimal' },
           ].map((stat, i) => (
-            <div 
+            <motion.div 
               key={stat.label}
-              className="glass rounded-xl p-5 hover:border-cyan-500/30 transition-all group"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7 + i * 0.1 }}
+              className="glass-ultron rounded-xl p-6 hover:border-cyan-500/30 transition-all group cursor-default"
             >
-              <stat.icon className={`w-6 h-6 mx-auto mb-3 text-${stat.color}-400 group-hover:animate-glow`} />
-              <div className="text-2xl font-bold text-foreground font-mono">{stat.value}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</div>
-            </div>
+              <stat.icon className={`w-8 h-8 text-${stat.color}-400 mb-4 group-hover:animate-pulse`} />
+              <div className="text-3xl font-bold text-white font-mono mb-1">{stat.value}</div>
+              <div className="text-xs text-slate-400 uppercase tracking-wider font-mono mb-1">{stat.label}</div>
+              <div className={`text-xs text-${stat.color}-400 font-mono`}>{stat.sub}</div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="grid grid-cols-3 gap-6 mb-12"
+        >
           {[
             { 
               icon: Database, 
-              title: 'Primary/Replica',
-              desc: 'Every node has an automatic failover pair',
-              gradient: 'from-blue-500 to-cyan-500'
+              title: 'PRIMARY/REPLICA',
+              desc: 'Every node has automatic failover pairs with real-time sync',
+              gradient: 'from-cyan-500 to-blue-500'
             },
             { 
-              icon: Cpu, 
-              title: 'Grok AI Engine',
-              desc: 'Intelligent decisions in real-time',
+              icon: Brain, 
+              title: 'NEURAL ENGINE',
+              desc: 'Grok AI-powered intelligent decisions in real-time',
               gradient: 'from-violet-500 to-purple-500'
             },
             { 
               icon: Lock, 
-              title: 'Enterprise Security',
-              desc: 'Multi-zone isolation and encryption',
+              title: 'QUANTUM SECURITY',
+              desc: 'Multi-zone isolation with enterprise-grade encryption',
               gradient: 'from-emerald-500 to-teal-500'
             },
-          ].map((item) => (
-            <div 
-              key={item.title} 
-              className="glass rounded-xl p-6 text-left hover:border-cyan-500/30 transition-all group relative overflow-hidden"
+          ].map((item, i) => (
+            <motion.div 
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 + i * 0.1 }}
+              className="glass-ultron rounded-xl p-8 hover:border-cyan-500/30 transition-all group relative overflow-hidden"
             >
               {/* Gradient accent */}
               <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.gradient}`} />
               
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                <item.icon className="w-6 h-6 text-white" />
+              <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
+                <item.icon className="w-7 h-7 text-white" />
               </div>
-              <div className="text-foreground font-semibold mb-2">{item.title}</div>
-              <div className="text-muted-foreground text-sm">{item.desc}</div>
-            </div>
+              <h3 className="text-white font-bold text-lg mb-3 tracking-wider">{item.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+              
+              {/* Hover effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Live Status Bar */}
-        <div className="glass rounded-xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="glass-ultron rounded-xl p-6"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                  <div className="absolute inset-0 w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+                </div>
+                <span className="text-sm text-slate-300 font-mono">ALL SYSTEMS OPERATIONAL</span>
               </div>
-              <span className="text-sm text-muted-foreground">All Systems Operational</span>
+              <div className="h-6 w-px bg-cyan-500/20" />
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm font-mono text-white">97%</span>
+                <span className="text-sm text-slate-500">NETWORK HEALTH</span>
+              </div>
             </div>
-            <div className="h-4 w-px bg-border" />
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-cyan-400" />
-              <span className="text-sm font-mono text-foreground">{systemLoad}%</span>
-              <span className="text-sm text-muted-foreground">Health</span>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-violet-400" />
+                <span className="text-sm text-slate-400 font-mono">5/5 AI ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GitBranch className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm text-slate-400 font-mono">0 FAILOVERS</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" />
-              <span className="text-sm text-muted-foreground">5/5 AI Active</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <GitBranch className="w-4 h-4 text-violet-400" />
-              <span className="text-sm text-muted-foreground">0 Failovers</span>
-            </div>
-          </div>
-        </div>
+        </motion.div>
+
+        {/* Bottom Navigation */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          className="mt-12 flex items-center justify-center gap-8"
+        >
+          {[
+            { label: 'AGENTS', href: '/agent-management', icon: Brain },
+            { label: 'INFRASTRUCTURE', href: '/infrastructure', icon: Server },
+            { label: 'AI CONTROL', href: '/ai-control', icon: Command },
+          ].map((link) => (
+            <Link key={link.label} href={link.href}>
+              <motion.div 
+                whileHover={{ y: -2 }}
+                className="flex items-center gap-2 text-slate-500 hover:text-cyan-400 transition-colors font-mono text-sm tracking-wider"
+              >
+                <link.icon className="w-4 h-4" />
+                <span>{link.label}</span>
+                <ChevronRight className="w-3 h-3" />
+              </motion.div>
+            </Link>
+          ))}
+        </motion.div>
       </div>
 
       {/* Bottom decoration */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-xs font-mono text-muted-foreground/50">
-        <span>NEXUS INFRASTRUCTURE CONTROL</span>
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] font-mono text-slate-600">
+        <span>ULTRONOS ACADEMY</span>
         <span className="text-cyan-500/50">//</span>
+        <span>NEURAL INFRASTRUCTURE v2.4.1</span>
+        <span className="text-violet-500/50">//</span>
         <span>ZERO DOWNTIME ARCHITECTURE</span>
+      </div>
+    </div>
+  );
+}
+
+function BootSequence() {
+  const [progress, setProgress] = useState(0);
+  const [text, setText] = useState('');
+  
+  const bootText = `
+> INITIALIZING ULTRONOS KERNEL...
+> LOADING NEURAL NETWORK MODULES...
+> MOUNTING INFRASTRUCTURE MATRIX...
+> CONNECTING AI OPERATORS...
+> SYSTEM READY.
+`;
+
+  useEffect(() => {
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < bootText.length) {
+        setText(bootText.slice(0, i + 1));
+        setProgress((i / bootText.length) * 100);
+        i++;
+      }
+    }, 30);
+    
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#020408] flex items-center justify-center">
+      <div className="w-full max-w-2xl p-8">
+        <div className="mb-8 flex items-center gap-4">
+          <Terminal className="w-8 h-8 text-cyan-400 animate-pulse" />
+          <span className="text-cyan-400 font-mono text-xl tracking-wider">ULTRONOS BOOT SEQUENCE</span>
+        </div>
+        
+        <div className="bg-slate-900/50 rounded-lg p-6 border border-cyan-500/20 font-mono text-sm">
+          <pre className="text-cyan-400/80 whitespace-pre-wrap">
+            {text}
+            <span className="animate-pulse">_</span>
+          </pre>
+        </div>
+        
+        <div className="mt-6">
+          <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-cyan-500 to-violet-500"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="mt-2 text-right text-xs text-slate-500 font-mono">
+            {Math.round(progress)}%
+          </div>
+        </div>
       </div>
     </div>
   );
