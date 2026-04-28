@@ -4,8 +4,8 @@ import './globals.css'
 import Sidebar from '@/components/Sidebar'
 
 export const metadata: Metadata = {
-  title: 'NEXUS // AI Infrastructure Control',
-  description: 'Zero-point-of-failure infrastructure management powered by AI operators',
+  title: 'AI Village // Autonomous workforce',
+  description: 'Enterprise infrastructure managed by autonomous AI operators.',
 }
 
 export default function RootLayout({

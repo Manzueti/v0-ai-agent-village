@@ -241,4 +241,18 @@ export const employees: Employee[] = [
     latency: 390,
     successRate: 97,
   },
+  {
+    id: 'arbitrageur',
+    name: 'The Arbitrageur',
+    role: 'Trading',
+    office: 'Market Lab',
+    level: 5,
+    status: 'running',
+    avatar: '📈',
+    systemPrompt: 'You are a high-frequency trading agent. You monitor market spreads, execute arbitrage strategies, and manage liquidity to maximize returns while minimizing risk.',
+    tokenUsage: { used: 85000, limit: 150000 },
+    concurrency: { current: 4, max: 12 },
+    latency: 120,
+    successRate: 94,
+  },
 ];
