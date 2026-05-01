@@ -28,16 +28,15 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
     <motion.div 
       className={`relative ${className}`}
       animate={isWalking ? {
-        y: [0, -4, 0],
-        rotate: [0, -2, 2, 0],
+        y: [0, -6, 0],
       } : {}}
       transition={isWalking ? {
-        duration: 0.6,
+        duration: 0.5,
         repeat: Infinity,
         ease: "easeInOut"
       } : {}}
     >
-      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_8px_rgba(var(--avatar-glow),0.5)]">
+      <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-[0_0_8px_rgba(var(--avatar-glow),0.5)]">
         <defs>
           <linearGradient id="skinGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" style={{ stopColor: hexColor, stopOpacity: 0.8 }} />
@@ -59,13 +58,50 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
           stroke={hexColor}
           strokeWidth="0.5"
           strokeDasharray="4 4"
-          animate={{ rotate: 360, scale: isWorking ? [1, 1.05, 1] : 1 }}
+          animate={{ rotate: 360, scale: isWorking ? [1, 1.1, 1] : 1 }}
           transition={{ 
             rotate: { duration: 20, repeat: Infinity, ease: "linear" },
             scale: { duration: 2, repeat: Infinity }
           }}
           className="opacity-30"
         />
+
+        {/* Holographic "Working" HUD */}
+        {isWorking && (
+          <motion.g
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="opacity-40"
+          >
+            <rect x="20" y="30" width="15" height="1" fill={hexColor} />
+            <rect x="65" y="30" width="15" height="1" fill={hexColor} />
+            <circle cx="50" cy="50" r="38" fill="none" stroke={hexColor} strokeWidth="0.2" strokeDasharray="1 2" />
+          </motion.g>
+        )}
+
+        {/* Legs (Animated when walking) */}
+        <g className="opacity-80">
+          <motion.path
+            d="M40,90 L40,110"
+            stroke={hexColor}
+            strokeWidth="3"
+            strokeLinecap="round"
+            animate={isWalking ? {
+              d: ["M40,90 L35,110", "M40,90 L45,105", "M40,90 L35,110"]
+            } : { d: "M40,90 L40,105" }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+          <motion.path
+            d="M60,90 L60,110"
+            stroke={hexColor}
+            strokeWidth="3"
+            strokeLinecap="round"
+            animate={isWalking ? {
+              d: ["M60,90 L65,105", "M60,90 L55,110", "M60,90 L65,105"]
+            } : { d: "M60,90 L60,105" }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          />
+        </g>
 
         {/* Body Base */}
         <motion.path
