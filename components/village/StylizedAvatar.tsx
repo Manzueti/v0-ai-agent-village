@@ -68,14 +68,31 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
         />
 
         {/* Body Base */}
-        <path
+        <motion.path
           d={gender === 'female' 
             ? "M30,90 Q30,70 50,70 Q70,70 70,90 L70,95 L30,95 Z" 
             : "M25,90 Q25,65 50,65 Q75,65 75,90 L75,95 L25,95 Z"
           }
           fill="url(#skinGradient)"
+          animate={isWorking ? { scale: [1, 1.01, 1] } : {}}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           className="opacity-90"
         />
+
+        {/* Bioluminescent Markings */}
+        <g className="opacity-40">
+          <motion.path
+            d={gender === 'female'
+              ? "M45,75 Q50,80 55,75 M40,82 Q50,85 60,82"
+              : "M40,70 Q50,75 60,70 M35,80 Q50,85 65,80"
+            }
+            fill="none"
+            stroke="white"
+            strokeWidth="0.5"
+            animate={{ opacity: [0.2, 0.6, 0.2] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </g>
 
         {/* Shoulders / Suit details */}
         <path

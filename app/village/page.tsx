@@ -23,15 +23,34 @@ export default function VillagePage() {
   return (
     <div className="min-h-screen bg-[#020408] relative overflow-hidden flex flex-col">
       {/* Background Ambience */}
-      <div className="fixed inset-0 cyber-grid opacity-20" />
-      <div className="fixed inset-0 hex-cyber opacity-10" />
+      <div className="fixed inset-0 cyber-grid opacity-30" />
+      <div className="fixed inset-0 hex-cyber opacity-20" />
+      
+      {/* Bioluminescent Glows */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
       
       {/* Dynamic Background Elements (The "Nature" part of the village) */}
-      <div className="absolute top-20 left-10 text-cyan-500/10 animate-float-ultra">
+      <div className="absolute top-20 left-10 text-cyan-400/20 animate-float-ultra">
         <Cloud className="w-32 h-32" />
       </div>
-      <div className="absolute top-40 right-20 text-violet-500/10 animate-float-ultra" style={{ animationDelay: '2s' }}>
+      <div className="absolute top-40 right-20 text-violet-400/20 animate-float-ultra" style={{ animationDelay: '2s' }}>
         <Cloud className="w-24 h-24" />
+      </div>
+      
+      {/* Bioluminescent "Trees" (Abstract) */}
+      <div className="fixed bottom-0 left-0 right-0 h-32 flex justify-around items-end opacity-20 pointer-events-none">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="w-1 bg-gradient-to-t from-cyan-500 to-transparent"
+            style={{ height: `${20 + Math.random() * 60}%` }}
+            animate={{ height: ['40%', '60%', '40%'] }}
+            transition={{ duration: 4 + i, repeat: Infinity }}
+          />
+        ))}
       </div>
 
       {/* Top Status Bar */}
