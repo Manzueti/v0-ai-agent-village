@@ -588,7 +588,7 @@ function AgentDetailPanel({
                 AI MODEL
               </h3>
               <div className="space-y-2">
-                {['GPT-4o', 'Claude 3.5', 'Grok-4', 'Gemini Pro'].map((model) => (
+                {['GPT-4o', 'Claude 3.5', 'Gemini 2.5 Flash', 'Gemini Pro'].map((model) => (
                   <button
                     key={model}
                     className="w-full p-3 rounded-lg border border-slate-700 bg-slate-800/50 hover:border-violet-500/30 transition-all text-left"

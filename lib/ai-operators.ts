@@ -2,7 +2,7 @@ import { InfraNode, AIDecision, SystemHealth, ZoneId } from './types';
 import { nodes, systemHealth, getNodesByZone, getOperatorForZone, getNodePair } from './infrastructure-data';
 
 /**
- * Analyze a zone using Grok AI
+ * Analyze a zone using Gemini AI
  */
 export async function analyzeZone(zoneId: ZoneId): Promise<ReadableStream<Uint8Array> | null> {
   const zoneNodes = getNodesByZone(zoneId);

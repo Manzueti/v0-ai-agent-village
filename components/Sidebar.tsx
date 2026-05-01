@@ -20,6 +20,7 @@ export default function Sidebar() {
     { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘2' },
     { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘3' },
     { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘4' },
+    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘5' },
     { name: 'Settings', href: '#', icon: Settings, shortcut: '⌘,' },
   ];
 

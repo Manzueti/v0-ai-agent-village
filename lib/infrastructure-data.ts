@@ -460,7 +460,7 @@ export const operators: AIOperator[] = [
     successRate: 99.5,
     assignedZone: 'data-center',
     managedNodes: ['db-primary-1', 'db-replica-1', 'server-primary-1', 'server-replica-1', 'storage-primary-1', 'storage-replica-1'],
-    aiModel: 'grok-4',
+    aiModel: 'gemini-2.5-flash',
     lastDecision: {
       action: 'health-check',
       nodeId: 'db-primary-1',
@@ -484,7 +484,7 @@ export const operators: AIOperator[] = [
     successRate: 100,
     assignedZone: 'network',
     managedNodes: ['fw-primary-1', 'fw-replica-1', 'lb-primary-1', 'lb-replica-1', 'vpn-1', 'vpn-2'],
-    aiModel: 'grok-4',
+    aiModel: 'gemini-2.5-flash',
     lastDecision: {
       action: 'reroute',
       nodeId: 'lb-primary-1',
@@ -508,7 +508,7 @@ export const operators: AIOperator[] = [
     successRate: 98.5,
     assignedZone: 'cloud',
     managedNodes: ['aws-primary', 'aws-replica', 'azure-1', 'azure-2', 'api-gateway-1', 'api-gateway-2'],
-    aiModel: 'grok-4',
+    aiModel: 'gemini-2.5-flash',
     lastDecision: {
       action: 'scale',
       nodeId: 'azure-1',
@@ -532,7 +532,7 @@ export const operators: AIOperator[] = [
     successRate: 100,
     assignedZone: 'security',
     managedNodes: ['auth-primary', 'auth-replica', 'siem-1', 'siem-2', 'waf-1', 'waf-2'],
-    aiModel: 'grok-4',
+    aiModel: 'gemini-2.5-flash',
     lastDecision: {
       action: 'alert',
       nodeId: 'waf-1',
@@ -556,7 +556,7 @@ export const operators: AIOperator[] = [
     successRate: 99.2,
     assignedZone: 'edge',
     managedNodes: ['cdn-1', 'cdn-2', 'edge-compute-1', 'edge-compute-2', 'dns-primary', 'dns-replica'],
-    aiModel: 'grok-4',
+    aiModel: 'gemini-2.5-flash',
     lastDecision: {
       action: 'heal',
       nodeId: 'cdn-1',

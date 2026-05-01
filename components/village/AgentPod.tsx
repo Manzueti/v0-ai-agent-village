@@ -11,6 +11,8 @@ import {
   Cpu, Code, Lock, Search
 } from 'lucide-react';
 
+import StylizedAvatar from './StylizedAvatar';
+
 interface AgentPodProps {
   agent: Employee;
 }
@@ -18,6 +20,8 @@ interface AgentPodProps {
 export default function AgentPod({ agent }: AgentPodProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [activity, setActivity] = useState('Processing...');
+  const [isWalking, setIsWalking] = useState(false);
+  const [isWorking, setIsWorking] = useState(false);
 
   // Theme configuration based on role
   const getTheme = () => {
@@ -87,25 +91,28 @@ export default function AgentPod({ agent }: AgentPodProps) {
 
   const theme = getTheme();
 
-  // Avatar mapping based on gender
-  const getAvatar = () => {
-    if (agent.gender === 'male') return '👨‍💻';
-    if (agent.gender === 'female') return '👩‍💻';
-    if (agent.gender === 'non-binary') return '🤖';
-    return agent.avatar; // Fallback to original emoji
-  };
-
-  // Random movement within the "room"
+  // Random movement within the "pod"
   useEffect(() => {
-    const interval = setInterval(() => {
+    const moveAgent = () => {
       if (Math.random() > 0.3) {
-        setPosition({
-          x: (Math.random() - 0.5) * 60,
-          y: (Math.random() - 0.5) * 60
-        });
+        setIsWalking(true);
+        setIsWorking(false);
+        
+        const newX = (Math.random() - 0.5) * 60;
+        const newY = (Math.random() - 0.5) * 60;
+        
+        setPosition({ x: newX, y: newY });
         setActivity(getRandomActivity());
+
+        // Finish walking after animation
+        setTimeout(() => {
+          setIsWalking(false);
+          setIsWorking(true);
+        }, 2000);
       }
-    }, 3000);
+    };
+
+    const interval = setInterval(moveAgent, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -123,84 +130,96 @@ export default function AgentPod({ agent }: AgentPodProps) {
   };
 
   return (
-    <div className={`relative w-72 h-72 ${theme.bg} rounded-3xl border ${theme.border} backdrop-blur-xl overflow-hidden group transition-all duration-500 hover:shadow-2xl ${theme.glow}`}>
-      {/* Room Background / Grid */}
-      <div className={`absolute inset-0 cyber-grid opacity-10 pointer-events-none`} />
+    <div className={`relative w-72 h-[400px] ${theme.bg} rounded-[60px] border-x-4 border-y-8 ${theme.border} backdrop-blur-xl overflow-hidden group transition-all duration-500 hover:shadow-2xl ${theme.glow} flex flex-col items-center`}>
+      {/* Pod Interior / Grid */}
+      <div className={`absolute inset-0 cyber-grid opacity-20 pointer-events-none`} />
       
+      {/* Glass Reflection effect */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
       {/* Role-Specific Background Icons */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none">
         {theme.icons.map((Icon, i) => (
           <Icon key={i} className={`w-32 h-32 absolute rotate-${i * 45}`} />
         ))}
       </div>
 
-      {/* Desk / Workstation */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-56 h-14 bg-slate-900/60 rounded-xl border border-white/5 flex items-center justify-around px-4 shadow-inner">
-        <div className="flex gap-2">
+      {/* Pod Base / Control Unit */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-slate-900/80 border-t border-white/10 flex flex-col items-center justify-center gap-2 px-4">
+        <div className="flex gap-4">
           <Monitor className={`w-4 h-4 ${theme.color} opacity-40`} />
-          <Laptop className={`w-4 h-4 ${theme.color} opacity-40`} />
+          <Cpu className={`w-4 h-4 ${theme.color} opacity-40`} />
+          <Zap className={`w-4 h-4 ${theme.color} opacity-40`} />
         </div>
-        <div className="h-4 w-px bg-white/5" />
-        <div className="flex gap-2">
-          {theme.icons.slice(0, 2).map((Icon, i) => (
-            <Icon key={i} className={`w-3 h-3 ${theme.color} opacity-20`} />
-          ))}
-          <Coffee className="w-3 h-3 text-amber-500/20" />
+        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <motion.div 
+            className={`h-full bg-${theme.accent}-500`}
+            animate={{ width: ['20%', '80%', '40%', '90%'] }}
+            transition={{ duration: 5, repeat: Infinity }}
+          />
         </div>
+        <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">Pod Life Support: Optimal</span>
       </div>
 
-      {/* Agent Avatar */}
+      {/* Agent Avatar in Pod */}
       <motion.div
         animate={{ 
           x: position.x, 
           y: position.y,
-          rotate: [0, 1, -1, 0]
+          rotate: isWalking ? [0, 1, -1, 0] : [0, 0.5, -0.5, 0]
         }}
         transition={{ 
-          duration: 3, 
+          duration: isWalking ? 2 : 3, 
           ease: "easeInOut"
         }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20 w-32 h-32"
       >
-        <div className="relative">
-          <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-${theme.accent}-500/20 to-slate-800 border border-${theme.accent}-500/30 flex items-center justify-center text-4xl shadow-xl`}>
-            {getAvatar()}
-          </div>
-          {/* Status Indicator */}
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-4 border-[#020408] animate-pulse" />
-        </div>
+        <StylizedAvatar 
+          gender={agent.gender as any || 'non-binary'} 
+          color={theme.color} 
+          className="w-full h-full"
+          isWalking={isWalking}
+          isWorking={isWorking}
+        />
+        
+        {/* Status Indicator (Pulse at feet) */}
+        <div className={`absolute bottom-0 w-12 h-1 bg-${theme.accent}-500/40 blur-sm rounded-full animate-pulse`} />
         
         {/* Thought Bubble */}
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-white/10 px-4 py-1.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-white/10 px-3 py-1 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-30 shadow-xl">
           <span className={`text-[10px] font-mono ${theme.color} font-bold tracking-tight uppercase`}>{activity}</span>
         </div>
       </motion.div>
 
+
       {/* Header Info */}
-      <div className="absolute top-6 left-6 flex flex-col">
+      <div className="absolute top-10 flex flex-col items-center">
         <div className="flex items-center gap-2 mb-1">
-          <div className={`w-1.5 h-1.5 rounded-full bg-${theme.accent}-400`} />
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em]">{agent.office}</span>
+          <div className={`w-1.5 h-1.5 rounded-full bg-${theme.accent}-400 animate-ping`} />
+          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-[0.2em]">{agent.office}</span>
         </div>
-        <span className="text-sm font-black text-white tracking-tighter">{agent.name.toUpperCase()}</span>
-        <span className={`text-[9px] font-mono ${theme.color} uppercase tracking-widest mt-1 opacity-70`}>{agent.role}</span>
+        <span className="text-md font-black text-white tracking-tighter text-center">{agent.name.toUpperCase()}</span>
+        <span className={`text-[9px] font-mono ${theme.color} uppercase tracking-widest mt-1 opacity-80 bg-slate-900/40 px-2 py-0.5 rounded-full`}>{agent.role}</span>
       </div>
 
-      {/* Personality Badge */}
-      {agent.personality && (
-        <div className="absolute top-6 right-6">
-          <div className="px-2 py-0.5 rounded border border-white/5 bg-white/5 backdrop-blur-sm">
-            <span className="text-[8px] font-mono text-slate-400 uppercase tracking-tighter">{agent.personality}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Decorative Corner Accents */}
-      <div className={`absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-${theme.accent}-500/10 rounded-tl-3xl`} />
-      <div className={`absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-${theme.accent}-500/10 rounded-br-3xl`} />
+      {/* Unit ID Badge */}
+      <div className="absolute top-4 right-6 px-2 py-1 rounded border border-white/5 bg-slate-900/60 backdrop-blur-md">
+        <span className="text-[8px] font-mono text-slate-500 tracking-tighter">UNIT_0{agent.id.length}</span>
+      </div>
 
       {/* Ambient Scanning effect */}
-      <div className={`absolute inset-0 bg-gradient-to-b from-${theme.accent}-500/5 to-transparent h-1/3 w-full -translate-y-full animate-scan pointer-events-none opacity-50`} />
+      <div className={`absolute inset-0 bg-gradient-to-b from-${theme.accent}-500/10 to-transparent h-1/4 w-full -translate-y-full animate-scan pointer-events-none opacity-40`} />
+      
+      {/* Side "Pipes" / Docking mechanisms */}
+      <div className={`absolute left-0 top-1/4 bottom-1/4 w-1 bg-gradient-to-b from-transparent via-${theme.accent}-500/20 to-transparent`} />
+      <div className={`absolute right-0 top-1/4 bottom-1/4 w-1 bg-gradient-to-b from-transparent via-${theme.accent}-500/20 to-transparent`} />
+      
+      {/* Interactive overlay on hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+        <div className={`absolute top-4 right-4 w-2 h-2 rounded-full bg-${theme.accent}-500 animate-pulse`} />
+        <div className={`absolute top-4 left-4 w-2 h-2 rounded-full bg-${theme.accent}-500 animate-pulse`} />
+      </div>
     </div>
   );
 }

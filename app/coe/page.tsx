@@ -58,13 +58,35 @@ export default function COEPlatform() {
             : log
         ));
       } else {
-        // Simulate execution for standard agents
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        setLogs(prev => prev.map(log => 
-          log.id === newLogId 
-            ? { ...log, status: 'completed', result: `Directive integrated into ${selectedAgent.name}'s core neural pathway. Training matrix updated successfully for continuous improvement.` }
-            : log
-        ));
+        // Live Gemini execution for standard agents
+        const response = await fetch('/api/coe/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            instruction: newLog.instruction,
+            agentName: selectedAgent.name,
+            agentRole: selectedAgent.role,
+            systemPrompt: selectedAgent.systemPrompt
+          })
+        });
+
+        if (!response.ok) throw new Error('Failed to connect to COE Matrix');
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+
+        while (reader) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullResponse += decoder.decode(value);
+          
+          setLogs(prev => prev.map(log => 
+            log.id === newLogId 
+              ? { ...log, status: 'completed', result: fullResponse }
+              : log
+          ));
+        }
       }
     } catch (error: any) {
       setLogs(prev => prev.map(log => 
@@ -148,8 +170,9 @@ export default function COEPlatform() {
                     <p className="text-sm text-cyan-400 font-mono mt-1">LVL.{selectedAgent.level} // {selectedAgent.office}</p>
                   </div>
                 </div>
-                <div className="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-mono text-slate-400">
-                  {selectedAgent.id === 'hermes' ? 'LIVE NEURAL LINK' : 'SIMULATED UPLINK'}
+                <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  LIVE NEURAL LINK
                 </div>
               </div>
               <p className="text-sm text-slate-400 mt-4 leading-relaxed bg-slate-900/50 p-4 rounded-lg border border-slate-800">
