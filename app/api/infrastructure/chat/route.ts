@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { createXai } from '@ai-sdk/xai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       infrastructureContext?: string;
     };
 
-    const systemPrompt = `You are the AI Infrastructure Control Center assistant, powered by Grok. You help operators understand and manage their zero-point-of-failure infrastructure.
+    const systemPrompt = `You are the AI Infrastructure Control Center assistant, powered by Gemini. You help operators understand and manage their zero-point-of-failure infrastructure.
 
 Current Infrastructure Overview:
 ${infrastructureContext || 'Infrastructure data not provided. Please ask for specific information.'}
@@ -29,18 +29,18 @@ When discussing nodes, always mention their Primary/Replica relationship and cur
 
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
     
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'XAI_API_KEY not configured. Please check your environment variables.' }),
+        JSON.stringify({ error: 'GOOGLE_API_KEY not configured. Please check your environment variables.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const xaiClient = createXai({ apiKey });
+    const google = createGoogleGenerativeAI({ apiKey });
     
     const result = streamText({
-      model: xaiClient('grok-4'),
+      model: google('gemini-2.5-flash'),
       system: systemPrompt,
       prompt: lastUserMessage?.content || 'Hello',
     });

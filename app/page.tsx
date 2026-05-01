@@ -208,7 +208,7 @@ export default function Landing() {
             { 
               icon: Brain, 
               title: 'NEURAL ENGINE',
-              desc: 'Grok AI-powered intelligent decisions in real-time',
+              desc: 'Gemini AI-powered intelligent decisions in real-time',
               gradient: 'from-violet-500 to-purple-500'
             },
             { 

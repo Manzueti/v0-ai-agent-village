@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { createXai } from '@ai-sdk/xai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
 
@@ -44,18 +44,18 @@ ${reason ? `Reason: ${reason}` : ''}
 
 Please validate the action, execute it, and report the outcome.`;
 
-    const apiKey = process.env.XAI_API_KEY;
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'XAI_API_KEY not configured. Please check your environment variables.' }),
+        JSON.stringify({ error: 'GOOGLE_API_KEY not configured. Please check your environment variables.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const xaiClient = createXai({ apiKey });
+    const google = createGoogleGenerativeAI({ apiKey });
     
     const result = streamText({
-      model: xaiClient('grok-4'),
+      model: google('gemini-2.5-flash'),
       system: systemPrompt,
       prompt: userPrompt,
     });
