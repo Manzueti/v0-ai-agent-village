@@ -98,16 +98,16 @@ export default function AgentMatrix() {
                 </div>
                 <div className="absolute inset-0 rounded-xl bg-cyan-500/20 blur-xl animate-pulse" />
               </div>
-              <div>
+                  <div>
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-white tracking-wider">
-                    <span className="text-cyan-400">ULTRON</span>OS
+                    <span className="text-cyan-400">AI</span>VILLAGE
                   </h1>
                   <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono tracking-widest rounded">
-                    ACADEMY
+                    MANAGEMENT
                   </span>
                 </div>
-                <p className="text-slate-400 text-sm font-mono">AI AGENT MATRIX // NEURAL NETWORK CONTROL</p>
+                <p className="text-slate-400 text-sm font-mono">AUTONOMOUS WORKFORCE MATRIX // NEURAL CONTROL</p>
               </div>
             </div>
 
@@ -267,7 +267,7 @@ export default function AgentMatrix() {
       {/* Decorative Elements */}
       <div className="fixed bottom-4 left-4 text-[10px] font-mono text-slate-600 flex items-center gap-2">
         <div className="w-2 h-2 bg-cyan-500/50 rounded-full animate-pulse" />
-        <span>ULTRONOS v2.4.1 // NEURAL NET ACTIVE</span>
+        <span>AI VILLAGE v2.4.1 // NEURAL WORKFORCE ACTIVE</span>
       </div>
     </div>
   );
