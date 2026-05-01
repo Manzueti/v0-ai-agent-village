@@ -1,17 +1,34 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { InfraNode, InfraZone } from '@/lib/types';
 import { nodes, connections, zones, operators, recentDecisions, systemHealth, getNodePair, getConnectionsForNode, getOperatorForZone } from '@/lib/infrastructure-data';
 import IsometricMap from '@/components/infrastructure/IsometricMap';
 import HealthBar from '@/components/infrastructure/HealthBar';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import NodeDetailPanel from '@/components/infrastructure/NodeDetailPanel';
+import { Shield, ShieldAlert, ShieldCheck, Terminal } from 'lucide-react';
 
 export default function InfrastructurePage() {
   const [selectedNode, setSelectedNode] = useState<InfraNode | null>(null);
   const [selectedZone, setSelectedZone] = useState<InfraZone | null>(null);
   const [showDecisionLog, setShowDecisionLog] = useState(true);
+  const [hermesStatus, setHermesStatus] = useState<{healthy: boolean, issues: number} | null>(null);
+
+  useEffect(() => {
+    const checkHermes = async () => {
+      try {
+        const res = await fetch('/api/hermes/doctor');
+        const data = await res.json();
+        setHermesStatus({ healthy: data.healthy, issues: data.issuesCount });
+      } catch (e) {
+        setHermesStatus({ healthy: false, issues: -1 });
+      }
+    };
+    checkHermes();
+    const interval = setInterval(checkHermes, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   const handleNodeSelect = useCallback((node: InfraNode | null) => {
     setSelectedNode(node);
@@ -73,6 +90,25 @@ export default function InfrastructurePage() {
             onNodeSelect={handleNodeSelect}
             onZoneSelect={handleZoneSelect}
           />
+
+          {/* Hermes Guardian Status */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2">
+            <div className={`
+              px-4 py-2 rounded-xl border flex items-center gap-3 backdrop-blur-md transition-all
+              ${hermesStatus?.healthy 
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+                : 'bg-red-500/10 border-red-500/30 text-red-400'}
+            `}>
+              {hermesStatus?.healthy ? <ShieldCheck className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
+              <div className="flex flex-col">
+                <span className="text-[10px] font-mono uppercase tracking-widest opacity-50">Hermes Guardian</span>
+                <span className="text-xs font-bold font-mono">
+                  {hermesStatus ? (hermesStatus.healthy ? 'STABLE' : `ISSUES: ${hermesStatus.issues}`) : 'CONNECTING...'}
+                </span>
+              </div>
+              <Terminal className="w-4 h-4 ml-2 opacity-30" />
+            </div>
+          </div>
 
           {/* Legend */}
           <div className="absolute bottom-16 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg border border-slate-800 p-3">

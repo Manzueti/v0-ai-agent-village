@@ -7,7 +7,7 @@ import {
   Cpu, Shield, Brain, Zap, GitBranch, Activity, 
   ArrowRight, Radio, Database, Lock, Terminal, 
   ChevronRight, Sparkles, Globe, Layers, Clock,
-  Server, Wifi, Command
+  Server, Wifi, Command, Target
 } from 'lucide-react';
 
 export default function Landing() {
@@ -287,6 +287,7 @@ export default function Landing() {
             { label: 'AGENTS', href: '/agent-management', icon: Brain },
             { label: 'INFRASTRUCTURE', href: '/infrastructure', icon: Server },
             { label: 'AI CONTROL', href: '/ai-control', icon: Command },
+            { label: 'COE', href: '/coe', icon: Target },
           ].map((link) => (
             <Link key={link.label} href={link.href}>
               <motion.div 

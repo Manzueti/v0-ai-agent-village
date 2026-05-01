@@ -312,7 +312,48 @@ function AgentDetailPanel({
   onClose: () => void;
   onToggleStatus: (id: string, status: string) => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'config'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'config' | 'chat'>('overview');
+  const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
+
+  useEffect(() => {
+    // Default to chat tab for Hermes
+    if (agent.id === 'hermes') {
+      setActiveTab('chat');
+    } else {
+      setActiveTab('overview');
+    }
+  }, [agent.id]);
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || isThinking) return;
+
+    const userMessage = inputValue.trim();
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setInputValue('');
+    setIsThinking(true);
+
+    try {
+      const response = await fetch('/api/hermes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+
+      const data = await response.json();
+      if (data.response) {
+        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      } else if (data.error) {
+        setMessages(prev => [...prev, { role: 'assistant', content: `ERROR: ${data.error}` }]);
+      }
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Failed to connect to Hermes Agent.' }]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
   const tokenPct = Math.min((agent.tokenUsage.used / agent.tokenUsage.limit) * 100, 100);
   const concurrencyPct = agent.concurrency.max > 0
     ? (agent.concurrency.current / agent.concurrency.max) * 100
@@ -330,6 +371,7 @@ function AgentDetailPanel({
   const tabs = [
     { id: 'overview', label: 'OVERVIEW', icon: Terminal },
     { id: 'metrics', label: 'METRICS', icon: Activity },
+    ...(agent.id === 'hermes' ? [{ id: 'chat', label: 'THINKING', icon: Brain }] : []),
     { id: 'config', label: 'CONFIG', icon: Settings },
   ] as const;
 
@@ -361,7 +403,7 @@ function AgentDetailPanel({
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setActiveTab(tab.id as any)}
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-mono tracking-wider transition-all
                 ${activeTab === tab.id 
@@ -378,6 +420,67 @@ function AgentDetailPanel({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6">
+        {activeTab === 'chat' && agent.id === 'hermes' && (
+          <div className="h-full flex flex-col">
+            <div className="flex-1 space-y-4 mb-4 overflow-y-auto pr-2 custom-scrollbar">
+              {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-slate-500 opacity-50 space-y-4">
+                  <Brain className="w-12 h-12" />
+                  <p className="font-mono text-xs uppercase tracking-widest text-center">
+                    Hermes Local Matrix Initialized.<br/>Awaiting Neural Input...
+                  </p>
+                </div>
+              )}
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`
+                    max-w-[85%] p-3 rounded-lg font-mono text-xs leading-relaxed
+                    ${msg.role === 'user' 
+                      ? 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400' 
+                      : 'bg-slate-800/80 border border-slate-700 text-slate-300'}
+                  `}>
+                    <div className="mb-1 text-[8px] opacity-50 uppercase tracking-tighter">
+                      {msg.role === 'user' ? 'Local_Terminal' : 'Hermes_Matrix'}
+                    </div>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {isThinking && (
+                <div className="flex justify-start">
+                  <div className="bg-slate-800/80 border border-slate-700 p-3 rounded-lg flex items-center gap-3">
+                    <div className="flex gap-1">
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce" />
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                    <span className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-widest animate-pulse">
+                      Processing Matrix...
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="EXECUTE COMMAND..."
+                className="w-full bg-slate-900 border border-cyan-500/30 rounded-lg p-3 pr-12 font-mono text-xs text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none transition-all"
+              />
+              <button 
+                onClick={handleSendMessage}
+                disabled={isThinking || !inputValue.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-cyan-500 hover:text-cyan-400 disabled:opacity-30"
+              >
+                <Zap className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Quick Stats */}

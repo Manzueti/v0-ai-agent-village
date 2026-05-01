@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { operators, zones, recentDecisions, systemHealth, nodes } from '@/lib/infrastructure-data';
 import { detectAnomalies } from '@/lib/ai-operators';
-import GrokChat from '@/components/ai/GrokChat';
+import HermesChat from '@/components/ai/HermesChat';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import { Bot, Activity, AlertTriangle, CheckCircle, Zap, Shield, Play, Pause, Settings, TrendingUp } from 'lucide-react';
 
@@ -153,7 +153,7 @@ export default function AIControlPage() {
 
         {/* Center Panel - Chat */}
         <div className="flex-1 flex flex-col">
-          <GrokChat className="flex-1" />
+          <HermesChat className="flex-1" />
         </div>
 
         {/* Right Panel - Logs & Anomalies */}
