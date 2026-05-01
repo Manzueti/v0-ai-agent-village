@@ -69,6 +69,8 @@ export type Employee = {
   level: number;
   status: AgentStatus;
   avatar: string;
+  gender?: 'male' | 'female' | 'non-binary';
+  personality?: 'analytical' | 'creative' | 'aggressive' | 'supportive' | 'stoic';
   systemPrompt: string;
   revenueMetrics?: RevenueMetrics;
 
