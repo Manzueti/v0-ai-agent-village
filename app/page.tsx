@@ -7,7 +7,7 @@ import {
   Cpu, Shield, Brain, Zap, GitBranch, Activity, 
   ArrowRight, Radio, Database, Lock, Terminal, 
   ChevronRight, Sparkles, Globe, Layers, Clock,
-  Server, Wifi, Command, Target
+  Server, Wifi, Command, Target, Trees
 } from 'lucide-react';
 
 export default function Landing() {
@@ -284,6 +284,7 @@ export default function Landing() {
           className="mt-12 flex items-center justify-center gap-8"
         >
           {[
+            { label: 'VILLAGE', href: '/village', icon: Trees },
             { label: 'AGENTS', href: '/agent-management', icon: Brain },
             { label: 'INFRASTRUCTURE', href: '/infrastructure', icon: Server },
             { label: 'AI CONTROL', href: '/ai-control', icon: Command },
