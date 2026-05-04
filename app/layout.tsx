@@ -4,7 +4,7 @@ import './globals.css'
 import Sidebar from '@/components/Sidebar'
 
 export const metadata: Metadata = {
-  title: 'AI Village // Autonomous workforce',
+  title: 'CyberEmpire // Autonomous workforce',
   description: 'Enterprise infrastructure managed by autonomous AI operators.',
 }
 

@@ -27,7 +27,7 @@ Your task:
 3. Confirm the updates to the agent's neural pathways or operational procedures.
 4. If the directive is complex, break down the execution steps.
 
-Respond in a professional, technical, and authoritative tone, consistent with the UltronOS Academy style. Identify yourself as being powered by Gemini.`;
+Respond in a professional, technical, and authoritative tone, consistent with the CyberEmpire style. Identify yourself as being powered by Gemini.`;
 
     const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {

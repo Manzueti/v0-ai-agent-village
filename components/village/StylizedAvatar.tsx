@@ -215,6 +215,6 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
           }}
         />
       ))}
-    </div>
+    </motion.div>
   );
 }

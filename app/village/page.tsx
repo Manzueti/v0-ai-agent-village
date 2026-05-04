@@ -58,7 +58,7 @@ export default function VillagePage() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <Trees className="w-5 h-5 text-emerald-400" />
-            <span className="text-white font-bold tracking-wider">AI AGENT <span className="text-emerald-400">VILLAGE</span></span>
+            <span className="text-white font-bold tracking-wider">CyberEmpire <span className="text-emerald-400">VILLAGE</span></span>
           </div>
           <div className="h-4 w-px bg-slate-800" />
           <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 text-[10px] font-mono text-emerald-400 uppercase tracking-widest">

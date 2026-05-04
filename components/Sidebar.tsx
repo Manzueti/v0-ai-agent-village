@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, Users, Server, Brain, Settings, 
   Activity, Cpu, ChevronRight, Terminal,
-  Zap, Shield, Wifi, Radio
+  Zap, Shield, Wifi, Radio, Target
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 

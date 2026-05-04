@@ -65,7 +65,7 @@ export default function Landing() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-cyan-400" />
-            <span className="text-cyan-400 font-mono text-sm tracking-wider">ULTRONOS</span>
+            <span className="text-cyan-400 font-mono text-sm tracking-wider">CyberEmpire</span>
             <span className="text-slate-600 font-mono text-sm">//</span>
             <span className="text-slate-400 font-mono text-xs">ACADEMY v2.4.1</span>
           </div>
@@ -124,7 +124,7 @@ export default function Landing() {
             
             <h1 className="text-7xl font-black text-white tracking-tight mb-6">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400">
-                ULTRONOS
+                CyberEmpire
               </span>
               <br />
               <span className="text-slate-400">ACADEMY</span>
@@ -306,7 +306,7 @@ export default function Landing() {
 
       {/* Bottom decoration */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] font-mono text-slate-600">
-        <span>ULTRONOS ACADEMY</span>
+        <span>CyberEmpire</span>
         <span className="text-cyan-500/50">//</span>
         <span>NEURAL INFRASTRUCTURE v2.4.1</span>
         <span className="text-violet-500/50">//</span>
@@ -321,7 +321,7 @@ function BootSequence() {
   const [text, setText] = useState('');
   
   const bootText = `
-> INITIALIZING ULTRONOS KERNEL...
+> INITIALIZING CyberEmpire KERNEL...
 > LOADING NEURAL NETWORK MODULES...
 > MOUNTING INFRASTRUCTURE MATRIX...
 > CONNECTING AI OPERATORS...
@@ -346,7 +346,7 @@ function BootSequence() {
       <div className="w-full max-w-2xl p-8">
         <div className="mb-8 flex items-center gap-4">
           <Terminal className="w-8 h-8 text-cyan-400 animate-pulse" />
-          <span className="text-cyan-400 font-mono text-xl tracking-wider">ULTRONOS BOOT SEQUENCE</span>
+          <span className="text-cyan-400 font-mono text-xl tracking-wider">CyberEmpire BOOT SEQUENCE</span>
         </div>
         
         <div className="bg-slate-900/50 rounded-lg p-6 border border-cyan-500/20 font-mono text-sm">
