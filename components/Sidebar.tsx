@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, Users, Server, Brain, Settings, 
   Activity, Cpu, ChevronRight, Terminal,
-  Zap, Shield, Wifi, Radio, Target
+  Zap, Shield, Wifi, Radio, Target, Trees
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -17,10 +17,11 @@ export default function Sidebar() {
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home, shortcut: '⌘1' },
-    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘2' },
-    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘3' },
-    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘4' },
-    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘5' },
+    { name: 'Village', href: '/village', icon: Trees, shortcut: '⌘2' },
+    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘3' },
+    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘4' },
+    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘5' },
+    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘6' },
     { name: 'Settings', href: '#', icon: Settings, shortcut: '⌘,' },
   ];
 
@@ -28,7 +29,7 @@ export default function Sidebar() {
     <motion.div 
       initial={{ x: -80 }}
       animate={{ x: 0 }}
-      className="w-20 bg-[#020408]/95 backdrop-blur-2xl border-r border-cyan-500/20 h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden"
+      className="w-20 bg-[#020408]/95 backdrop-blur-2xl border-r border-cyan-500/20 h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50"
     >
       {/* Background Effects */}
       <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
