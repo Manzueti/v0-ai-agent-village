@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { InfraNode, AIOperator, NodeConnection } from '@/lib/types';
-import { X, Server, Database, Shield, Activity, GitBranch, RefreshCw, AlertTriangle, Play, Pause, Zap } from 'lucide-react';
+import { X, Server, Database, Shield, Activity, GitBranch, RefreshCw, AlertTriangle, Play, Pause, Zap, Terminal, Power } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface NodeDetailPanelProps {
   node: InfraNode;
@@ -25,130 +26,148 @@ export default function NodeDetailPanel({
 }: NodeDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'redundancy' | 'ai'>('metrics');
 
-  const statusColors: Record<string, string> = {
-    healthy: 'bg-emerald-500',
-    warning: 'bg-amber-500',
-    critical: 'bg-red-500',
-    offline: 'bg-gray-500',
-    failover: 'bg-blue-500',
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'healthy': return 'text-[hsl(var(--neon-green))]';
+      case 'warning': return 'text-[hsl(var(--neon-yellow))]';
+      case 'critical': return 'text-[hsl(var(--neon-magenta))]';
+      case 'failover': return 'text-[hsl(var(--neon-purple))]';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getStatusBg = (status: string) => {
+    switch (status) {
+      case 'healthy': return 'bg-[hsl(var(--neon-green))]';
+      case 'warning': return 'bg-[hsl(var(--neon-yellow))]';
+      case 'critical': return 'bg-[hsl(var(--neon-magenta))]';
+      case 'failover': return 'bg-[hsl(var(--neon-purple))]';
+      default: return 'bg-slate-500';
+    }
   };
 
   const getMetricColor = (value: number) => {
-    if (value < 50) return 'bg-emerald-500';
-    if (value < 75) return 'bg-amber-500';
-    return 'bg-red-500';
+    if (value < 50) return 'bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]';
+    if (value < 75) return 'bg-[hsl(var(--neon-yellow))] shadow-[0_0_8px_hsl(var(--neon-yellow))]';
+    return 'bg-[hsl(var(--neon-magenta))] shadow-[0_0_8px_hsl(var(--neon-magenta))]';
   };
 
   return (
-    <div className="fixed right-0 top-0 h-full w-96 bg-slate-900 border-l border-slate-800 shadow-2xl z-50 flex flex-col animate-slide-in">
+    <div className="fixed right-0 top-0 h-full w-full md:w-[480px] bg-[hsl(var(--sidebar-background)/0.98)] backdrop-blur-2xl border-l border-white/10 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] z-50 flex flex-col scanlines overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${statusColors[node.status]}`} />
+      <div className="flex items-center justify-between p-8 border-b border-white/5 bg-[hsl(var(--background)/0.5)] relative overflow-hidden">
+        <div className="absolute inset-0 starfield opacity-10 pointer-events-none" />
+        <div className="flex items-center gap-5 relative z-10">
+          <div className={`w-3 h-3 rounded-full ${getStatusBg(node.status)} ${node.status === 'healthy' ? 'pulse-dot shadow-[0_0_8px_currentColor]' : ''}`} style={{ color: getStatusBg(node.status).replace('bg-', '') }} />
           <div>
-            <h2 className="text-lg font-bold text-white">{node.name}</h2>
-            <p className="text-xs text-slate-400 capitalize">{node.type.replace('-', ' ')}</p>
+            <h2 className="text-2xl font-black text-white tracking-tight uppercase leading-none mb-2">{node.name}</h2>
+            <p className="text-[10px] font-black text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase">{node.type.replace('-', '_')}</p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-2.5 hover:bg-white/5 rounded transition-colors group relative z-10"
         >
-          <X className="w-5 h-5 text-slate-400" />
+          <X className="w-8 h-8 text-muted-foreground group-hover:text-white transition-colors" />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800">
+      <div className="flex bg-[hsl(var(--background)/0.3)] border-b border-white/5 p-4 gap-3">
         {(['metrics', 'redundancy', 'ai'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${
-              activeTab === tab
-                ? 'text-cyan-400 border-b-2 border-cyan-400 bg-slate-800/50'
-                : 'text-slate-400 hover:text-white'
-            }`}
+            className={`flex-1 py-2.5 text-[10px] font-black tracking-[0.25em] uppercase transition-all border rounded
+              ${activeTab === tab
+                ? 'bg-[hsl(var(--neon-cyan)/0.15)] text-[hsl(var(--neon-cyan))] border-[hsl(var(--neon-cyan)/0.4)] shadow-[0_0_15px_hsl(var(--neon-cyan)/0.2)]'
+                : 'text-muted-foreground border-transparent hover:border-white/10 hover:bg-white/5'
+              }`}
           >
-            {tab === 'metrics' && 'Metrics'}
-            {tab === 'redundancy' && 'Redundancy'}
-            {tab === 'ai' && 'AI Control'}
+            {tab}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-8 scrollbar-hide">
         {activeTab === 'metrics' && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Status Card */}
-            <div className="bg-slate-800/50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-white">Status</span>
-                <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-                  node.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' :
-                  node.status === 'warning' ? 'bg-amber-500/20 text-amber-400' :
-                  node.status === 'critical' ? 'bg-red-500/20 text-red-400' :
-                  'bg-slate-500/20 text-slate-400'
+            <div className="bg-[hsl(var(--card)/0.4)] rounded-md border border-white/5 p-6 panel-glow-cyan relative overflow-hidden">
+              <div className="absolute inset-0 scanlines opacity-10 pointer-events-none" />
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-[10px] font-black text-muted-foreground tracking-[0.3em] uppercase">Protocol_Status</span>
+                <span className={`px-3 py-1 rounded-sm border text-[9px] font-black uppercase tracking-widest ${
+                  node.status === 'healthy' ? 'bg-[hsl(var(--neon-green)/0.1)] border-[hsl(var(--neon-green)/0.4)] text-[hsl(var(--neon-green))]' :
+                  node.status === 'warning' ? 'bg-[hsl(var(--neon-yellow)/0.1)] border-[hsl(var(--neon-yellow)/0.4)] text-[hsl(var(--neon-yellow))]' :
+                  node.status === 'critical' ? 'bg-[hsl(var(--neon-magenta)/0.1)] border-[hsl(var(--neon-magenta)/0.4)] text-[hsl(var(--neon-magenta))]' :
+                  'bg-white/5 border-white/10 text-muted-foreground'
                 }`}>
                   {node.status}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <Activity className="w-3 h-3" />
-                <span>Uptime: {node.metrics.uptime}%</span>
+              <div className="flex items-center gap-3 text-[10px] font-black text-white tracking-[0.2em] uppercase">
+                <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+                <span>Uptime: <span className="tabular-nums">{node.metrics.uptime}%</span></span>
               </div>
             </div>
 
             {/* Metrics */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-white">Performance Metrics</h3>
+            <div className="space-y-6">
+              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+                <Terminal className="w-4 h-4 text-[hsl(var(--neon-purple))]" /> Neural Load Metrics
+              </h3>
               
-              {[
-                { label: 'CPU Usage', value: node.metrics.cpu },
-                { label: 'Memory', value: node.metrics.memory },
-                { label: 'Network', value: node.metrics.network },
-              ].map(metric => (
-                <div key={metric.label} className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">{metric.label}</span>
-                    <span className="text-xs font-mono text-white">{metric.value}%</span>
+              <div className="space-y-5">
+                {[
+                  { label: 'CPU_EXECUTION', value: node.metrics.cpu },
+                  { label: 'MEMORY_BUFFER', value: node.metrics.memory },
+                  { label: 'NETWORK_BANDWIDTH', value: node.metrics.network },
+                ].map(metric => (
+                  <div key={metric.label} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{metric.label}</span>
+                      <span className="text-[10px] font-black text-white tabular-nums">{metric.value}%</span>
+                    </div>
+                    <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${metric.value}%` }}
+                        className={`h-full ${getMetricColor(metric.value)} transition-all duration-1000`}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full ${getMetricColor(metric.value)} transition-all duration-500`}
-                      style={{ width: `${metric.value}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
-              {/* Latency */}
-              <div className="flex items-center justify-between py-3 border-t border-slate-800">
-                <span className="text-xs text-slate-400">Latency</span>
-                <span className="text-sm font-mono text-white">{node.metrics.latency}ms</span>
+              <div className="flex items-center justify-between py-4 border-t border-white/5 mt-4">
+                <span className="text-[10px] font-black text-muted-foreground tracking-[0.3em] uppercase">Latency_Delay</span>
+                <span className="text-xl font-black text-[hsl(var(--neon-cyan))] tabular-nums text-glow">{node.metrics.latency}ms</span>
               </div>
             </div>
 
             {/* Connections */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white">Active Connections</h3>
+            <div className="space-y-4">
+              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+                <GitBranch className="w-4 h-4 text-[hsl(var(--neon-green))]" /> Active Neural Streams
+              </h3>
               <div className="space-y-2">
                 {connections.slice(0, 5).map(conn => (
                   <div 
                     key={conn.id}
-                    className="flex items-center justify-between p-2 bg-slate-800/50 rounded"
+                    className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-md hover:border-white/10 transition-colors group"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${
-                        conn.status === 'active' ? 'bg-emerald-400' :
-                        conn.status === 'degraded' ? 'bg-amber-400' : 'bg-red-400'
+                    <div className="flex items-center gap-4">
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        conn.status === 'active' ? 'bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]' :
+                        conn.status === 'degraded' ? 'bg-[hsl(var(--neon-yellow))] shadow-[0_0_8px_hsl(var(--neon-yellow))]' : 'bg-[hsl(var(--neon-magenta))]'
                       }`} />
-                      <span className="text-xs text-slate-300">
+                      <span className="text-[11px] font-black text-white tracking-tight uppercase group-hover:text-[hsl(var(--neon-cyan))] transition-colors">
                         {conn.from === node.id ? conn.to : conn.from}
                       </span>
                     </div>
-                    <span className="text-[10px] uppercase text-slate-500">{conn.type}</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/40">{conn.type}</span>
                   </div>
                 ))}
               </div>
@@ -157,60 +176,59 @@ export default function NodeDetailPanel({
         )}
 
         {activeTab === 'redundancy' && (
-          <div className="space-y-6">
-            {/* Primary/Replica Status */}
-            <div className="bg-slate-800/50 rounded-lg p-4">
+          <div className="space-y-8">
+            {/* Role Card */}
+            <div className="bg-[hsl(var(--card)/0.4)] rounded-md border border-white/5 p-6 relative overflow-hidden">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-white">Role</span>
-                <span className={`px-2 py-1 rounded text-xs font-bold ${
+                <span className="text-[10px] font-black text-muted-foreground tracking-[0.3em] uppercase">Node_Architecture_Role</span>
+                <span className={`px-3 py-1 rounded-sm border text-[9px] font-black tracking-widest ${
                   node.isPrimary 
-                    ? 'bg-amber-500/20 text-amber-400' 
-                    : 'bg-slate-500/20 text-slate-400'
+                    ? 'bg-[hsl(var(--neon-yellow)/0.1)] border-[hsl(var(--neon-yellow)/0.4)] text-[hsl(var(--neon-yellow))]' 
+                    : 'bg-white/5 border-white/10 text-muted-foreground'
                 }`}>
-                  {node.isPrimary ? 'PRIMARY' : 'REPLICA'}
+                  {node.isPrimary ? 'PRIMARY_NODE' : 'REPLICA_INSTANCE'}
                 </span>
               </div>
               {node.lastSync && (
-                <div className="text-xs text-slate-400">
-                  Last sync: {new Date(node.lastSync).toLocaleString()}
+                <div className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-3">
+                  <RefreshCw className="w-3 h-3" />
+                  Last_Sync: {new Date(node.lastSync).toLocaleTimeString()}
                 </div>
               )}
             </div>
 
             {/* Paired Node */}
             {replicaNode && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-white">
-                  {node.isPrimary ? 'Replica Node' : 'Primary Node'}
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">
+                  {node.isPrimary ? 'Replica_Mirror_Instance' : 'Primary_Upstream_Node'}
                 </h3>
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${statusColors[replicaNode.status]}`} />
-                      <span className="text-sm text-white">{replicaNode.name}</span>
+                <div className="bg-white/5 border border-white/5 rounded-md p-6 panel-glow-purple">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-2 h-2 rounded-full ${getStatusBg(replicaNode.status)} shadow-[0_0_8px_currentColor]`} style={{ color: getStatusBg(replicaNode.status).replace('bg-', '') }} />
+                      <span className="text-sm font-black text-white tracking-tight uppercase">{replicaNode.name}</span>
                     </div>
-                    <span className={`text-xs capitalize ${
-                      replicaNode.status === 'healthy' ? 'text-emerald-400' : 'text-amber-400'
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${
+                      replicaNode.status === 'healthy' ? 'text-[hsl(var(--neon-green))]' : 'text-[hsl(var(--neon-yellow))]'
                     }`}>
                       {replicaNode.status}
                     </span>
                   </div>
                   
-                  {/* Sync Status */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <RefreshCw className="w-3 h-3 text-emerald-400" />
-                    <span className="text-xs text-emerald-400">In Sync</span>
+                  <div className="flex items-center gap-3 mb-6 bg-[hsl(var(--neon-green)/0.05)] p-2 rounded border border-[hsl(var(--neon-green)/0.2)]">
+                    <RefreshCw className="w-3.5 h-3.5 text-[hsl(var(--neon-green))] animate-spin-slow" />
+                    <span className="text-[9px] font-black text-[hsl(var(--neon-green))] uppercase tracking-[0.2em]">Neural_Sync: ACTIVE</span>
                   </div>
                   
-                  {/* Mini Metrics */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="bg-slate-900/50 rounded p-2">
-                      <div className="text-slate-500">CPU</div>
-                      <div className="font-mono text-white">{replicaNode.metrics.cpu}%</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-[hsl(var(--background)/0.5)] rounded p-4 border border-white/5">
+                      <div className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-[0.3em] mb-1">Mirror_CPU</div>
+                      <div className="text-sm font-black text-white tabular-nums">{replicaNode.metrics.cpu}%</div>
                     </div>
-                    <div className="bg-slate-900/50 rounded p-2">
-                      <div className="text-slate-500">Memory</div>
-                      <div className="font-mono text-white">{replicaNode.metrics.memory}%</div>
+                    <div className="bg-[hsl(var(--background)/0.5)] rounded p-4 border border-white/5">
+                      <div className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-[0.3em] mb-1">Mirror_MEM</div>
+                      <div className="text-sm font-black text-white tabular-nums">{replicaNode.metrics.memory}%</div>
                     </div>
                   </div>
                 </div>
@@ -218,22 +236,22 @@ export default function NodeDetailPanel({
             )}
 
             {/* Failover Actions */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white">Failover Controls</h3>
-              <div className="space-y-2">
+            <div className="space-y-4 pt-4">
+              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Redundancy Control Operations</h3>
+              <div className="grid grid-cols-1 gap-4">
                 <button
                   onClick={() => onFailover?.(node.id)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-[hsl(var(--neon-purple))] hover:bg-[hsl(var(--neon-purple)/0.9)] text-background rounded-md font-black tracking-[0.4em] uppercase text-xs transition-all shadow-[0_0_20px_hsl(var(--neon-purple)/0.3)] transform hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <GitBranch className="w-4 h-4" />
-                  <span className="text-sm font-medium">Manual Failover</span>
+                  MANUAL_FAILOVER
                 </button>
                 <button
                   onClick={() => onSimulateFailure?.(node.id)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-colors border border-amber-500/30"
+                  className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-transparent hover:bg-[hsl(var(--neon-magenta)/0.1)] text-[hsl(var(--neon-magenta))] border border-[hsl(var(--neon-magenta)/0.4)] rounded-md font-black tracking-[0.4em] uppercase text-xs transition-all"
                 >
                   <AlertTriangle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Simulate Failure</span>
+                  SIMULATE_FAILURE
                 </button>
               </div>
             </div>
@@ -241,84 +259,101 @@ export default function NodeDetailPanel({
         )}
 
         {activeTab === 'ai' && operator && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* AI Operator Card */}
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4 border border-slate-700">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-2xl">
+            <div className="bg-gradient-to-br from-[hsl(var(--card)/0.6)] to-[hsl(var(--background)/0.8)] rounded-md p-6 border border-white/5 panel-glow-cyan relative overflow-hidden scanlines">
+              <div className="flex items-center gap-5 mb-6 relative z-10">
+                <div className="w-16 h-16 rounded bg-[hsl(var(--background))] border border-white/10 flex items-center justify-center text-4xl shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]">
                   {operator.avatar}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">{operator.name}</h3>
-                  <p className="text-xs text-slate-400">{operator.role}</p>
+                  <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-2">{operator.name}</h3>
+                  <div className="text-[10px] font-black text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase">{operator.role}</div>
                 </div>
               </div>
               
-              <div className="flex items-center gap-2 mb-4">
-                <div className={`w-2 h-2 rounded-full ${
-                  operator.status === 'running' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'
-                }`} />
-                <span className="text-xs text-slate-400 capitalize">{operator.status}</span>
-                <span className="text-xs text-slate-600">|</span>
-                <span className="text-xs text-cyan-400 font-mono">{operator.aiModel}</span>
+              <div className="flex items-center gap-4 mb-6 relative z-10">
+                <div className="flex items-center gap-2 bg-white/5 px-3 py-1 rounded border border-white/5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    operator.status === 'running' ? 'bg-[hsl(var(--neon-green))] pulse-dot shadow-[0_0_8px_currentColor]' : 'bg-white/20'
+                  }`} />
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">{operator.status}</span>
+                </div>
+                <span className="text-white/10">|</span>
+                <span className="text-[9px] font-black text-[hsl(var(--neon-cyan))] uppercase tracking-[0.3em]">{operator.aiModel}</span>
               </div>
               
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {operator.systemPrompt.slice(0, 150)}...
-              </p>
+              <div className="bg-[hsl(var(--background)/0.6)] p-4 rounded border border-white/5 relative z-10">
+                <p className="text-[10px] font-medium text-slate-400 leading-relaxed font-mono italic opacity-70">
+                  "{operator.systemPrompt.slice(0, 120)}..."
+                </p>
+              </div>
             </div>
 
             {/* Last Decision */}
             {operator.lastDecision && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-white">Last Decision</h3>
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-cyan-400 uppercase">
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Latest Neural Protocol</h3>
+                <div className="bg-white/5 border border-white/5 rounded-md p-6 panel-glow-purple scanlines">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-black text-[hsl(var(--neon-cyan))] uppercase tracking-[0.3em]">
                       {operator.lastDecision.action}
                     </span>
-                    <span className={`text-xs ${
-                      operator.lastDecision.outcome === 'success' ? 'text-emerald-400' :
-                      operator.lastDecision.outcome === 'pending' ? 'text-amber-400' : 'text-red-400'
+                    <span className={`text-[9px] font-black uppercase tracking-widest ${
+                      operator.lastDecision.outcome === 'success' ? 'text-[hsl(var(--neon-green))]' :
+                      operator.lastDecision.outcome === 'pending' ? 'text-[hsl(var(--neon-yellow))]' : 'text-[hsl(var(--neon-magenta))]'
                     }`}>
                       {operator.lastDecision.outcome}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {operator.lastDecision.reasoning}
+                  <p className="text-[11px] font-medium text-slate-300 leading-relaxed italic">
+                    "{operator.lastDecision.reasoning}"
                   </p>
-                  <div className="mt-2 text-[10px] text-slate-600">
-                    {new Date(operator.lastDecision.timestamp).toLocaleString()}
+                  <div className="mt-4 pt-4 border-t border-white/5 text-[8px] font-black text-muted-foreground/40 uppercase tracking-[0.3em] flex justify-between">
+                    <span>Neural_Timestamp</span>
+                    <span className="tabular-nums">{new Date(operator.lastDecision.timestamp).toLocaleTimeString()}</span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* AI Actions */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white">AI Actions</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button className="flex flex-col items-center gap-1 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
-                  <Play className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs text-slate-300">Run Analysis</span>
-                </button>
-                <button className="flex flex-col items-center gap-1 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
-                  <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-300">Auto-Heal</span>
-                </button>
-                <button className="flex flex-col items-center gap-1 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
-                  <Shield className="w-4 h-4 text-blue-400" />
-                  <span className="text-xs text-slate-300">Check Security</span>
-                </button>
-                <button className="flex flex-col items-center gap-1 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
-                  <RefreshCw className="w-4 h-4 text-violet-400" />
-                  <span className="text-xs text-slate-300">Restart Node</span>
-                </button>
+            <div className="space-y-4">
+              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+                <Zap className="w-4 h-4 text-[hsl(var(--neon-yellow))]" /> AI Directive Execution
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <DirectiveButton icon={Play} label="Analysis" color="green" />
+                <DirectiveButton icon={Zap} label="Heal" color="yellow" />
+                <DirectiveButton icon={Shield} label="Security" color="cyan" />
+                <DirectiveButton icon={RefreshCw} label="Restart" color="purple" />
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <div className="p-8 border-t border-white/5 bg-[hsl(var(--background)/0.5)]">
+        <button className="w-full py-5 bg-[hsl(var(--neon-cyan))] hover:bg-[hsl(var(--neon-cyan)/0.9)] rounded font-black text-background text-[11px] tracking-[0.4em] uppercase transition-all shadow-[0_0_25px_hsl(var(--neon-cyan)/0.4)] transform hover:scale-[1.02] active:scale-[0.98]">
+          Node_Admin_Console
+        </button>
+      </div>
     </div>
+  );
+}
+
+function DirectiveButton({ icon: Icon, label, color }: any) {
+  const colors: any = {
+    green: 'text-[hsl(var(--neon-green))]',
+    yellow: 'text-[hsl(var(--neon-yellow))]',
+    cyan: 'text-[hsl(var(--neon-cyan))]',
+    purple: 'text-[hsl(var(--neon-purple))]',
+  };
+  return (
+    <button className="flex flex-col items-center gap-3 p-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md transition-all group">
+      <Icon className={`w-5 h-5 ${colors[color]} group-hover:scale-110 transition-transform`} />
+      <span className="text-[9px] font-black text-muted-foreground group-hover:text-white uppercase tracking-[0.2em]">{label}</span>
+    </button>
   );
 }
