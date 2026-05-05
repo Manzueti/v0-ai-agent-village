@@ -2,11 +2,16 @@
 
 import { employees } from '@/lib/data';
 import AgentPod from '@/components/village/AgentPod';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const PhaserGame = dynamic(() => import('@/components/village/PhaserGame'), { ssr: false });
+
 import { 
   Trees, Cloud, Sun, Wind, 
   ChevronRight, Brain, Activity, Terminal,
-  Moon, Zap, ShieldAlert, RefreshCw, Factory
+  Moon, Zap, ShieldAlert, RefreshCw, Factory,
+  Eye, LayoutGrid
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
@@ -14,6 +19,7 @@ import { useState, useEffect, useMemo } from 'react';
 // --- Types ---
 type SimState = 'day' | 'night' | 'emergency';
 type WeatherState = 'clear' | 'neural-rain' | 'flux';
+type ViewMode = 'grid' | 'visualizer';
 
 // --- Sub-components ---
 
@@ -43,6 +49,7 @@ export default function VillagePage() {
   const [simState, setSimState] = useState<SimState>('day');
   const [weather, setWeather] = useState<WeatherState>('clear');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -197,6 +204,14 @@ export default function VillagePage() {
             >
               <RefreshCw className="w-4 h-4" />
             </button>
+            <div className="w-px h-5 bg-white/5 mx-1" />
+            <button 
+              onClick={() => setViewMode(prev => prev === 'grid' ? 'visualizer' : 'grid')}
+              className={`p-1.5 rounded transition-all ${viewMode === 'visualizer' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)]' : 'text-muted-foreground hover:text-white'}`}
+              title="Toggle Neural Visualizer"
+            >
+              {viewMode === 'grid' ? <Eye className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
+            </button>
           </div>
 
           <div className="flex items-center gap-3 text-[hsl(var(--neon-cyan)/0.6)]">
@@ -213,12 +228,14 @@ export default function VillagePage() {
           <div className="mb-12 flex justify-between items-end">
             <div>
               <h1 className="text-5xl font-black text-white tracking-tight mb-3 uppercase leading-none">
-                {simState === 'emergency' ? 'Containment Sector' : 'Habitat Matrix'}
+                {viewMode === 'visualizer' ? 'Neural Factory' : (simState === 'emergency' ? 'Containment Sector' : 'Habitat Matrix')}
               </h1>
               <p className="text-muted-foreground font-bold text-[11px] uppercase tracking-[0.3em]">
-                {simState === 'emergency' 
-                  ? 'Protocols enforced. Neural flux exceeding safety thresholds.' 
-                  : 'Live execution monitoring in autonomous housing units.'}
+                {viewMode === 'visualizer' 
+                  ? 'Real-time rendering of neural processing units.' 
+                  : (simState === 'emergency' 
+                    ? 'Protocols enforced. Neural flux exceeding safety thresholds.' 
+                    : 'Live execution monitoring in autonomous housing units.')}
               </p>
             </div>
             {isSyncing && (
@@ -233,22 +250,42 @@ export default function VillagePage() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {employees.map((agent, i) => (
-              <motion.div
-                key={agent.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+          <AnimatePresence mode="wait">
+            {viewMode === 'grid' ? (
+              <motion.div 
+                key="grid"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
               >
-                <AgentPod 
-                  agent={agent} 
-                  simState={simState} 
-                  isGlobalSyncing={isSyncing}
-                />
+                {employees.map((agent, i) => (
+                  <motion.div
+                    key={agent.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <AgentPod 
+                      agent={agent} 
+                      simState={simState} 
+                      isGlobalSyncing={isSyncing}
+                    />
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </div>
+            ) : (
+              <motion.div
+                key="visualizer"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                className="flex justify-center items-center"
+              >
+                <PhaserGame />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
 
