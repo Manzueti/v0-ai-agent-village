@@ -1,7 +1,8 @@
 'use client';
 
 import { SystemHealth, ZoneId } from '@/lib/types';
-import { Activity, AlertTriangle, CheckCircle, RefreshCw, Clock } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle, RefreshCw, Clock, Wifi, ShieldCheck, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface HealthBarProps {
   health: SystemHealth;
@@ -9,66 +10,67 @@ interface HealthBarProps {
 }
 
 const zoneLabels: Record<ZoneId, { name: string; color: string }> = {
-  'data-center': { name: 'Data Center', color: '#3B82F6' },
-  'network': { name: 'Network', color: '#8B5CF6' },
-  'cloud': { name: 'Cloud', color: '#06B6D4' },
-  'security': { name: 'Security', color: '#EF4444' },
-  'edge': { name: 'Edge', color: '#22C55E' },
+  'data-center': { name: 'Data Center', color: 'hsl(var(--neon-blue))' },
+  'network': { name: 'Network', color: 'hsl(var(--neon-purple))' },
+  'cloud': { name: 'Cloud', color: 'hsl(var(--neon-cyan))' },
+  'security': { name: 'Security', color: 'hsl(var(--neon-magenta))' },
+  'edge': { name: 'Edge', color: 'hsl(var(--neon-green))' },
 };
 
 export default function HealthBar({ health, onRefresh }: HealthBarProps) {
   const getOverallColor = (value: number) => {
-    if (value >= 95) return 'text-emerald-400';
-    if (value >= 80) return 'text-amber-400';
-    return 'text-red-400';
+    if (value >= 95) return 'text-[hsl(var(--neon-green))]';
+    if (value >= 80) return 'text-[hsl(var(--neon-yellow))]';
+    return 'text-[hsl(var(--neon-magenta))]';
   };
 
   const getOverallBg = (value: number) => {
-    if (value >= 95) return 'bg-emerald-500';
-    if (value >= 80) return 'bg-amber-500';
-    return 'bg-red-500';
+    if (value >= 95) return 'bg-[hsl(var(--neon-green))]';
+    if (value >= 80) return 'bg-[hsl(var(--neon-yellow))]';
+    return 'bg-[hsl(var(--neon-magenta))]';
   };
 
   return (
-    <div className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 px-4 py-3">
-      <div className="flex items-center justify-between gap-6">
+    <div className="bg-[hsl(var(--background)/0.8)] backdrop-blur-xl border-b border-white/5 px-8 py-3 relative overflow-hidden scanlines">
+      <div className="flex items-center justify-between gap-8 relative z-10">
         {/* Overall Health */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Activity className={`w-5 h-5 ${getOverallColor(health.overall)}`} />
-            <span className="text-sm font-semibold text-white">System Health</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <Activity className={`w-5 h-5 ${getOverallColor(health.overall)} shadow-[0_0_10px_currentColor]`} />
+            <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Matrix_Health</span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className={`h-full ${getOverallBg(health.overall)} transition-all duration-500`}
-                style={{ width: `${health.overall}%` }}
+          <div className="flex items-center gap-4">
+            <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${health.overall}%` }}
+                className={`h-full ${getOverallBg(health.overall)} shadow-[0_0_8px_currentColor] transition-all duration-1000`}
               />
             </div>
-            <span className={`text-lg font-bold font-mono ${getOverallColor(health.overall)}`}>
+            <span className={`text-xl font-black tabular-nums tracking-tighter ${getOverallColor(health.overall)} text-glow`}>
               {health.overall}%
             </span>
           </div>
         </div>
 
         {/* Zone Health Pills */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {(Object.entries(health.zones) as [ZoneId, number][]).map(([zoneId, zoneHealth]) => {
             const zone = zoneLabels[zoneId];
             return (
               <div 
                 key={zoneId}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-800/80"
+                className="flex items-center gap-3 px-3 py-1.5 rounded bg-white/5 border border-white/5 hover:border-white/10 transition-all"
               >
                 <div 
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: zone.color }}
+                  className="w-1.5 h-1.5 rounded-full shadow-[0_0_5px_currentColor]"
+                  style={{ backgroundColor: zone.color, color: zone.color }}
                 />
-                <span className="text-[10px] text-slate-400">{zone.name}</span>
-                <span className={`text-[10px] font-mono font-bold ${
-                  zoneHealth === 100 ? 'text-emerald-400' : 
-                  zoneHealth >= 90 ? 'text-amber-400' : 'text-red-400'
+                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">{zone.name}</span>
+                <span className={`text-[9px] font-black tabular-nums ${
+                  zoneHealth === 100 ? 'text-[hsl(var(--neon-green))]' : 
+                  zoneHealth >= 90 ? 'text-[hsl(var(--neon-yellow))]' : 'text-[hsl(var(--neon-magenta))]'
                 }`}>
                   {zoneHealth}%
                 </span>
@@ -78,40 +80,40 @@ export default function HealthBar({ health, onRefresh }: HealthBarProps) {
         </div>
 
         {/* Status Indicators */}
-        <div className="flex items-center gap-4">
-          {/* Active Failovers */}
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
             {health.activeFailovers > 0 ? (
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <AlertTriangle className="w-4 h-4 text-[hsl(var(--neon-yellow))] animate-pulse shadow-[0_0_8px_currentColor]" />
             ) : (
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-[hsl(var(--neon-green))] shadow-[0_0_8px_currentColor]" />
             )}
-            <span className="text-xs text-slate-400">
+            <span className="text-[9px] font-black text-white tracking-[0.2em] uppercase">
               {health.activeFailovers > 0 
-                ? `${health.activeFailovers} Failover${health.activeFailovers > 1 ? 's' : ''}`
-                : 'All Primary'
+                ? `${health.activeFailovers} Active_Failovers`
+                : 'Node_Security: OPTIMAL'
               }
             </span>
           </div>
 
-          {/* Pending Decisions */}
-          <div className="flex items-center gap-1.5">
-            <Clock className={`w-4 h-4 ${health.pendingDecisions > 0 ? 'text-cyan-400' : 'text-slate-500'}`} />
-            <span className="text-xs text-slate-400">
-              {health.pendingDecisions} Pending
+          <div className="flex items-center gap-3">
+            <Zap className={`w-4 h-4 ${health.pendingDecisions > 0 ? 'text-[hsl(var(--neon-cyan))] animate-pulse' : 'text-muted-foreground/30'}`} />
+            <span className="text-[9px] font-black text-white tracking-[0.2em] uppercase">
+              {health.pendingDecisions} Pending_Directives
             </span>
           </div>
 
-          {/* Refresh Button */}
           <button
             onClick={onRefresh}
-            className="p-1.5 hover:bg-slate-800 rounded transition-colors"
-            title="Refresh"
+            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded transition-all group"
+            title="Sync Matrix"
           >
-            <RefreshCw className="w-4 h-4 text-slate-400 hover:text-white" />
+            <RefreshCw className="w-4 h-4 text-muted-foreground group-hover:text-white transition-all group-active:rotate-180" />
           </button>
         </div>
       </div>
+      
+      {/* Decorative scanning line */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--neon-cyan)/0.05)] to-transparent w-1/4 h-full -translate-x-full animate-scan-horizontal pointer-events-none" />
     </div>
   );
 }

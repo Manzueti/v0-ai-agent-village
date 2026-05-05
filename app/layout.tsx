@@ -14,15 +14,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-background">
-      <body className="antialiased font-sans">
-        <div className="flex h-screen overflow-hidden bg-background">
+    <html lang="en" className="dark">
+      <body className="antialiased font-mono selection:bg-[hsl(var(--neon-purple)/0.3)] selection:text-white">
+        <div className="flex h-screen w-full overflow-hidden bg-background/40 backdrop-blur-[2px]">
           <Sidebar />
-          <main className="flex-1 overflow-auto relative">
-            {/* Ambient glow effects */}
-            <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
-            {children}
+          <main className="flex-1 overflow-auto relative scrollbar-hide">
+            <div className="absolute inset-0 starfield opacity-40 pointer-events-none" />
+            <div className="relative z-10">
+              {children}
+            </div>
           </main>
         </div>
         {process.env.NODE_ENV === 'production' && <Analytics />}

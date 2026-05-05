@@ -30,13 +30,10 @@ export default function Sidebar() {
     <motion.div 
       initial={{ x: -80 }}
       animate={{ x: 0 }}
-      className="w-20 bg-[#020408]/95 backdrop-blur-2xl border-r border-cyan-500/20 h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50"
+      className="w-20 bg-[hsl(var(--sidebar-background)/0.95)] backdrop-blur-2xl border-r border-[hsl(var(--sidebar-border))] h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50 scanlines"
     >
       {/* Background Effects */}
-      <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
-      
-      {/* Gradient Border */}
-      <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 via-violet-500/30 to-cyan-500/50" />
+      <div className="absolute inset-0 starfield opacity-10 pointer-events-none" />
       
       {/* Logo */}
       <motion.div 
@@ -45,12 +42,10 @@ export default function Sidebar() {
         transition={{ delay: 0.2 }}
         className="relative mb-8 group"
       >
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/40 flex items-center justify-center relative overflow-hidden">
-          <Terminal className="w-6 h-6 text-cyan-400 relative z-10" />
-          <div className="absolute inset-0 bg-cyan-500/10 animate-pulse" />
+        <div className="w-12 h-12 rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_hsl(var(--neon-magenta)/0.4)]">
+          <Terminal className="w-6 h-6 text-background relative z-10" />
+          <div className="absolute inset-0 bg-white/10 animate-pulse" />
         </div>
-        {/* Pulse ring */}
-        <div className="absolute inset-0 rounded-xl bg-cyan-500/20 blur-xl animate-ping opacity-30" style={{ animationDuration: '3s' }} />
       </motion.div>
 
       {/* Status Badge */}
@@ -58,10 +53,10 @@ export default function Sidebar() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-6"
+        className="flex items-center gap-1.5 px-2 py-1 rounded bg-[hsl(var(--neon-green)/0.1)] border border-[hsl(var(--neon-green)/0.3)] mb-6"
       >
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-wider">ONLINE</span>
+        <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] pulse-dot shadow-[0_0_8px_hsl(var(--neon-green))]" />
+        <span className="text-[8px] font-mono text-[hsl(var(--neon-green))] uppercase tracking-[0.2em] font-bold">ONLINE</span>
       </motion.div>
 
       {/* Navigation */}
@@ -81,20 +76,20 @@ export default function Sidebar() {
             >
               <Link
                 href={item.href}
-                className={`relative w-14 h-14 flex items-center justify-center rounded-xl transition-all duration-300 group ${
+                className={`relative w-14 h-14 flex items-center justify-center rounded transition-all duration-300 group ${
                   isActive
-                    ? 'bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 border border-cyan-500/50 shadow-lg shadow-cyan-500/20'
-                    : 'border border-transparent hover:border-cyan-500/30 hover:bg-cyan-500/5'
+                    ? 'bg-[hsl(var(--neon-purple)/0.15)] border border-[hsl(var(--neon-purple)/0.5)] shadow-[0_0_15px_hsl(var(--neon-purple)/0.2)]'
+                    : 'border border-transparent hover:border-[hsl(var(--neon-cyan)/0.3)] hover:bg-[hsl(var(--neon-cyan)/0.05)]'
                 }`}
               >
                 {/* Active glow */}
                 {isActive && (
-                  <div className="absolute inset-0 rounded-xl bg-cyan-500/10 animate-pulse" />
+                  <div className="absolute inset-0 rounded bg-[hsl(var(--neon-purple)/0.1)] animate-pulse" />
                 )}
                 
                 <Icon
                   className={`w-5 h-5 relative z-10 transition-all duration-300 ${
-                    isActive ? 'text-cyan-400 scale-110' : 'text-slate-500 group-hover:text-cyan-400 group-hover:scale-110'
+                    isActive ? 'text-[hsl(var(--neon-purple))] scale-110' : 'text-muted-foreground group-hover:text-[hsl(var(--neon-cyan))] group-hover:scale-110'
                   }`}
                 />
                 
@@ -102,17 +97,17 @@ export default function Sidebar() {
                 <motion.span 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: hoveredItem === item.name ? 1 : 0, x: hoveredItem === item.name ? 0 : -10 }}
-                  className="absolute left-full ml-3 px-3 py-1.5 glass-ultron rounded-lg text-xs text-white whitespace-nowrap z-50 font-mono border border-cyan-500/20"
+                  className="absolute left-full ml-3 px-3 py-1.5 bg-[hsl(var(--sidebar-background)/0.95)] border border-[hsl(var(--neon-cyan)/0.4)] panel-glow-cyan rounded-md text-[10px] text-white whitespace-nowrap z-50 font-bold tracking-widest uppercase"
                 >
-                  <div className="flex items-center gap-2">
-                    <span>{item.name}</span>
-                    <span className="text-slate-500">{item.shortcut}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[hsl(var(--neon-cyan))]">{item.name}</span>
+                    <span className="text-muted-foreground/60">{item.shortcut}</span>
                   </div>
                 </motion.span>
                 
                 {/* Active indicator line */}
                 {isActive && (
-                  <div className="absolute -right-px top-1/2 -translate-y-1/2 w-0.5 h-8 bg-gradient-to-b from-cyan-400 to-violet-400 rounded-l" />
+                  <div className="absolute -right-[1px] top-1/2 -translate-y-1/2 w-[2px] h-8 bg-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple))]" />
                 )}
               </Link>
             </motion.div>
@@ -128,23 +123,24 @@ export default function Sidebar() {
         className="mt-auto flex flex-col items-center gap-4 pb-4"
       >
         {/* System Stats */}
-        <div className="glass-ultron rounded-lg p-3 w-14 flex flex-col items-center gap-2">
-          <Activity className="w-4 h-4 text-cyan-400" />
-          <div className="text-[10px] font-mono text-white">{systemStatus.health}%</div>
-          <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-            <div className="h-full bg-cyan-400" style={{ width: `${systemStatus.health}%` }} />
+        <div className="bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))] rounded p-2.5 w-14 flex flex-col items-center gap-2 panel-glow-cyan overflow-hidden relative">
+          <div className="absolute inset-0 scanlines opacity-20" />
+          <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+          <div className="text-[10px] font-bold font-mono text-white tabular-nums">{systemStatus.health}%</div>
+          <div className="w-full h-1 bg-[hsl(var(--background))] rounded-full overflow-hidden border border-white/5">
+            <div className="h-full bg-[hsl(var(--neon-cyan))]" style={{ width: `${systemStatus.health}%`, boxShadow: '0 0 8px hsl(var(--neon-cyan))' }} />
           </div>
         </div>
 
         {/* Network Status */}
         <div className="flex items-center gap-1.5">
-          <Wifi className="w-3 h-3 text-violet-400" />
-          <span className="text-[8px] font-mono text-slate-500">{systemStatus.active}/5</span>
+          <Wifi className="w-3 h-3 text-[hsl(var(--neon-purple))]" />
+          <span className="text-[9px] font-bold font-mono text-muted-foreground tracking-widest uppercase">{systemStatus.active}/5</span>
         </div>
         
         {/* Version */}
-        <div className="text-[8px] font-mono text-slate-600 tracking-wider">
-          v2.4.1
+        <div className="text-[8px] font-bold font-mono text-muted-foreground/40 tracking-[0.2em] uppercase">
+          v2.5.0
         </div>
       </motion.div>
     </motion.div>
