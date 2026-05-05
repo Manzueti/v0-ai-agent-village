@@ -9,7 +9,7 @@ import {
   DollarSign, TrendingUp, Shield, 
   Edit3, Rocket, BarChart3, Target,
   Cpu, Code, Lock, Search, RefreshCw,
-  AlertTriangle, Info
+  AlertTriangle, Info, Moon
 } from 'lucide-react';
 
 import StylizedAvatar from './StylizedAvatar';
