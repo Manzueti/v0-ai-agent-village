@@ -13,7 +13,6 @@ import {
 export default function Landing() {
   const [time, setTime] = useState('');
   const [bootSequence, setBootSequence] = useState(true);
-  const [scanLine, setScanLine] = useState(0);
   
   useEffect(() => {
     const updateTime = () => {
@@ -32,29 +31,16 @@ export default function Landing() {
     };
   }, []);
 
-  useEffect(() => {
-    const scan = setInterval(() => {
-      setScanLine((prev) => (prev + 1) % 100);
-    }, 50);
-    return () => clearInterval(scan);
-  }, []);
-
   if (bootSequence) {
     return <BootSequence />;
   }
 
   return (
-    <div className="min-h-screen bg-[#020408] relative overflow-hidden">
+    <div className="min-h-screen bg-[#020408] relative overflow-hidden scanline-overlay">
       {/* Animated Grid Background */}
       <div className="fixed inset-0 cyber-grid opacity-40" />
       <div className="fixed inset-0 hex-cyber opacity-20" />
       <div className="fixed inset-0 circuit-bg" />
-      
-      {/* Scanning Line */}
-      <motion.div 
-        className="fixed left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent z-50 pointer-events-none"
-        style={{ top: `${scanLine}%` }}
-      />
       
       {/* Ambient Orbs */}
       <div className="fixed top-1/4 left-1/4 w-[800px] h-[800px] bg-cyan-500/5 rounded-full blur-[200px] animate-float-ultra" />

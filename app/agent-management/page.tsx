@@ -17,7 +17,6 @@ export default function AgentMatrix() {
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
   const [hoveredAgentId, setHoveredAgentId] = useState<string | null>(null);
   const [systemTime, setSystemTime] = useState('');
-  const [scanLine, setScanLine] = useState(0);
 
   const selectedAgent = agents.find((a) => a.id === selectedAgentId) ?? null;
 
@@ -29,13 +28,6 @@ export default function AgentMatrix() {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const scan = setInterval(() => {
-      setScanLine((prev) => (prev + 1) % 100);
-    }, 50);
-    return () => clearInterval(scan);
   }, []);
 
   const handleToggleStatus = (id: string, newStatus: string) => {
@@ -71,17 +63,11 @@ export default function AgentMatrix() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020408] relative overflow-hidden">
+    <div className="min-h-screen bg-[#020408] relative overflow-hidden scanline-overlay">
       {/* Cyber Grid Background */}
       <div className="fixed inset-0 cyber-grid opacity-30" />
       <div className="fixed inset-0 hex-cyber opacity-20" />
       <div className="fixed inset-0 circuit-bg" />
-      
-      {/* Scanning Line */}
-      <motion.div 
-        className="fixed left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent z-50 pointer-events-none"
-        style={{ top: `${scanLine}%` }}
-      />
       
       {/* Ambient Orbs */}
       <div className="fixed top-1/4 left-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px] animate-float-ultra" />
