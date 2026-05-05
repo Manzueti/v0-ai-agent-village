@@ -522,3 +522,54 @@
   background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent);
   animation: cyber-loading 2s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   VYBECORP DASHBOARD CSS (MERGED FROM LOVABLE)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --neon-cyan: 190 100% 55%;
+  --neon-magenta: 320 100% 60%;
+  --neon-yellow: 48 100% 60%;
+  --neon-green: 140 80% 55%;
+  --neon-purple: 270 90% 65%;
+  --neon-orange: 25 100% 60%;
+  --neon-pink: 335 95% 65%;
+}
+
+.starfield {
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, hsl(0 0% 100% / 0.8), transparent),
+    radial-gradient(1px 1px at 60% 70%, hsl(0 0% 100% / 0.6), transparent),
+    radial-gradient(1px 1px at 80% 20%, hsl(0 0% 100% / 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 35% 85%, hsl(0 0% 100% / 0.5), transparent),
+    radial-gradient(1px 1px at 90% 50%, hsl(0 0% 100% / 0.6), transparent),
+    radial-gradient(1px 1px at 10% 60%, hsl(0 0% 100% / 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 50% 15%, hsl(0 0% 100% / 0.4), transparent),
+    radial-gradient(1px 1px at 75% 90%, hsl(0 0% 100% / 0.5), transparent);
+  background-size: 400px 400px, 350px 350px, 300px 300px, 500px 500px, 450px 450px, 380px 380px, 420px 420px, 360px 360px;
+}
+.panel-glow-cyan { box-shadow: 0 0 0 1px hsl(var(--neon-cyan) / 0.6), 0 0 24px hsl(var(--neon-cyan) / 0.25), inset 0 0 30px hsl(var(--neon-cyan) / 0.08); }
+.panel-glow-magenta { box-shadow: 0 0 0 1px hsl(var(--neon-magenta) / 0.6), 0 0 24px hsl(var(--neon-magenta) / 0.25), inset 0 0 30px hsl(var(--neon-magenta) / 0.08); }
+.panel-glow-purple { box-shadow: 0 0 0 1px hsl(var(--neon-purple) / 0.6), 0 0 24px hsl(var(--neon-purple) / 0.3), inset 0 0 30px hsl(var(--neon-purple) / 0.1); }
+.panel-glow-orange { box-shadow: 0 0 0 1px hsl(var(--neon-orange) / 0.6), 0 0 24px hsl(var(--neon-orange) / 0.25), inset 0 0 30px hsl(var(--neon-orange) / 0.08); }
+.panel-glow-yellow { box-shadow: 0 0 0 1px hsl(var(--neon-yellow) / 0.6), 0 0 24px hsl(var(--neon-yellow) / 0.25), inset 0 0 30px hsl(var(--neon-yellow) / 0.08); }
+.text-glow { text-shadow: 0 0 8px currentColor, 0 0 18px currentColor; }
+.scanlines::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, hsl(0 0% 0% / 0.15) 2px, hsl(0 0% 0% / 0.15) 3px);
+  mix-blend-mode: overlay;
+}
+@keyframes pulse-dot { 0%,100%{ opacity:1; transform: scale(1);} 50%{opacity:.4; transform: scale(.85);} }
+.pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+@keyframes ticker { 0%{ transform: translateX(0);} 100%{ transform: translateX(-50%);} }
+.ticker-track { animation: ticker 40s linear infinite; }
+@keyframes worker-walk { 0%{ transform: translateX(0);} 50%{transform: translateX(120%);} 100%{transform: translateX(0);} }
+.worker { animation: worker-walk 6s ease-in-out infinite; }
+@keyframes flicker { 0%,100%{ opacity:1;} 48%{opacity:.3;} 49%{opacity:1;} 51%{opacity:.5;} 52%{opacity:1;} }
+.flicker { animation: flicker 4s linear infinite; }
+@keyframes pipe-flow { 0%{ background-position: 0 0;} 100%{ background-position: 24px 0;} }
+.pipe-flow { background-image: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 12px); animation: pipe-flow 1.2s linear infinite; }
+@keyframes spin-slow { to { transform: rotate(360deg);} }
+.spin-slow { animation: spin-slow 8s linear infinite; }
+@keyframes blip { 0%,100%{ opacity:.2;} 50%{ opacity:1;} }
+.blip { animation: blip 2s ease-in-out infinite; }

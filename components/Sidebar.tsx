@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, Users, Server, Brain, Settings, 
   Activity, Cpu, ChevronRight, Terminal,
-  Zap, Shield, Wifi, Radio, Target, Trees
+  Zap, Shield, Wifi, Radio, Target, Trees, Factory
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -17,11 +17,12 @@ export default function Sidebar() {
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home, shortcut: '⌘1' },
-    { name: 'Village', href: '/village', icon: Trees, shortcut: '⌘2' },
-    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘3' },
-    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘4' },
-    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘5' },
-    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘6' },
+    { name: 'VybeCorp', href: '/vybecorp', icon: Factory, shortcut: '⌘2' },
+    { name: 'Village', href: '/village', icon: Trees, shortcut: '⌘3' },
+    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘4' },
+    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘5' },
+    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘6' },
+    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘7' },
     { name: 'Settings', href: '#', icon: Settings, shortcut: '⌘,' },
   ];
 
