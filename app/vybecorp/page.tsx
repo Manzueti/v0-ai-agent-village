@@ -6,6 +6,7 @@ import {
   Send, ChevronRight, Coins, FlaskConical, Pickaxe, Truck, MessageSquare, Bell,
   Trophy, Target, Flame, Star, Award, CheckCircle2, Circle,
 } from "lucide-react";
+import StylizedAvatar from "@/components/village/StylizedAvatar";
 
 const NeonPanel = ({
   color = "purple",
@@ -14,6 +15,8 @@ const NeonPanel = ({
   level,
   children,
   className = "",
+  avatarColor,
+  gender = "non-binary"
 }: {
   color?: "cyan" | "magenta" | "purple" | "orange" | "yellow";
   title: string;
@@ -21,6 +24,8 @@ const NeonPanel = ({
   level?: string;
   children: React.ReactNode;
   className?: string;
+  avatarColor?: string;
+  gender?: 'male' | 'female' | 'non-binary';
 }) => {
   const glow = {
     cyan: "panel-glow-cyan",
@@ -37,7 +42,7 @@ const NeonPanel = ({
     yellow: "var(--neon-yellow)",
   }[color];
   return (
-    <div className={`relative rounded-md bg-[hsl(255_45%_8%/0.85)] backdrop-blur-sm scanlines ${glow} ${className}`}>
+    <div className={`relative rounded-md bg-[hsl(255_45%_8%/0.85)] backdrop-blur-sm scanlines ${glow} ${className} flex flex-col`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: `hsl(${colorVar} / 0.4)` }}>
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full pulse-dot" style={{ background: `hsl(${colorVar})`, boxShadow: `0 0 8px hsl(${colorVar})` }} />
@@ -50,7 +55,20 @@ const NeonPanel = ({
           </span>
         )}
       </div>
-      <div className="p-3">{children}</div>
+      <div className="flex-1 p-3 flex gap-4">
+        <div className="w-16 h-16 shrink-0 relative">
+          <StylizedAvatar 
+            color={avatarColor || `hsl(${colorVar})`} 
+            gender={gender} 
+            isWorking={status === "Active" || status === "Etsy Live"} 
+            className="w-full h-full"
+          />
+          <div className="absolute inset-x-0 -bottom-1 h-px bg-current opacity-20 blur-sm" style={{ color: avatarColor || `hsl(${colorVar})` }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
