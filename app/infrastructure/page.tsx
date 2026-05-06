@@ -8,7 +8,7 @@ import HealthBar from '@/components/infrastructure/HealthBar';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import NodeDetailPanel from '@/components/infrastructure/NodeDetailPanel';
 import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Radio } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InfrastructurePage() {
   const [selectedNode, setSelectedNode] = useState<InfraNode | null>(null);
