@@ -7,7 +7,7 @@ import IsometricMap from '@/components/infrastructure/IsometricMap';
 import HealthBar from '@/components/infrastructure/HealthBar';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import NodeDetailPanel from '@/components/infrastructure/NodeDetailPanel';
-import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Radio } from 'lucide-react';
+import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Radio, FlaskConical, Beaker, Zap, Microscope } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InfrastructurePage() {
@@ -15,6 +15,14 @@ export default function InfrastructurePage() {
   const [selectedZone, setSelectedZone] = useState<InfraZone | null>(null);
   const [showDecisionLog, setShowDecisionLog] = useState(true);
   const [hermesStatus, setHermesStatus] = useState<{healthy: boolean, issues: number} | null>(null);
+  const [fluxLevel, setFluxLevel] = useState(72);
+
+  useEffect(() => {
+    const fluxInterval = setInterval(() => {
+      setFluxLevel(prev => Math.min(100, Math.max(0, prev + (Math.random() - 0.5) * 5)));
+    }, 2000);
+    return () => clearInterval(fluxInterval);
+  }, []);
 
   useEffect(() => {
     const checkHermes = async () => {
@@ -66,42 +74,59 @@ export default function InfrastructurePage() {
     : [];
 
   return (
-    <div className="h-screen flex flex-col bg-transparent relative overflow-hidden scanlines">
+    <div className="h-screen flex flex-col bg-transparent relative overflow-hidden scanlines font-mono">
       {/* Animated Grid Background */}
       <div className="fixed inset-0 cyber-grid opacity-20 pointer-events-none" />
       
       {/* Header / Health Bar */}
-      <div className="relative z-20 border-b border-white/5 bg-[hsl(var(--background)/0.8)] backdrop-blur-xl">
+      <div className="relative z-20 border-b border-[hsl(var(--neon-cyan)/0.3)] bg-[hsl(var(--background)/0.9)] backdrop-blur-xl">
         <div className="px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded bg-gradient-to-br from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-purple))] grid place-items-center shadow-[0_0_15px_hsl(var(--neon-cyan)/0.4)]">
-                <Server className="w-5 h-5 text-background" />
+              <div className="h-10 w-10 rounded-lg border border-[hsl(var(--neon-cyan)/0.5)] bg-[hsl(var(--neon-cyan)/0.05)] grid place-items-center shadow-[0_0_15px_hsl(var(--neon-cyan)/0.2)]">
+                <FlaskConical className="w-5 h-5 text-[hsl(var(--neon-cyan))]" />
               </div>
               <div>
-                <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Infrastructure Matrix</span>
-                <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">VYBECORP Global Node Map</span>
+                <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Infrastructure Lab</span>
+                <span className="text-[9px] text-[hsl(var(--neon-cyan))] tracking-[0.2em] uppercase font-bold opacity-60">Neural Network Analysis Station</span>
               </div>
             </div>
-            <div className="h-6 w-px bg-white/5" />
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[hsl(var(--neon-green))]" />
-                <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{systemHealth.overall}% HEALTH</span>
+            <div className="h-6 w-px bg-white/10" />
+            <div className="flex items-center gap-8">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-3.5 h-3.5 text-[hsl(var(--neon-green))]" />
+                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest uppercase">System Stability</span>
+                </div>
+                <div className="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                  <motion.div 
+                    className="h-full bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]"
+                    animate={{ width: `${systemHealth.overall}%` }}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-[hsl(var(--neon-cyan))] animate-pulse" />
-                <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{nodes.length} ACTIVE NODES</span>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-3.5 h-3.5 text-[hsl(var(--neon-yellow))]" />
+                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest uppercase">Neural Flux</span>
+                </div>
+                <div className="text-xs font-black text-[hsl(var(--neon-yellow))] mt-0.5 tabular-nums">
+                  {fluxLevel.toFixed(1)} mHz
+                </div>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-md border border-white/10">
+              <Microscope className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Active Analysis: NODE_GLOBAL_01</span>
+            </div>
             <button 
               onClick={handleRefresh}
-              className="px-4 py-1.5 bg-[hsl(var(--neon-cyan)/0.1)] border border-[hsl(var(--neon-cyan)/0.3)] text-[10px] text-[hsl(var(--neon-cyan))] font-black tracking-[0.2em] rounded uppercase hover:bg-[hsl(var(--neon-cyan)/0.2)] transition-all"
+              className="px-4 py-2 bg-[hsl(var(--neon-cyan)/0.1)] border border-[hsl(var(--neon-cyan)/0.5)] text-[10px] text-[hsl(var(--neon-cyan))] font-black tracking-[0.3em] rounded uppercase hover:bg-[hsl(var(--neon-cyan)/0.2)] transition-all panel-glow-cyan"
             >
-              Sync Data
+              Recalibrate
             </button>
           </div>
         </div>
@@ -111,6 +136,8 @@ export default function InfrastructurePage() {
       <div className="flex-1 flex overflow-hidden relative z-10">
         {/* Map Area */}
         <div className="flex-1 relative">
+          <div className="absolute inset-0 bg-radial-at-c from-[hsl(var(--neon-cyan)/0.03)] via-transparent to-transparent pointer-events-none" />
+          
           <IsometricMap
             nodes={nodes}
             connections={connections}
@@ -125,37 +152,43 @@ export default function InfrastructurePage() {
           {/* Hermes Guardian Status */}
           <div className="absolute top-6 right-6 flex flex-col gap-2">
             <div className={`
-              px-5 py-3 rounded bg-[hsl(var(--card)/0.6)] backdrop-blur-md border flex items-center gap-4 transition-all scanlines
+              px-6 py-4 rounded-xl backdrop-blur-md border-2 flex items-center gap-5 transition-all scanlines shadow-2xl
               ${hermesStatus?.healthy 
-                ? 'border-[hsl(var(--neon-green)/0.4)] panel-glow-cyan text-[hsl(var(--neon-green))]' 
-                : 'border-[hsl(var(--neon-magenta)/0.4)] panel-glow-magenta text-[hsl(var(--neon-magenta))]'}
+                ? 'border-[hsl(var(--neon-green)/0.4)] bg-[hsl(var(--neon-green)/0.03)] panel-glow-cyan text-[hsl(var(--neon-green))]' 
+                : 'border-[hsl(var(--neon-magenta)/0.4)] bg-[hsl(var(--neon-magenta)/0.03)] panel-glow-magenta text-[hsl(var(--neon-magenta))]'}
             `}>
-              {hermesStatus?.healthy ? <ShieldCheck className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
+              <div className="relative">
+                {hermesStatus?.healthy ? <ShieldCheck className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8" />}
+                <div className="absolute inset-0 animate-ping opacity-20 bg-current rounded-full" />
+              </div>
               <div className="flex flex-col">
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Guardian Status</span>
-                <span className="text-xs font-black tracking-widest">
-                  {hermesStatus ? (hermesStatus.healthy ? 'OPERATIONAL' : `CRITICAL: ${hermesStatus.issues}`) : 'INITIALIZING...'}
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/60">Lab Guardian</span>
+                <span className="text-sm font-black tracking-widest">
+                  {hermesStatus ? (hermesStatus.healthy ? 'STABLE' : `CONTAINMENT: ${hermesStatus.issues}`) : 'BOOTING...'}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Legend */}
-          <div className="absolute bottom-8 left-8 bg-[hsl(var(--card)/0.6)] backdrop-blur-md rounded border border-white/5 p-4 panel-glow-cyan scanlines">
-            <div className="text-[10px] font-black text-white tracking-[0.3em] uppercase mb-4 border-b border-white/5 pb-2">MAP_LEGEND</div>
-            <div className="space-y-2.5">
-              <LegendItem color="hsl(var(--neon-green))" label="Optimal Node" />
-              <LegendItem color="hsl(var(--neon-yellow))" label="Warning State" />
-              <LegendItem color="hsl(var(--neon-magenta))" label="Critical Failure" />
-              <LegendItem color="hsl(var(--neon-purple))" label="Failover Ready" />
-              <div className="h-px bg-white/5 my-3" />
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-0.5 bg-[hsl(var(--neon-green))]" />
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Data Stream</span>
+          <div className="absolute bottom-8 left-8 bg-[hsl(var(--background)/0.8)] backdrop-blur-xl rounded-xl border border-[hsl(var(--neon-cyan)/0.3)] p-6 panel-glow-cyan scanlines">
+            <div className="text-[11px] font-black text-white tracking-[0.4em] uppercase mb-5 border-b border-white/10 pb-3 flex items-center gap-3">
+              <Beaker className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+              Lab Spectrum
+            </div>
+            <div className="space-y-3.5">
+              <LegendItem color="hsl(var(--neon-green))" label="Stable Link" />
+              <LegendItem color="hsl(var(--neon-yellow))" label="Thermal Flux" />
+              <LegendItem color="hsl(var(--neon-magenta))" label="Containment Breach" />
+              <LegendItem color="hsl(var(--neon-purple))" label="Neural Ready" />
+              <div className="h-px bg-white/10 my-4" />
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-0.5 bg-[hsl(var(--neon-cyan))] shadow-[0_0_8px_hsl(var(--neon-cyan))]" />
+                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Electron Path</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-0.5 bg-[hsl(var(--neon-purple))] border-t border-dashed" />
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Neural Link</span>
+              <div className="flex items-center gap-4">
+                <div className="w-6 h-0.5 bg-[hsl(var(--neon-purple))] border-t border-dashed" />
+                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Neural Synapse</span>
               </div>
             </div>
           </div>
@@ -163,9 +196,10 @@ export default function InfrastructurePage() {
           {/* Toggle Decision Log */}
           <button
             onClick={() => setShowDecisionLog(!showDecisionLog)}
-            className="absolute top-6 left-6 px-4 py-2 bg-[hsl(var(--background)/0.6)] backdrop-blur-sm rounded border border-white/10 text-[10px] font-black text-white hover:bg-white/5 transition-all uppercase tracking-[0.2em]"
+            className="absolute top-6 left-6 px-5 py-2.5 bg-[hsl(var(--background)/0.8)] backdrop-blur-sm rounded-lg border border-[hsl(var(--neon-cyan)/0.3)] text-[10px] font-black text-white hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all uppercase tracking-[0.3em] flex items-center gap-3"
           >
-            {showDecisionLog ? 'Suspend' : 'Display'} Logs
+            <Terminal className="w-3.5 h-3.5 text-[hsl(var(--neon-cyan))]" />
+            {showDecisionLog ? 'DEACTIVATE' : 'ACTIVATE'} TELEMETRY
           </button>
         </div>
 
@@ -173,18 +207,24 @@ export default function InfrastructurePage() {
         <AnimatePresence>
           {showDecisionLog && (
             <motion.div 
-              initial={{ x: 320, opacity: 0 }}
+              initial={{ x: 360, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 320, opacity: 0 }}
-              className="w-80 border-l border-white/5 bg-[hsl(var(--card)/0.4)] backdrop-blur-xl overflow-hidden flex flex-col scanlines"
+              exit={{ x: 360, opacity: 0 }}
+              className="w-96 border-l border-[hsl(var(--neon-cyan)/0.2)] bg-[hsl(var(--background)/0.6)] backdrop-blur-2xl overflow-hidden flex flex-col scanlines shadow-2xl"
             >
-              <div className="p-4 border-b border-white/5 bg-[hsl(var(--background)/0.5)]">
-                <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-                  Neural Decision Feed
+              <div className="p-5 border-b border-white/10 bg-[hsl(var(--background)/0.8)] flex items-center justify-between">
+                <h3 className="text-[11px] font-black text-white tracking-[0.4em] uppercase flex items-center gap-3">
+                  <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+                  Neural Telemetry
                 </h3>
+                <div className="flex gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green)/0.3)]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green)/0.3)]" />
+                </div>
               </div>
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[hsl(var(--background)/0.4)] pointer-events-none z-10" />
                 <AIDecisionLog 
                   decisions={recentDecisions} 
                   operators={operators}
@@ -210,14 +250,17 @@ export default function InfrastructurePage() {
       )}
 
       {/* Footer decoration */}
-      <footer className="relative z-20 h-10 border-t border-white/5 bg-[hsl(var(--background)/0.8)] backdrop-blur-md flex items-center justify-between px-8">
-        <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/40 uppercase">
-          <span>Global Infrastructure Network</span>
-          <span className="text-[hsl(var(--neon-green))]">● ALL SYSTEMS GO</span>
+      <footer className="relative z-20 h-12 border-t border-[hsl(var(--neon-cyan)/0.2)] bg-[hsl(var(--background)/0.9)] backdrop-blur-md flex items-center justify-between px-8">
+        <div className="flex gap-8 text-[9px] font-black tracking-[0.4em] text-muted-foreground/50 uppercase items-center">
+          <span className="flex items-center gap-2"><Server className="w-3 h-3" /> Core Matrix Network</span>
+          <span className="text-[hsl(var(--neon-green))] flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]" /> 
+            CALIBRATION NOMINAL
+          </span>
         </div>
-        <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/40 uppercase">
-          <span>Tier-1 Architecture</span>
-          <span>v2.5.0</span>
+        <div className="flex gap-8 text-[9px] font-black tracking-[0.4em] text-muted-foreground/50 uppercase">
+          <span>Neural Lab Spec. v4.8.2</span>
+          <span>EST. 2026.05.06</span>
         </div>
       </footer>
     </div>
@@ -226,9 +269,9 @@ export default function InfrastructurePage() {
 
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: color, color }} />
-      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{label}</span>
+    <div className="flex items-center gap-4">
+      <div className="w-2.5 h-2.5 rounded-sm shadow-[0_0_10px_currentColor]" style={{ backgroundColor: color, color }} />
+      <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">{label}</span>
     </div>
   );
 }
