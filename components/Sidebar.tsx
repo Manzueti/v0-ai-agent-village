@@ -19,10 +19,9 @@ export default function Sidebar() {
     { name: 'Home', href: '/', icon: Home, shortcut: '⌘1' },
     { name: 'VybeCorp', href: '/vybecorp', icon: Factory, shortcut: '⌘2' },
     { name: 'Village', href: '/village', icon: Trees, shortcut: '⌘3' },
-    { name: 'Agents', href: '/agent-management', icon: Users, shortcut: '⌘4' },
-    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘5' },
-    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘6' },
-    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘7' },
+    { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘4' },
+    { name: 'AI Control', href: '/ai-control', icon: Brain, shortcut: '⌘5' },
+    { name: 'COE', href: '/coe', icon: Target, shortcut: '⌘6' },
     { name: 'Settings', href: '#', icon: Settings, shortcut: '⌘,' },
   ];
 
