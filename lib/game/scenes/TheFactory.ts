@@ -54,6 +54,7 @@ class TinyRobot extends Phaser.GameObjects.Container {
 export class TheFactory extends Phaser.Scene {
     private labs: Phaser.GameObjects.Group | null = null;
     private robots: TinyRobot[] = [];
+    private trailTexture: Phaser.GameObjects.RenderTexture | null = null;
 
     constructor() {
         super('TheFactory');
@@ -64,40 +65,57 @@ export class TheFactory extends Phaser.Scene {
     }
 
     create() {
-        // Lab Floor - Dark grid
-        const bg = this.add.image(400, 300, 'sky').setAlpha(0.3);
+        // --- Texture Concept: Procedural Canvas Texture ---
+        // Create a 'Circuit' pattern texture dynamically
+        const canvasTexture = this.textures.createCanvas('circuitBG', 128, 128);
+        if (canvasTexture) {
+            const ctx = canvasTexture.context;
+            ctx.strokeStyle = '#00f2ff';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                const x = Math.random() * 128;
+                const y = Math.random() * 128;
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, y);
+                ctx.lineTo(128, y);
+            }
+            ctx.stroke();
+            canvasTexture.refresh();
+        }
+
+        // --- Texture Concept: RenderTexture for Trails ---
+        // Create a RenderTexture that stays on screen to create a "ghosting" or trail effect
+        this.trailTexture = this.add.renderTexture(0, 0, 800, 600).setOrigin(0).setAlpha(0.4);
+        this.trailTexture.setBlendMode(Phaser.BlendModes.ADD);
+
+        // Lab Floor - Dark grid with procedural pattern
+        const bg = this.add.image(400, 300, 'sky').setAlpha(0.2);
         bg.setDisplaySize(this.sys.canvas.width, this.sys.canvas.height);
+
+        // Add our procedural circuit pattern as a repeating tile
+        this.add.tileSprite(400, 300, 800, 600, 'circuitBG').setAlpha(0.1);
 
         const grid = this.add.grid(400, 300, 1200, 800, 64, 64, 0x000000, 0, 0x00f2ff, 0.05);
         
-        // Create Labs (Office Pods equivalent)
+        // ... (Labs creation code remains similar)
         this.labs = this.add.group();
         const labColors = [0x00f2ff, 0x7000ff, 0x00ff41, 0xffd700];
         
         for (let i = 0; i < 4; i++) {
             const lx = 150 + i * 170;
             const ly = 300;
-            
-            // Lab Base
-            const lab = this.add.graphics();
             const color = labColors[i];
             
+            const lab = this.add.graphics();
             lab.lineStyle(2, color, 0.3);
             lab.strokeRoundedRect(lx - 60, ly - 80, 120, 160, 10);
             
-            // Glowing Terminal
             const terminal = this.add.graphics();
             terminal.fillStyle(color, 0.1);
             terminal.fillRoundedRect(lx - 40, ly - 60, 80, 50, 4);
             terminal.lineStyle(1, color, 0.5);
             terminal.strokeRoundedRect(lx - 40, ly - 60, 80, 50, 4);
-            
-            // Technical details
-            for (let j = 0; j < 3; j++) {
-                const line = this.add.graphics();
-                line.fillStyle(color, 0.4);
-                line.fillRect(lx - 30, ly - 50 + (j * 10), 40 + Math.random() * 20, 2);
-            }
 
             this.add.text(lx, ly + 95, `LAB_${i+1}`, {
                 fontSize: '10px',
@@ -114,7 +132,6 @@ export class TheFactory extends Phaser.Scene {
             const color = Phaser.Utils.Array.GetRandom(robotColors);
             const robot = new TinyRobot(this, rx, ry, color);
             this.robots.push(robot);
-
             this.moveRobot(robot);
         }
 
@@ -126,6 +143,19 @@ export class TheFactory extends Phaser.Scene {
             stroke: '#00f2ff',
             strokeThickness: 1
         }).setOrigin(0.5).postFX.addGlow(0x00f2ff, 2, 0, false, 0.1, 10);
+    }
+
+    update() {
+        // --- Texture Concept: Real-time RenderTexture modification ---
+        // Slowly fade the trail texture to create a "motion blur" effect
+        if (this.trailTexture) {
+            this.trailTexture.fill(0x000000, 0.05); // Darken the texture slightly every frame
+            
+            // Draw all robots onto the trail texture
+            this.robots.forEach(robot => {
+                this.trailTexture?.draw(robot, robot.x, robot.y);
+            });
+        }
     }
 
     private moveRobot(robot: TinyRobot) {
