@@ -7,7 +7,7 @@ import IsometricMap from '@/components/infrastructure/IsometricMap';
 import HealthBar from '@/components/infrastructure/HealthBar';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import NodeDetailPanel from '@/components/infrastructure/NodeDetailPanel';
-import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Radio, FlaskConical, Beaker, Zap, Microscope } from 'lucide-react';
+import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Cpu, HardDrive, Factory, Box, Drill, Zap, Boxes } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InfrastructurePage() {
@@ -15,13 +15,13 @@ export default function InfrastructurePage() {
   const [selectedZone, setSelectedZone] = useState<InfraZone | null>(null);
   const [showDecisionLog, setShowDecisionLog] = useState(true);
   const [hermesStatus, setHermesStatus] = useState<{healthy: boolean, issues: number} | null>(null);
-  const [fluxLevel, setFluxLevel] = useState(72);
+  const [computeLoad, setComputeLoad] = useState(84);
 
   useEffect(() => {
-    const fluxInterval = setInterval(() => {
-      setFluxLevel(prev => Math.min(100, Math.max(0, prev + (Math.random() - 0.5) * 5)));
-    }, 2000);
-    return () => clearInterval(fluxInterval);
+    const loadInterval = setInterval(() => {
+      setComputeLoad(prev => Math.min(100, Math.max(60, prev + (Math.random() - 0.5) * 2)));
+    }, 1500);
+    return () => clearInterval(loadInterval);
   }, []);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function InfrastructurePage() {
       }
     };
     checkHermes();
-    const interval = setInterval(checkHermes, 30000); // Check every 30s
+    const interval = setInterval(checkHermes, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -57,7 +57,7 @@ export default function InfrastructurePage() {
   }, []);
 
   const handleRefresh = useCallback(() => {
-    console.log('[v0] Refreshing infrastructure data...');
+    console.log('[v0] Syncing industrial grid...');
   }, []);
 
   const nodePair = selectedNode ? getNodePair(selectedNode.id) : null;
@@ -74,69 +74,67 @@ export default function InfrastructurePage() {
     : [];
 
   return (
-    <div className="h-screen flex flex-col bg-transparent relative overflow-hidden scanlines font-mono">
-      {/* Animated Grid Background */}
-      <div className="fixed inset-0 cyber-grid opacity-20 pointer-events-none" />
+    <div className="h-screen flex flex-col bg-black relative overflow-hidden font-mono selection:bg-[hsl(var(--neon-cyan))] selection:text-black">
+      {/* Industrial Background - Exposed Steel Texture & Grid */}
+      <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+      <div className="fixed inset-0 cyber-grid opacity-10 pointer-events-none" />
       
-      {/* Header / Health Bar */}
-      <div className="relative z-20 border-b border-[hsl(var(--neon-cyan)/0.3)] bg-[hsl(var(--background)/0.9)] backdrop-blur-xl">
+      {/* Heavy Steel Header */}
+      <div className="relative z-20 border-b-2 border-[#333] bg-[#0a0a0a]">
         <div className="px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg border border-[hsl(var(--neon-cyan)/0.5)] bg-[hsl(var(--neon-cyan)/0.05)] grid place-items-center shadow-[0_0_15px_hsl(var(--neon-cyan)/0.2)]">
-                <FlaskConical className="w-5 h-5 text-[hsl(var(--neon-cyan))]" />
+          <div className="flex items-center gap-10">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 bg-white/5 border border-[#444] rounded-sm flex items-center justify-center shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                <Factory className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Infrastructure Lab</span>
-                <span className="text-[9px] text-[hsl(var(--neon-cyan))] tracking-[0.2em] uppercase font-bold opacity-60">Neural Network Analysis Station</span>
+                <span className="text-white font-black tracking-[0.3em] uppercase text-base block leading-none">Warehouse_Compute_Lab</span>
+                <span className="text-[9px] text-[#666] tracking-[0.4em] uppercase font-bold mt-1">Sector 7G // High-Density Rack Cluster</span>
               </div>
             </div>
-            <div className="h-6 w-px bg-white/10" />
-            <div className="flex items-center gap-8">
+            
+            <div className="flex items-center gap-12 border-l border-[#222] pl-12">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-3.5 h-3.5 text-[hsl(var(--neon-green))]" />
-                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest uppercase">System Stability</span>
-                </div>
-                <div className="w-32 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
-                  <motion.div 
-                    className="h-full bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]"
-                    animate={{ width: `${systemHealth.overall}%` }}
-                  />
+                <span className="text-[9px] text-[#666] uppercase tracking-widest mb-1">Total_Grid_Load</span>
+                <div className="flex items-end gap-3">
+                  <span className="text-xl font-black text-white tabular-nums">{computeLoad.toFixed(1)}%</span>
+                  <div className="flex gap-0.5 mb-1.5">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className={`w-1 h-3 ${i < computeLoad/10 ? 'bg-[hsl(var(--neon-cyan))]' : 'bg-[#222]'}`} />
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col">
+                <span className="text-[9px] text-[#666] uppercase tracking-widest mb-1">Grid_Status</span>
                 <div className="flex items-center gap-2">
-                  <Zap className="w-3.5 h-3.5 text-[hsl(var(--neon-yellow))]" />
-                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest uppercase">Neural Flux</span>
-                </div>
-                <div className="text-xs font-black text-[hsl(var(--neon-yellow))] mt-0.5 tabular-nums">
-                  {fluxLevel.toFixed(1)} mHz
+                  <div className="w-2 h-2 rounded-full bg-[hsl(var(--neon-green))] shadow-[0_0_10px_hsl(var(--neon-green))]" />
+                  <span className="text-xs font-black text-white uppercase tracking-tighter">Synchronized</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-md border border-white/10">
-              <Microscope className="w-4 h-4 text-muted-foreground" />
-              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Active Analysis: NODE_GLOBAL_01</span>
+          <div className="flex items-center gap-6">
+            <div className="px-4 py-2 bg-white/5 border border-[#333] rounded-sm flex items-center gap-3">
+              <HardDrive className="w-4 h-4 text-[#666]" />
+              <span className="text-[10px] text-white font-bold uppercase tracking-widest">Rack_01 :: Online</span>
             </div>
             <button 
               onClick={handleRefresh}
-              className="px-4 py-2 bg-[hsl(var(--neon-cyan)/0.1)] border border-[hsl(var(--neon-cyan)/0.5)] text-[10px] text-[hsl(var(--neon-cyan))] font-black tracking-[0.3em] rounded uppercase hover:bg-[hsl(var(--neon-cyan)/0.2)] transition-all panel-glow-cyan"
+              className="px-6 py-2 bg-white text-black text-[10px] font-black tracking-[0.3em] uppercase hover:bg-[hsl(var(--neon-cyan))] transition-all active:scale-95"
             >
-              Recalibrate
+              Flush_Grid
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Grid Floor */}
       <div className="flex-1 flex overflow-hidden relative z-10">
-        {/* Map Area */}
-        <div className="flex-1 relative">
-          <div className="absolute inset-0 bg-radial-at-c from-[hsl(var(--neon-cyan)/0.03)] via-transparent to-transparent pointer-events-none" />
+        {/* Isometric Map - Warehouse Context */}
+        <div className="flex-1 relative bg-[#050505]">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 pointer-events-none" />
           
           <IsometricMap
             nodes={nodes}
@@ -149,82 +147,75 @@ export default function InfrastructurePage() {
             onZoneSelect={handleZoneSelect}
           />
 
-          {/* Hermes Guardian Status */}
-          <div className="absolute top-6 right-6 flex flex-col gap-2">
+          {/* Heavy Metal Guardian Panel */}
+          <div className="absolute top-8 right-8">
             <div className={`
-              px-6 py-4 rounded-xl backdrop-blur-md border-2 flex items-center gap-5 transition-all scanlines shadow-2xl
-              ${hermesStatus?.healthy 
-                ? 'border-[hsl(var(--neon-green)/0.4)] bg-[hsl(var(--neon-green)/0.03)] panel-glow-cyan text-[hsl(var(--neon-green))]' 
-                : 'border-[hsl(var(--neon-magenta)/0.4)] bg-[hsl(var(--neon-magenta)/0.03)] panel-glow-magenta text-[hsl(var(--neon-magenta))]'}
+              px-8 py-5 bg-[#0a0a0a] border-t-4 border-x border-b border-[#333] flex items-center gap-6 shadow-2xl
+              ${hermesStatus?.healthy ? 'border-t-[hsl(var(--neon-cyan))]' : 'border-t-red-600'}
             `}>
-              <div className="relative">
-                {hermesStatus?.healthy ? <ShieldCheck className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8" />}
-                <div className="absolute inset-0 animate-ping opacity-20 bg-current rounded-full" />
+              <div className="p-3 bg-white/5 border border-[#222]">
+                <Shield className={`w-8 h-8 ${hermesStatus?.healthy ? 'text-white' : 'text-red-600'}`} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground/60">Lab Guardian</span>
-                <span className="text-sm font-black tracking-widest">
-                  {hermesStatus ? (hermesStatus.healthy ? 'STABLE' : `CONTAINMENT: ${hermesStatus.issues}`) : 'BOOTING...'}
+                <span className="text-[9px] font-bold uppercase tracking-[0.5em] text-[#666]">Security_Lock</span>
+                <span className="text-lg font-black text-white tracking-widest">
+                  {hermesStatus ? (hermesStatus.healthy ? 'SECURED' : 'BREACHED') : 'PENDING'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Legend */}
-          <div className="absolute bottom-8 left-8 bg-[hsl(var(--background)/0.8)] backdrop-blur-xl rounded-xl border border-[hsl(var(--neon-cyan)/0.3)] p-6 panel-glow-cyan scanlines">
-            <div className="text-[11px] font-black text-white tracking-[0.4em] uppercase mb-5 border-b border-white/10 pb-3 flex items-center gap-3">
-              <Beaker className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-              Lab Spectrum
+          {/* Industrial Legend - Server Rack Style */}
+          <div className="absolute bottom-10 left-10 bg-[#0a0a0a] border border-[#333] p-8 shadow-2xl">
+            <div className="text-[11px] font-black text-white tracking-[0.5em] uppercase mb-6 border-b border-[#222] pb-4 flex items-center gap-4">
+              <Box className="w-4 h-4 text-[#666]" />
+              System_Legend
             </div>
-            <div className="space-y-3.5">
-              <LegendItem color="hsl(var(--neon-green))" label="Stable Link" />
-              <LegendItem color="hsl(var(--neon-yellow))" label="Thermal Flux" />
-              <LegendItem color="hsl(var(--neon-magenta))" label="Containment Breach" />
-              <LegendItem color="hsl(var(--neon-purple))" label="Neural Ready" />
-              <div className="h-px bg-white/10 my-4" />
-              <div className="flex items-center gap-4">
-                <div className="w-6 h-0.5 bg-[hsl(var(--neon-cyan))] shadow-[0_0_8px_hsl(var(--neon-cyan))]" />
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Electron Path</span>
+            <div className="space-y-4">
+              <LegendItem color="white" label="High_Priority_Node" />
+              <LegendItem color="#666" label="Standby_Unit" />
+              <LegendItem color="hsl(var(--neon-cyan))" label="Active_Transfer" />
+              <LegendItem color="red" label="Critical_Fault" />
+              <div className="h-px bg-[#222] my-6" />
+              <div className="flex items-center gap-5">
+                <div className="w-8 h-1 bg-white/10 border border-[#333]" />
+                <span className="text-[9px] font-bold text-[#666] uppercase tracking-[0.3em]">Steel_Conduit</span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-6 h-0.5 bg-[hsl(var(--neon-purple))] border-t border-dashed" />
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Neural Synapse</span>
+              <div className="flex items-center gap-5">
+                <div className="w-8 h-0.5 bg-[hsl(var(--neon-cyan))] shadow-[0_0_8px_hsl(var(--neon-cyan))]" />
+                <span className="text-[9px] font-bold text-[#666] uppercase tracking-[0.3em]">Electric_Accent</span>
               </div>
             </div>
           </div>
 
-          {/* Toggle Decision Log */}
+          {/* Industrial Terminal Toggle */}
           <button
             onClick={() => setShowDecisionLog(!showDecisionLog)}
-            className="absolute top-6 left-6 px-5 py-2.5 bg-[hsl(var(--background)/0.8)] backdrop-blur-sm rounded-lg border border-[hsl(var(--neon-cyan)/0.3)] text-[10px] font-black text-white hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all uppercase tracking-[0.3em] flex items-center gap-3"
+            className="absolute top-8 left-8 px-6 py-3 bg-[#0a0a0a] border border-[#333] text-[10px] font-black text-[#666] hover:text-white hover:border-white transition-all uppercase tracking-[0.4em] flex items-center gap-4 group"
           >
-            <Terminal className="w-3.5 h-3.5 text-[hsl(var(--neon-cyan))]" />
-            {showDecisionLog ? 'DEACTIVATE' : 'ACTIVATE'} TELEMETRY
+            <Terminal className="w-4 h-4 group-hover:text-[hsl(var(--neon-cyan))]" />
+            {showDecisionLog ? 'Kill_Terminal' : 'Boot_Terminal'}
           </button>
         </div>
 
-        {/* AI Decision Log Panel */}
+        {/* Heavy Data Feed */}
         <AnimatePresence>
           {showDecisionLog && (
             <motion.div 
-              initial={{ x: 360, opacity: 0 }}
+              initial={{ x: 400, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 360, opacity: 0 }}
-              className="w-96 border-l border-[hsl(var(--neon-cyan)/0.2)] bg-[hsl(var(--background)/0.6)] backdrop-blur-2xl overflow-hidden flex flex-col scanlines shadow-2xl"
+              exit={{ x: 400, opacity: 0 }}
+              className="w-[400px] border-l-2 border-[#1a1a1a] bg-[#050505] overflow-hidden flex flex-col shadow-2xl"
             >
-              <div className="p-5 border-b border-white/10 bg-[hsl(var(--background)/0.8)] flex items-center justify-between">
-                <h3 className="text-[11px] font-black text-white tracking-[0.4em] uppercase flex items-center gap-3">
-                  <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-                  Neural Telemetry
+              <div className="p-6 border-b border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-between">
+                <h3 className="text-[12px] font-black text-white tracking-[0.6em] uppercase flex items-center gap-4">
+                  <Cpu className="w-5 h-5 text-[hsl(var(--neon-cyan))]" />
+                  Compute_Feed
                 </h3>
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] animate-pulse" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green)/0.3)]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green)/0.3)]" />
-                </div>
+                <span className="text-[9px] text-[#444] font-bold">L-04 // LIVE</span>
               </div>
               <div className="flex-1 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[hsl(var(--background)/0.4)] pointer-events-none z-10" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-[hsl(var(--neon-cyan))] opacity-20" />
                 <AIDecisionLog 
                   decisions={recentDecisions} 
                   operators={operators}
@@ -236,7 +227,7 @@ export default function InfrastructurePage() {
         </AnimatePresence>
       </div>
 
-      {/* Node Detail Panel */}
+      {/* Rack Detail Overlay */}
       {selectedNode && (
         <NodeDetailPanel
           node={selectedNode}
@@ -249,18 +240,18 @@ export default function InfrastructurePage() {
         />
       )}
 
-      {/* Footer decoration */}
-      <footer className="relative z-20 h-12 border-t border-[hsl(var(--neon-cyan)/0.2)] bg-[hsl(var(--background)/0.9)] backdrop-blur-md flex items-center justify-between px-8">
-        <div className="flex gap-8 text-[9px] font-black tracking-[0.4em] text-muted-foreground/50 uppercase items-center">
-          <span className="flex items-center gap-2"><Server className="w-3 h-3" /> Core Matrix Network</span>
-          <span className="text-[hsl(var(--neon-green))] flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]" /> 
-            CALIBRATION NOMINAL
+      {/* Industrial Footer */}
+      <footer className="relative z-20 h-14 border-t-2 border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-between px-10">
+        <div className="flex gap-10 text-[10px] font-black tracking-[0.5em] text-[#444] uppercase items-center">
+          <span className="flex items-center gap-3"><Boxes className="w-4 h-4" /> Heavy_Industrial_Computing</span>
+          <span className="text-white flex items-center gap-3">
+            <div className="w-2 h-2 bg-white" /> 
+            GRID_NOMINAL // STABLE
           </span>
         </div>
-        <div className="flex gap-8 text-[9px] font-black tracking-[0.4em] text-muted-foreground/50 uppercase">
-          <span>Neural Lab Spec. v4.8.2</span>
-          <span>EST. 2026.05.06</span>
+        <div className="flex gap-10 text-[10px] font-black tracking-[0.5em] text-[#444] uppercase">
+          <span>S-7G_WAREHOUSE_SPEC</span>
+          <span>EST_05.06.2026</span>
         </div>
       </footer>
     </div>
@@ -269,9 +260,9 @@ export default function InfrastructurePage() {
 
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="w-2.5 h-2.5 rounded-sm shadow-[0_0_10px_currentColor]" style={{ backgroundColor: color, color }} />
-      <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">{label}</span>
+    <div className="flex items-center gap-5">
+      <div className="w-3 h-3 border border-[#333]" style={{ backgroundColor: color }} />
+      <span className="text-[10px] font-black text-[#666] uppercase tracking-[0.3em]">{label}</span>
     </div>
   );
 }
