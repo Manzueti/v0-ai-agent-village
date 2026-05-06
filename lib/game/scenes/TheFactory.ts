@@ -143,6 +143,76 @@ export class TheFactory extends Phaser.Scene {
             stroke: '#00f2ff',
             strokeThickness: 1
         }).setOrigin(0.5).postFX.addGlow(0x00f2ff, 2, 0, false, 0.1, 10);
+
+        // --- Digital Environment Elements ---
+        this.createEnvironment();
+    }
+
+    private createEnvironment() {
+        const colors = [0x00f2ff, 0x7000ff, 0x00ff41];
+        
+        // Procedural Digital Trees
+        for (let i = 0; i < 6; i++) {
+            const tx = Phaser.Math.Between(50, 750);
+            const ty = Phaser.Math.Between(50, 550);
+            
+            // Skip if too close to labs (simplified check)
+            if (ty > 220 && ty < 380) continue;
+
+            const tree = this.add.graphics();
+            const color = Phaser.Utils.Array.GetRandom(colors);
+            
+            // Tree Trunk (Steel Pillar)
+            tree.lineStyle(2, 0x444444, 1);
+            tree.lineBetween(tx, ty, tx, ty - 40);
+            
+            // Tree Canopy (Glowing Nodes)
+            tree.fillStyle(color, 0.2);
+            tree.fillCircle(tx, ty - 40, 15);
+            tree.lineStyle(1, color, 0.8);
+            tree.strokeCircle(tx, ty - 40, 15);
+            
+            // Branches
+            for (let j = 0; j < 3; j++) {
+                const angle = (j * 120) * (Math.PI / 180);
+                const bx = tx + Math.cos(angle) * 20;
+                const by = ty - 40 + Math.sin(angle) * 20;
+                tree.lineBetween(tx, ty - 40, bx, by);
+                tree.fillStyle(color, 0.6);
+                tree.fillCircle(bx, by, 4);
+                
+                // Add tiny pulsing to nodes
+                this.tweens.add({
+                    targets: tree,
+                    alpha: 0.4,
+                    duration: 1000 + Math.random() * 1000,
+                    yoyo: true,
+                    repeat: -1
+                });
+            }
+        }
+
+        // Floating Data Nodes
+        for (let i = 0; i < 15; i++) {
+            const nx = Phaser.Math.Between(0, 800);
+            const ny = Phaser.Math.Between(0, 600);
+            const node = this.add.graphics();
+            const color = Phaser.Utils.Array.GetRandom(colors);
+            
+            node.fillStyle(color, 0.4);
+            node.fillCircle(0, 0, 2);
+            node.x = nx;
+            node.y = ny;
+
+            this.tweens.add({
+                targets: node,
+                y: ny - 20,
+                alpha: 0,
+                duration: 2000 + Math.random() * 3000,
+                repeat: -1,
+                ease: 'Sine.easeOut'
+            });
+        }
     }
 
     update() {
