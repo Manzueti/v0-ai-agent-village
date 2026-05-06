@@ -1,5 +1,62 @@
 import Phaser from 'phaser';
 
+const GALAXY_SHADER = `
+precision mediump float;
+uniform float time;
+uniform vec2 resolution;
+
+#define ITERATIONS 15
+#define FORMUPARAM 0.53
+#define VOLSTEPS 20
+#define STEPSIZE 0.1
+#define ZOOM 0.800
+#define TILE 0.850
+#define SPEED 0.005
+#define BRIGHTNESS 0.0015
+#define DARKMATTER 0.300
+#define DISTFADING 0.730
+#define SATURATION 0.850
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / resolution.xy - 0.5;
+    uv.y *= resolution.y / resolution.x;
+    vec3 dir = vec3(uv * ZOOM, 1.0);
+    float a1 = 0.5 + time * SPEED / 2.0;
+    float a2 = 0.8 + time * SPEED;
+    mat2 rot1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
+    mat2 rot2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
+    dir.xz *= rot1;
+    dir.xy *= rot2;
+    
+    vec3 from = vec3(1.0, 0.5, 0.5);
+    from += vec3(time * SPEED, time * SPEED, -2.0);
+    from.xz *= rot1;
+    from.xy *= rot2;
+    
+    float s = 0.1, fade = 1.0;
+    vec3 v = vec3(0.0);
+    for (int r = 0; r < VOLSTEPS; r++) {
+        vec3 p = from + s * dir * 0.5;
+        p = abs(vec3(TILE) - mod(p, vec3(TILE * 2.0)));
+        float pa, a = pa = 0.0;
+        for (int i = 0; i < ITERATIONS; i++) {
+            p = abs(p) / dot(p, p) - FORMUPARAM;
+            a += abs(length(p) - pa);
+            pa = length(p);
+        }
+        float dm = max(0.0, DARKMATTER - a * a * 0.001);
+        a *= a * a;
+        if (r > 6) fade *= 1.0 - dm;
+        v += fade;
+        v += vec3(s, s * s, s * s * s * s) * a * BRIGHTNESS * fade;
+        fade *= DISTFADING;
+        s += STEPSIZE;
+    }
+    v = mix(vec3(length(v)), v, SATURATION);
+    gl_FragColor = vec4(v * 0.01, 1.0);
+}
+`;
+
 export class TheFactory extends Phaser.Scene {
     private robots: Phaser.GameObjects.Sprite[] = [];
     private trailTexture: Phaser.GameObjects.RenderTexture | null = null;
@@ -10,32 +67,24 @@ export class TheFactory extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
+        this.load.image('robot-base', '/robot-vintage.png');
     }
 
     create() {
-        // --- Texture Concept: Generate Procedural Robot Spritesheet ---
+        // --- Galaxy Background Shader ---
+        const baseShader = new Phaser.Display.BaseShader('GalaxyShader', GALAXY_SHADER);
+        const shader = this.add.shader(baseShader, 400, 300, 800, 600);
+        shader.setUniform('resolution.value', { x: 800, y: 600 });
+        shader.setAlpha(0.6);
+
+        // --- Texture Concept: Generate Tinted Robot Textures ---
         this.generateRobotTextures();
 
         this.trailTexture = this.add.renderTexture(0, 0, 800, 600).setOrigin(0).setAlpha(0.7);
         this.trailTexture.setBlendMode(Phaser.BlendModes.ADD);
 
-        // Background
-        const bg = this.add.image(400, 300, 'sky').setAlpha(0.2);
-        bg.setDisplaySize(this.sys.canvas.width, this.sys.canvas.height);
-
         // Procedural Floor Texture (Circuit Pattern)
         const circuit = this.createCircuitFloor();
-
-        // --- Tween Concept: Ambient Floor Pulse ---
-        this.tweens.add({
-            targets: circuit,
-            alpha: { from: 0.05, to: 0.15 },
-            duration: 3000,
-            ease: 'Sine.easeInOut',
-            yoyo: true,
-            repeat: -1
-        });
 
         // Environment
         this.createEnvironment();
@@ -49,30 +98,17 @@ export class TheFactory extends Phaser.Scene {
             const ry = Phaser.Math.Between(100, 500);
             const colorIdx = i % this.robotColors.length;
             
-            const robot = this.add.sprite(rx, ry, `robot_${colorIdx}`, 0);
+            const robot = this.add.sprite(rx, ry, `robot_tinted_${colorIdx}`);
             robot.setScale(0); // Start small for stagger entrance
+            robot.setDisplaySize(48, 48); // Set a reasonable size for the robot image
             robot.setData('id', `UNIT_${i.toString().padStart(3, '0')}`);
             this.robots.push(robot);
-
-            if (!this.anims.exists(`walk_${colorIdx}`)) {
-                this.anims.create({
-                    key: `walk_${colorIdx}`,
-                    frames: [
-                        { key: `robot_${colorIdx}`, frame: 1 },
-                        { key: `robot_${colorIdx}`, frame: 0 },
-                        { key: `robot_${colorIdx}`, frame: 2 },
-                        { key: `robot_${colorIdx}`, frame: 0 }
-                    ],
-                    frameRate: 8,
-                    repeat: -1
-                });
-            }
         }
 
         // --- Tween Concept: Staggered Robot Entrance ---
         this.tweens.add({
             targets: this.robots,
-            scale: 1.2,
+            scale: 0.15, // Final scale relative to original image size
             duration: 800,
             ease: 'Back.easeOut',
             delay: this.tweens.stagger(100),
@@ -84,7 +120,7 @@ export class TheFactory extends Phaser.Scene {
         });
 
         // Title with Elastic entrance
-        const title = this.add.text(400, -50, 'NEURAL RESEARCH LABORATORIES', {
+        const title = this.add.text(400, -50, 'STELLAR REACH: GALAXY HUB', {
             fontSize: '28px',
             fontFamily: 'monospace',
             color: '#ffffff',
@@ -92,22 +128,11 @@ export class TheFactory extends Phaser.Scene {
             strokeThickness: 1
         }).setOrigin(0.5);
 
-        // --- Tween Concept: Elastic Entrance & Continuous Pulse ---
         this.tweens.chain({
             targets: title,
             tweens: [
-                {
-                    y: 30,
-                    duration: 1500,
-                    ease: 'Elastic.easeOut'
-                },
-                {
-                    alpha: 0.6,
-                    duration: 1000,
-                    ease: 'Sine.easeInOut',
-                    yoyo: true,
-                    repeat: -1
-                }
+                { y: 30, duration: 1500, ease: 'Elastic.easeOut' },
+                { alpha: 0.6, duration: 1000, ease: 'Sine.easeInOut', yoyo: true, repeat: -1 }
             ]
         });
         
@@ -115,25 +140,29 @@ export class TheFactory extends Phaser.Scene {
     }
 
     private generateRobotTextures() {
+        const sourceImage = this.textures.get('robot-base').getSourceImage() as HTMLImageElement;
+        
         this.robotColors.forEach((color, idx) => {
-            const key = `robot_${idx}`;
-            if (!this.textures.exists(key)) {
-                const canvasTexture = this.textures.createCanvas(key, 96, 32);
-                const ctx = canvasTexture?.context;
-                if (ctx) {
-                    this.drawRobotFrame(ctx, 32, 0, color, 'idle');
-                    this.drawRobotFrame(ctx, 0, 0, color, 'left');
-                    this.drawRobotFrame(ctx, 64, 0, color, 'right');
-
-                    canvasTexture.add(0, 0, 32, 0, 32, 32);
-                    canvasTexture.add(1, 0, 0, 0, 32, 32);
-                    canvasTexture.add(2, 0, 64, 0, 32, 32);
-                    
-                    canvasTexture.refresh();
-                }
+            const tintedKey = `robot_tinted_${idx}`;
+            if (!this.textures.exists(tintedKey)) {
+                // Create a tinted version of the robot
+                const canvas = this.textures.createCanvas(`${tintedKey}_canvas`, sourceImage.width, sourceImage.height);
+                const ctx = canvas.getContext();
+                
+                // Draw base robot
+                ctx.drawImage(sourceImage, 0, 0);
+                
+                // Apply color tint (overlay mode)
+                ctx.globalCompositeOperation = 'source-atop';
+                ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+                ctx.globalAlpha = 0.3;
+                ctx.fillRect(0, 0, sourceImage.width, sourceImage.height);
+                
+                canvas.refresh();
+                this.textures.addImage(tintedKey, canvas.getSourceImage() as HTMLImageElement);
             }
 
-            // Pre-generate HUD texture for this color to optimize rendering
+            // Pre-generate HUD texture for this color
             const hudKey = `hud_${idx}`;
             if (!this.textures.exists(hudKey)) {
                 const hudCanvas = this.textures.createCanvas(hudKey, 64, 16);
@@ -147,30 +176,6 @@ export class TheFactory extends Phaser.Scene {
                 }
             }
         });
-    }
-
-    private drawRobotFrame(ctx: CanvasRenderingContext2D, x: number, y: number, color: number, state: string) {
-        const hexColor = `#${color.toString(16).padStart(6, '0')}`;
-        ctx.save();
-        ctx.translate(x + 16, y + 16);
-        
-        if (state === 'left') ctx.rotate(-0.1);
-        if (state === 'right') ctx.rotate(0.1);
-
-        ctx.fillStyle = '#111111';
-        ctx.strokeStyle = hexColor;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(-8, -10, 16, 20, 3);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = hexColor;
-        ctx.beginPath();
-        ctx.arc(0, -4, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
     }
 
     private createCircuitFloor() {
@@ -191,7 +196,6 @@ export class TheFactory extends Phaser.Scene {
             canvasTexture.refresh();
         }
         const tile = this.add.tileSprite(400, 300, 800, 600, 'circuitBG').setAlpha(0.1);
-        this.add.grid(400, 300, 1200, 800, 64, 64, 0x000000, 0, 0x00f2ff, 0.05);
         return tile;
     }
 
@@ -222,7 +226,6 @@ export class TheFactory extends Phaser.Scene {
 
             labContainer.add([lab, terminal, label]);
 
-            // --- Tween Concept: Periodic Lab Pulse ---
             this.tweens.add({
                 targets: labContainer,
                 scale: 1.02,
@@ -237,20 +240,6 @@ export class TheFactory extends Phaser.Scene {
 
     private createEnvironment() {
         const colors = [0x00f2ff, 0x7000ff, 0x00ff41];
-        for (let i = 0; i < 8; i++) {
-            const tx = Phaser.Math.Between(50, 750);
-            const ty = Phaser.Math.Between(50, 550);
-            if (ty > 200 && ty < 400) continue;
-            const tree = this.add.graphics();
-            const color = Phaser.Utils.Array.GetRandom(colors);
-            tree.lineStyle(1, 0x333333, 1);
-            tree.lineBetween(tx, ty, tx, ty - 30);
-            tree.fillStyle(color, 0.1);
-            tree.fillCircle(tx, ty - 30, 12);
-            tree.lineStyle(1, color, 0.5);
-            tree.strokeCircle(tx, ty - 30, 12);
-        }
-
         for (let i = 0; i < 20; i++) {
             const node = this.add.graphics();
             node.fillStyle(Phaser.Utils.Array.GetRandom(colors), 0.3);
@@ -272,8 +261,6 @@ export class TheFactory extends Phaser.Scene {
         const ty = Phaser.Math.Between(100, 500);
         const duration = Phaser.Math.Between(5000, 10000);
 
-        robot.play(`walk_${colorIdx}`);
-
         this.tweens.add({
             targets: robot,
             x: tx,
@@ -281,13 +268,9 @@ export class TheFactory extends Phaser.Scene {
             duration: duration,
             ease: 'Sine.easeInOut',
             onComplete: () => {
-                robot.stop();
-                robot.setFrame(0);
-                
-                // --- Tween Concept: "Interaction" Bounce ---
                 this.tweens.add({
                     targets: robot,
-                    scale: 1.5,
+                    scale: robot.scale * 1.2,
                     duration: 300,
                     ease: 'Bounce.easeOut',
                     yoyo: true,
@@ -303,21 +286,16 @@ export class TheFactory extends Phaser.Scene {
 
     update() {
         if (this.trailTexture) {
-            // Motion Blur persistence
             this.trailTexture.fill(0x000000, 0.12);
-            
-            // Use batch rendering for optimized performance
             this.trailTexture.beginDraw();
             this.robots.forEach((robot, i) => {
-                // Draw robot to trail
                 this.trailTexture?.batchDraw(robot, robot.x, robot.y);
-                
-                // Batch Draw pre-rendered HUD to trail
                 const colorIdx = i % this.robotColors.length;
-                this.trailTexture?.batchDrawFrame(`hud_${colorIdx}`, '__BASE', robot.x - 32, robot.y - 25);
+                this.trailTexture?.batchDrawFrame(`hud_${colorIdx}`, '__BASE', robot.x - 32, robot.y - 40);
             });
             this.trailTexture.endDraw();
         }
     }
 }
+
 
