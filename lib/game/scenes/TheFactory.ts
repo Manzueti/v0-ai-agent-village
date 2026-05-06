@@ -18,11 +18,9 @@ export class TheFactory extends Phaser.Scene {
         // --- Texture Concept: Generate Procedural Robot Spritesheet ---
         this.generateRobotTextures();
 
-        // --- Texture Concept: Dynamic Texture for shared HUD elements ---
         this.hudTexture = this.textures.addDynamicTexture('robotHUD', 64, 16);
         this.hudTexture?.setIsSpriteTexture(false);
 
-        // --- Texture Concept: RenderTexture for High-Fidelity Motion Trails ---
         this.trailTexture = this.add.renderTexture(0, 0, 800, 600).setOrigin(0).setAlpha(0.7);
         this.trailTexture.setBlendMode(Phaser.BlendModes.ADD);
 
@@ -31,7 +29,17 @@ export class TheFactory extends Phaser.Scene {
         bg.setDisplaySize(this.sys.canvas.width, this.sys.canvas.height);
 
         // Procedural Floor Texture (Circuit Pattern)
-        this.createCircuitFloor();
+        const circuit = this.createCircuitFloor();
+
+        // --- Tween Concept: Ambient Floor Pulse ---
+        this.tweens.add({
+            targets: circuit,
+            alpha: { from: 0.05, to: 0.15 },
+            duration: 3000,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1
+        });
 
         // Environment
         this.createEnvironment();
@@ -39,18 +47,17 @@ export class TheFactory extends Phaser.Scene {
         // Labs
         this.createLabs();
 
-        // Spawn Optimized Robots
+        // Spawn Optimized Robots with Stagger
         for (let i = 0; i < 18; i++) {
             const rx = Phaser.Math.Between(100, 700);
             const ry = Phaser.Math.Between(100, 500);
             const colorIdx = i % this.robotColors.length;
             
             const robot = this.add.sprite(rx, ry, `robot_${colorIdx}`, 0);
-            robot.setScale(1.2);
+            robot.setScale(0); // Start small for stagger entrance
             robot.setData('id', `UNIT_${i.toString().padStart(3, '0')}`);
             this.robots.push(robot);
 
-            // Create animations
             if (!this.anims.exists(`walk_${colorIdx}`)) {
                 this.anims.create({
                     key: `walk_${colorIdx}`,
@@ -64,18 +71,51 @@ export class TheFactory extends Phaser.Scene {
                     repeat: -1
                 });
             }
-
-            this.moveRobot(robot, colorIdx);
         }
 
-        // Title
-        this.add.text(400, 30, 'NEURAL RESEARCH LABORATORIES', {
+        // --- Tween Concept: Staggered Robot Entrance ---
+        this.tweens.add({
+            targets: this.robots,
+            scale: 1.2,
+            duration: 800,
+            ease: 'Back.easeOut',
+            delay: this.tweens.stagger(100),
+            onComplete: (tween, targets) => {
+                targets.forEach((robot: any, index: number) => {
+                    this.moveRobot(robot, index % this.robotColors.length);
+                });
+            }
+        });
+
+        // Title with Elastic entrance
+        const title = this.add.text(400, -50, 'NEURAL RESEARCH LABORATORIES', {
             fontSize: '28px',
             fontFamily: 'monospace',
             color: '#ffffff',
             stroke: '#00f2ff',
             strokeThickness: 1
-        }).setOrigin(0.5).postFX.addGlow(0x00f2ff, 2, 0, false, 0.1, 10);
+        }).setOrigin(0.5);
+
+        // --- Tween Concept: Elastic Entrance & Continuous Pulse ---
+        this.tweens.chain({
+            targets: title,
+            tweens: [
+                {
+                    y: 30,
+                    duration: 1500,
+                    ease: 'Elastic.easeOut'
+                },
+                {
+                    alpha: 0.6,
+                    duration: 1000,
+                    ease: 'Sine.easeInOut',
+                    yoyo: true,
+                    repeat: -1
+                }
+            ]
+        });
+        
+        title.postFX.addGlow(0x00f2ff, 2, 0, false, 0.1, 10);
     }
 
     private generateRobotTextures() {
@@ -140,8 +180,9 @@ export class TheFactory extends Phaser.Scene {
             ctx.stroke();
             canvasTexture.refresh();
         }
-        this.add.tileSprite(400, 300, 800, 600, 'circuitBG').setAlpha(0.1);
+        const tile = this.add.tileSprite(400, 300, 800, 600, 'circuitBG').setAlpha(0.1);
         this.add.grid(400, 300, 1200, 800, 64, 64, 0x000000, 0, 0x00f2ff, 0.05);
+        return tile;
     }
 
     private createLabs() {
@@ -150,22 +191,37 @@ export class TheFactory extends Phaser.Scene {
             const lx = 150 + i * 170;
             const ly = 300;
             const color = labColors[i];
+            const labContainer = this.add.container(lx, ly);
+
             const lab = this.add.graphics();
             lab.lineStyle(2, color, 0.2);
-            lab.strokeRoundedRect(lx - 60, ly - 80, 120, 160, 12);
+            lab.strokeRoundedRect(-60, -80, 120, 160, 12);
             
             const terminal = this.add.graphics();
             terminal.fillStyle(color, 0.05);
-            terminal.fillRoundedRect(lx - 40, ly - 60, 80, 50, 4);
+            terminal.fillRoundedRect(-40, -60, 80, 50, 4);
             terminal.lineStyle(1, color, 0.4);
-            terminal.strokeRoundedRect(lx - 40, ly - 60, 80, 50, 4);
+            terminal.strokeRoundedRect(-40, -60, 80, 50, 4);
 
-            this.add.text(lx, ly + 95, `STATION_${i+1}`, {
+            const label = this.add.text(0, 95, `STATION_${i+1}`, {
                 fontSize: '9px',
                 fontFamily: 'monospace',
                 color: Phaser.Display.Color.IntegerToColor(color).rgba,
                 letterSpacing: 2
             }).setOrigin(0.5);
+
+            labContainer.add([lab, terminal, label]);
+
+            // --- Tween Concept: Periodic Lab Pulse ---
+            this.tweens.add({
+                targets: labContainer,
+                scale: 1.02,
+                duration: 2000,
+                ease: 'Sine.easeInOut',
+                yoyo: true,
+                repeat: -1,
+                delay: i * 500
+            });
         }
     }
 
@@ -217,8 +273,19 @@ export class TheFactory extends Phaser.Scene {
             onComplete: () => {
                 robot.stop();
                 robot.setFrame(0);
-                this.time.delayedCall(Phaser.Math.Between(2000, 5000), () => {
-                    this.moveRobot(robot, colorIdx);
+                
+                // --- Tween Concept: "Interaction" Bounce ---
+                this.tweens.add({
+                    targets: robot,
+                    scale: 1.5,
+                    duration: 300,
+                    ease: 'Bounce.easeOut',
+                    yoyo: true,
+                    onComplete: () => {
+                        this.time.delayedCall(Phaser.Math.Between(2000, 5000), () => {
+                            this.moveRobot(robot, colorIdx);
+                        });
+                    }
                 });
             }
         });
@@ -234,19 +301,14 @@ export class TheFactory extends Phaser.Scene {
                 this.trailTexture?.draw(robot, robot.x, robot.y);
                 
                 // --- Texture Concept: Batch Draw shared HUD to trail ---
-                // We create a temporary look for the HUD on our Dynamic Texture
                 this.hudTexture?.clear();
                 this.hudTexture?.fill(0x000000, 0.5, 0, 0, 64, 16);
                 
-                // We don't actually need a real Text object here for performance, 
-                // we can just draw a small health bar/id onto the HUD texture
                 const idColor = this.robotColors[this.robots.indexOf(robot) % this.robotColors.length];
                 this.hudTexture?.fill(idColor, 1, 2, 12, 60, 2); // Status bar
                 
-                // Draw HUD above robot in the trail texture
                 this.trailTexture?.draw(this.hudTexture, robot.x - 32, robot.y - 25);
             });
         }
     }
-}
 }

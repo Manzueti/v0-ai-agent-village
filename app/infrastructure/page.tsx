@@ -287,7 +287,6 @@ export default function InfrastructurePage() {
     </div>
   );
 }
-}
 
 function LegendItem({ color, label }: { color: string, label: string }) {
   return (
