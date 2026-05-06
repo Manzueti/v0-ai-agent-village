@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 export class TheFactory extends Phaser.Scene {
     private robots: Phaser.GameObjects.Sprite[] = [];
     private trailTexture: Phaser.GameObjects.RenderTexture | null = null;
-    private hudTexture: Phaser.GameObjects.DynamicTexture | null = null;
     private robotColors = [0x00f2ff, 0x7000ff, 0x00ff41, 0xffd700, 0xff00ff];
 
     constructor() {
@@ -17,9 +16,6 @@ export class TheFactory extends Phaser.Scene {
     create() {
         // --- Texture Concept: Generate Procedural Robot Spritesheet ---
         this.generateRobotTextures();
-
-        this.hudTexture = this.textures.addDynamicTexture('robotHUD', 64, 16);
-        this.hudTexture?.setIsSpriteTexture(false);
 
         this.trailTexture = this.add.renderTexture(0, 0, 800, 600).setOrigin(0).setAlpha(0.7);
         this.trailTexture.setBlendMode(Phaser.BlendModes.ADD);
@@ -121,21 +117,35 @@ export class TheFactory extends Phaser.Scene {
     private generateRobotTextures() {
         this.robotColors.forEach((color, idx) => {
             const key = `robot_${idx}`;
-            if (this.textures.exists(key)) return;
+            if (!this.textures.exists(key)) {
+                const canvasTexture = this.textures.createCanvas(key, 96, 32);
+                const ctx = canvasTexture?.context;
+                if (ctx) {
+                    this.drawRobotFrame(ctx, 32, 0, color, 'idle');
+                    this.drawRobotFrame(ctx, 0, 0, color, 'left');
+                    this.drawRobotFrame(ctx, 64, 0, color, 'right');
 
-            const canvasTexture = this.textures.createCanvas(key, 96, 32);
-            const ctx = canvasTexture?.context;
-            if (!ctx) return;
+                    canvasTexture.add(0, 0, 32, 0, 32, 32);
+                    canvasTexture.add(1, 0, 0, 0, 32, 32);
+                    canvasTexture.add(2, 0, 64, 0, 32, 32);
+                    
+                    canvasTexture.refresh();
+                }
+            }
 
-            this.drawRobotFrame(ctx, 32, 0, color, 'idle');
-            this.drawRobotFrame(ctx, 0, 0, color, 'left');
-            this.drawRobotFrame(ctx, 64, 0, color, 'right');
-
-            canvasTexture.add(0, 0, 32, 0, 32, 32);
-            canvasTexture.add(1, 0, 0, 0, 32, 32);
-            canvasTexture.add(2, 0, 64, 0, 32, 32);
-            
-            canvasTexture.refresh();
+            // Pre-generate HUD texture for this color to optimize rendering
+            const hudKey = `hud_${idx}`;
+            if (!this.textures.exists(hudKey)) {
+                const hudCanvas = this.textures.createCanvas(hudKey, 64, 16);
+                const hCtx = hudCanvas?.context;
+                if (hCtx) {
+                    hCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                    hCtx.fillRect(0, 0, 64, 16);
+                    hCtx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
+                    hCtx.fillRect(2, 12, 60, 2); // Status bar
+                    hudCanvas.refresh();
+                }
+            }
         });
     }
 
@@ -292,23 +302,22 @@ export class TheFactory extends Phaser.Scene {
     }
 
     update() {
-        if (this.trailTexture && this.hudTexture) {
+        if (this.trailTexture) {
             // Motion Blur persistence
             this.trailTexture.fill(0x000000, 0.12);
             
-            this.robots.forEach(robot => {
+            // Use batch rendering for optimized performance
+            this.trailTexture.beginDraw();
+            this.robots.forEach((robot, i) => {
                 // Draw robot to trail
-                this.trailTexture?.draw(robot, robot.x, robot.y);
+                this.trailTexture?.batchDraw(robot, robot.x, robot.y);
                 
-                // --- Texture Concept: Batch Draw shared HUD to trail ---
-                this.hudTexture?.clear();
-                this.hudTexture?.fill(0x000000, 0.5, 0, 0, 64, 16);
-                
-                const idColor = this.robotColors[this.robots.indexOf(robot) % this.robotColors.length];
-                this.hudTexture?.fill(idColor, 1, 2, 12, 60, 2); // Status bar
-                
-                this.trailTexture?.draw(this.hudTexture, robot.x - 32, robot.y - 25);
+                // Batch Draw pre-rendered HUD to trail
+                const colorIdx = i % this.robotColors.length;
+                this.trailTexture?.batchDrawFrame(`hud_${colorIdx}`, '__BASE', robot.x - 32, robot.y - 25);
             });
+            this.trailTexture.endDraw();
         }
     }
 }
+
