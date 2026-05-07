@@ -23,6 +23,15 @@ type ViewMode = 'grid' | 'visualizer';
 
 // --- Sub-components ---
 
+const TechGrid = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none opacity-30">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(130,80,255,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(130,80,255,0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_20%,#0a0515_100%)]" />
+    </div>
+  );
+};
+
 const NeuralRain = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -126,6 +135,8 @@ export default function VillagePage() {
 
   return (
     <div className={`min-h-screen ${theme.bg} relative overflow-hidden flex flex-col transition-colors duration-1000 scanlines`}>
+      <TechGrid />
+      
       {/* Background Ambience */}
       <div className={`fixed inset-0 cyber-grid ${theme.gridOpacity} transition-opacity duration-1000 pointer-events-none`} />
       
@@ -223,7 +234,7 @@ export default function VillagePage() {
       </header>
 
       {/* Village Grid */}
-      <main className="relative z-10 flex-1 overflow-y-auto p-12 custom-scrollbar scrollbar-hide">
+      <main className="relative z-10 flex-1 overflow-y-auto p-12 custom-scrollbar scrollbar-hide pb-32">
         <div className="max-w-[1600px] mx-auto">
           <div className="mb-12 flex justify-between items-end">
             <div>
@@ -289,8 +300,51 @@ export default function VillagePage() {
         </div>
       </main>
 
+      {/* Bottom Nav Footer */}
+      <footer className="fixed bottom-0 left-0 w-full z-50 h-20 bg-[#080816]/90 border-t border-cyan-500/20 backdrop-blur-xl flex items-center justify-between px-8">
+        <div className="flex items-center gap-8">
+          <NavBtn icon={<LayoutGrid className="w-4 h-4" />} label="DASHBOARD" active={true} />
+          <NavBtn icon={<Users className="w-4 h-4" />} label="CREW" />
+          <NavBtn icon={<Activity className="w-4 h-4" />} label="TASKS" />
+        </div>
+
+        {/* Center Station Time */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center border border-cyan-500/30 bg-cyan-950/20 px-8 py-2 rounded-lg shadow-[0_0_20px_rgba(0,255,255,0.1)]">
+          <div className="flex items-end gap-3 mb-1">
+            <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500 mono">STATION TIME</span>
+            <span className="text-cyan-50 font-bold tracking-widest bg-cyan-500/20 px-2 rounded mono text-[8px]">DAY 127</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-black text-cyan-300 mono tracking-wider">
+              {time}
+            </span>
+            <div className="flex items-center gap-1 text-[7px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+              <RefreshCw className="h-2 w-2 animate-spin-slow" />
+              SHIFT A
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-8">
+          <NavBtn icon={<Zap className="w-4 h-4" />} label="ALERTS" color="red" />
+          <NavBtn icon={<Terminal className="w-4 h-4" />} label="LOGS" />
+          <NavBtn icon={<Settings className="w-4 h-4" />} label="SETTINGS" />
+        </div>
+      </footer>
+
       {/* Floating Ground decoration */}
       <div className={`fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-${simState === 'emergency' ? 'hsl(var(--neon-magenta))' : 'hsl(var(--neon-cyan))'} to-transparent blur-sm opacity-20`} />
     </div>
+  );
+}
+
+function NavBtn({ icon, label, active = false, color = "cyan" }: any) {
+  return (
+    <button className={`flex flex-col items-center gap-1 group cursor-pointer transition-all ${active ? 'text-cyan-400' : 'text-cyan-500/50 hover:text-cyan-300'}`}>
+      <div className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-all ${active ? 'bg-cyan-500/10 border border-cyan-500 shadow-[0_0_15px_rgba(0,255,255,0.2)]' : 'bg-white/5 border border-white/5'}`}>
+        {icon}
+      </div>
+      <span className="text-[8px] font-black uppercase tracking-[0.1em] mono">{label}</span>
+    </button>
   );
 }
