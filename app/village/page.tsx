@@ -11,7 +11,7 @@ import {
   Trees, Cloud, Sun, Wind, 
   ChevronRight, Brain, Activity, Terminal,
   Moon, Zap, ShieldAlert, RefreshCw, Factory,
-  Eye, LayoutGrid
+  Eye, LayoutGrid, Users, Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';

@@ -39,47 +39,52 @@ export default function EcosystemNode({ agent, position }: Props) {
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
       <group position={position}>
-        {/* Central Core */}
-        <mesh ref={meshRef}>
-          <octahedronGeometry args={[0.6, 0]} />
-          <meshStandardMaterial
+        {/* Advanced Central Core using MeshPhysicalMaterial */}
+        <mesh ref={meshRef} castShadow>
+          <octahedronGeometry args={[0.7, 0]} />
+          <meshPhysicalMaterial
             color={color}
             emissive={color}
             emissiveIntensity={agent.status === 'running' ? 2 : 0.5}
-            metalness={0.9}
+            metalness={1.0}
             roughness={0.1}
+            clearcoat={1}
+            clearcoatRoughness={0.1}
+            iridescence={1}
+            iridescenceIOR={1.5}
           />
         </mesh>
 
         {/* Outer Wireframe Shell */}
         <mesh ref={shellRef}>
-          <icosahedronGeometry args={[1, 1]} />
+          <icosahedronGeometry args={[1.2, 1]} />
           <meshBasicMaterial
             color={color}
             wireframe
             transparent
-            opacity={0.2}
+            opacity={0.15}
           />
         </mesh>
 
-        {/* Status Ring */}
+        {/* Pulsing Status Ring */}
         {agent.status === 'running' && (
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
-            <ringGeometry args={[1.2, 1.3, 32]} />
-            <meshBasicMaterial color={color} transparent opacity={0.4} side={THREE.DoubleSide} />
+            <ringGeometry args={[1.3, 1.4, 32]} />
+            <meshBasicMaterial color={color} transparent opacity={0.3} side={THREE.DoubleSide} />
           </mesh>
         )}
 
-        {/* Floating UI Label */}
-        <Html distanceFactor={10} position={[0, 1.5, 0]} center>
+        {/* Agent Badge (Floating HTML) */}
+        <Html distanceFactor={15} position={[0, 1.8, 0]} center>
           <div className="flex flex-col items-center pointer-events-none select-none">
-            <div className="bg-black/80 backdrop-blur-md border border-white/20 px-3 py-1 rounded-md shadow-[0_0_10px_rgba(0,255,255,0.2)]">
-              <span className="text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">
+            <div className="bg-[#03010a]/90 backdrop-blur-xl border border-white/10 px-4 py-1 rounded shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-2">
+               <span className="text-[14px]">{agent.avatar}</span>
+               <span className="text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">
                 {agent.name}
               </span>
             </div>
-            <div className={`mt-1 text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-              agent.status === 'running' ? 'text-cyan-400' : 'text-slate-400'
+            <div className={`mt-1 text-[8px] font-bold uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border ${
+              agent.status === 'running' ? 'text-green-400 border-green-500/30 bg-green-500/5' : 'text-slate-500 border-slate-500/30'
             }`}>
               {agent.status}
             </div>
