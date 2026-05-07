@@ -5,7 +5,7 @@ import AgentPod from '@/components/village/AgentPod';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const PhaserGame = dynamic(() => import('@/components/village/PhaserGame'), { ssr: false });
+const EcosystemCanvas = dynamic(() => import('@/components/village/EcosystemCanvas'), { ssr: false });
 
 import { 
   Trees, Cloud, Sun, Wind, 
@@ -161,8 +161,8 @@ export default function VillagePage() {
               <Trees className="w-6 h-6 text-background" />
             </div>
             <div>
-              <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Neural Neighborhood</span>
-              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">VYBECORP Habitat Matrix</span>
+              <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Ecosystem</span>
+              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">VYBECORP Ecosystem Matrix</span>
             </div>
           </div>
           <div className="h-6 w-px bg-white/5" />
@@ -208,7 +208,7 @@ export default function VillagePage() {
             <button 
               onClick={() => setViewMode(prev => prev === 'grid' ? 'visualizer' : 'grid')}
               className={`p-1.5 rounded transition-all ${viewMode === 'visualizer' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)]' : 'text-muted-foreground hover:text-white'}`}
-              title="Toggle Neural Visualizer"
+              title="Toggle Ecosystem Visualizer"
             >
               {viewMode === 'grid' ? <Eye className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
             </button>
@@ -228,11 +228,11 @@ export default function VillagePage() {
           <div className="mb-12 flex justify-between items-end">
             <div>
               <h1 className="text-5xl font-black text-white tracking-tight mb-3 uppercase leading-none">
-                {viewMode === 'visualizer' ? 'Neural Factory' : (simState === 'emergency' ? 'Containment Sector' : 'Habitat Matrix')}
+                {viewMode === 'visualizer' ? 'Ecosystem Overview' : (simState === 'emergency' ? 'Containment Sector' : 'Ecosystem Matrix')}
               </h1>
               <p className="text-muted-foreground font-bold text-[11px] uppercase tracking-[0.3em]">
                 {viewMode === 'visualizer' 
-                  ? 'Real-time rendering of neural processing units.' 
+                  ? 'Real-time 3D rendering of neural ecosystem nodes.' 
                   : (simState === 'emergency' 
                     ? 'Protocols enforced. Neural flux exceeding safety thresholds.' 
                     : 'Live execution monitoring in autonomous housing units.')}
@@ -282,7 +282,7 @@ export default function VillagePage() {
                 exit={{ opacity: 0, y: -50 }}
                 className="flex justify-center items-center"
               >
-                <PhaserGame />
+                <EcosystemCanvas />
               </motion.div>
             )}
           </AnimatePresence>

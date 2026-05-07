@@ -566,3 +566,53 @@
 .spin-slow { animation: spin-slow 8s linear infinite; }
 @keyframes blip { 0%,100%{ opacity:.2;} 50%{ opacity:1;} }
 .blip { animation: blip 2s ease-in-out infinite; }
+
+/* --- AI OPS HUB THEME (EXTRACTED) --- */
+:root {
+  --hub-bg: #0a0c10;
+  --hub-surface: #111418;
+  --hub-surface2: #181c22;
+  --hub-surface3: #1e242c;
+  --hub-surface4: #242c36;
+  --hub-border: rgba(255, 255, 255, 0.07);
+  --hub-border2: rgba(255, 255, 255, 0.12);
+  --hub-text: #e8ecf0;
+  --hub-text2: #8a95a0;
+  --hub-text3: #4a5560;
+  --hub-accent: #3b82f6;
+  --hub-accent-green: #10b981;
+  --hub-accent-yellow: #f59e0b;
+  --hub-accent-red: #ef4444;
+  --hub-accent-purple: #8b5cf6;
+}
+
+.hub-card {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.hub-kpi {
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.hub-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.hub-badge-online { background: rgba(16, 185, 129, 0.1); color: var(--hub-accent-green); border: 1px solid rgba(16, 185, 129, 0.15); }
+.hub-badge-error { background: rgba(239, 68, 68, 0.1); color: var(--hub-accent-red); border: 1px solid rgba(239, 68, 68, 0.15); }
+.hub-badge-paused { background: rgba(245, 158, 11, 0.1); color: var(--hub-accent-yellow); border: 1px solid rgba(245, 158, 11, 0.15); }
+
