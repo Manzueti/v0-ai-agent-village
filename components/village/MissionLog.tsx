@@ -78,7 +78,7 @@ export default function MissionLog() {
                 <span className="text-[7px] text-muted-foreground tabular-nums">{update.timestamp}</span>
               </div>
               <p className="text-[10px] text-white/80 leading-relaxed tracking-wide">
-                <span className="text-cyan-500 mr-2">></span>
+                <span className="text-cyan-500 mr-2">{">"}</span>
                 {update.update}
               </p>
             </motion.div>
