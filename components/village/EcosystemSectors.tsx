@@ -82,20 +82,38 @@ export function StationSector({ position, type, title }: SectorProps) {
       <group>
         {/* Pod Base */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <circleGeometry args={[ROOM_SIZE / 2, 32]} />
-          <meshStandardMaterial map={textures[type]} roughness={0.4} metalness={0.8} />
+          <circleGeometry args={[ROOM_SIZE / 2, 64]} />
+          <meshPhysicalMaterial 
+            map={textures[type]} 
+            emissiveMap={textures[type]}
+            emissive={colorMap[type]}
+            emissiveIntensity={0.5}
+            roughness={0.2} 
+            metalness={0.9} 
+            clearcoat={1.0}
+            clearcoatRoughness={0.1}
+          />
         </mesh>
 
         {/* Pod Shield / Glass */}
-        <mesh position={[0, 2, 0]}>
-          <cylinderGeometry args={[ROOM_SIZE / 2, ROOM_SIZE / 2, 1, 32, 1, true]} />
-          <meshStandardMaterial color={colorMap[type]} transparent opacity={0.1} side={THREE.DoubleSide} />
+        <mesh position={[0, 4, 0]}>
+          <cylinderGeometry args={[ROOM_SIZE / 2, ROOM_SIZE / 2, 8, 64, 1, true]} />
+          <meshPhysicalMaterial 
+            color={colorMap[type]} 
+            transparent 
+            opacity={0.05} 
+            side={THREE.DoubleSide} 
+            blending={THREE.AdditiveBlending}
+            roughness={0}
+            transmission={1}
+            thickness={0.5}
+          />
         </mesh>
 
         {/* Floating Ring around Pod */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.2, 0]}>
-          <ringGeometry args={[ROOM_SIZE / 2 + 1, ROOM_SIZE / 2 + 1.5, 64]} />
-          <meshBasicMaterial color={colorMap[type]} transparent opacity={0.5} side={THREE.DoubleSide} />
+          <ringGeometry args={[ROOM_SIZE / 2 + 1, ROOM_SIZE / 2 + 1.2, 64]} />
+          <meshBasicMaterial color={colorMap[type]} transparent opacity={0.8} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} />
         </mesh>
 
         {/* Pod Core Light */}
