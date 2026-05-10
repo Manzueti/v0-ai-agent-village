@@ -53,12 +53,17 @@ const NeuralRain = () => {
   );
 };
 
+import MissionLog from '@/components/village/MissionLog';
+
 export default function VillagePage() {
   const [time, setTime] = useState('');
   const [simState, setSimState] = useState<SimState>('day');
   const [weather, setWeather] = useState<WeatherState>('clear');
   const [isSyncing, setIsSyncing] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [showLog, setShowLog] = useState(true);
+
+  // ... (rest of the state logic)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -265,25 +270,38 @@ export default function VillagePage() {
             {viewMode === 'grid' ? (
               <motion.div 
                 key="grid"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex gap-8"
               >
-                {employees.map((agent, i) => (
-                  <motion.div
-                    key={agent.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {employees.map((agent, i) => (
+                    <motion.div
+                      key={agent.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <AgentPod 
+                        agent={agent} 
+                        simState={simState} 
+                        isGlobalSyncing={isSyncing}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+                
+                {showLog && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 50 }}
+                    className="w-96 sticky top-0 h-[calc(100vh-250px)]"
                   >
-                    <AgentPod 
-                      agent={agent} 
-                      simState={simState} 
-                      isGlobalSyncing={isSyncing}
-                    />
+                    <MissionLog />
                   </motion.div>
-                ))}
+                )}
               </motion.div>
             ) : (
               <motion.div

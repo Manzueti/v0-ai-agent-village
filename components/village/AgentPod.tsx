@@ -206,18 +206,30 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
               <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Unit_Data</span>
               <button onClick={(e) => { e.stopPropagation(); setShowStats(false); }} className="text-muted-foreground hover:text-white transition-colors">✕</button>
             </div>
-            <div className="space-y-5">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Level {agent.level}</span>
+                <span className="text-[9px] font-black text-white tabular-nums">{agent.xp} / {agent.nextLevelXp} XP</span>
+              </div>
+              <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-[hsl(var(--neon-purple))] to-[hsl(var(--neon-cyan))]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(agent.xp / agent.nextLevelXp) * 100}%` }}
+                />
+              </div>
+
               <div className="flex justify-between items-center">
                 <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Efficiency</span>
                 <span className="text-xs font-black text-[hsl(var(--neon-green))] tabular-nums">{agent.successRate}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Latency</span>
-                <span className="text-xs font-black text-[hsl(var(--neon-yellow))] tabular-nums">{agent.latency}ms</span>
+                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Tasks Done</span>
+                <span className="text-xs font-black text-[hsl(var(--neon-cyan))] tabular-nums">{agent.tasksCompleted}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Matrix Load</span>
-                <span className="text-xs font-black text-[hsl(var(--neon-cyan))] tabular-nums">{Math.round((agent.tokenUsage.used / agent.tokenUsage.limit) * 100)}%</span>
+                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">AI Model</span>
+                <span className="text-[9px] font-black text-[hsl(var(--neon-yellow))] uppercase">{agent.aiModel}</span>
               </div>
             </div>
             <button 

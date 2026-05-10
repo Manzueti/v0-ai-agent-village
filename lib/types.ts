@@ -65,20 +65,25 @@ export type Employee = {
   id: string;
   name: string;
   role: string;
+  department: string;
   office: string;
   level: number;
+  xp: number;
+  nextLevelXp: number;
   status: AgentStatus;
   avatar: string;
   gender?: 'male' | 'female' | 'non-binary';
   personality?: 'analytical' | 'creative' | 'aggressive' | 'supportive' | 'stoic';
   systemPrompt: string;
   revenueMetrics?: RevenueMetrics;
+  aiModel: 'gemini-1.5-flash' | 'deepseek-chat' | 'deepseek-reasoner' | 'gpt-4o-mini';
 
   // Metrics
   tokenUsage: { used: number; limit: number };
   concurrency: { current: number; max: number };
   latency: number;
   successRate: number;
+  tasksCompleted: number;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════

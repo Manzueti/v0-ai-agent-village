@@ -86,15 +86,15 @@ export default function Landing() {
               OF WORK.
             </h2>
             <p className="text-muted-foreground text-xl mb-12 max-w-xl leading-relaxed">
-              Coordinate autonomous AI workforces through a high-fidelity neuro-interface. Monitor production lines, infrastructure health, and revenue generation in real-time.
+              Coordinate an autonomous AI workforce of 20+ agents across specialized space pods. Manage revenue, design, and infrastructure from the ultimate Deep Space Command Center.
             </p>
             
             <div className="flex flex-wrap gap-6">
-              <Link href="/vybecorp" className="px-10 py-5 bg-[hsl(var(--neon-purple))] text-background font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-purple)/0.9)] transition-all shadow-[0_0_30px_hsl(var(--neon-purple)/0.5)] transform hover:scale-105 active:scale-95">
-                Initialize Console
+              <Link href="/village" className="px-10 py-5 bg-[hsl(var(--neon-purple))] text-background font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-purple)/0.9)] transition-all shadow-[0_0_30px_hsl(var(--neon-purple)/0.5)] transform hover:scale-105 active:scale-95">
+                Initialize Command
               </Link>
-              <Link href="/village" className="px-10 py-5 bg-transparent border border-[hsl(var(--neon-cyan)/0.5)] text-[hsl(var(--neon-cyan))] font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all transform hover:scale-105 active:scale-95">
-                Access Village
+              <Link href="/infrastructure" className="px-10 py-5 bg-transparent border border-[hsl(var(--neon-cyan)/0.5)] text-[hsl(var(--neon-cyan))] font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all transform hover:scale-105 active:scale-95">
+                View Matrix
               </Link>
             </div>
           </motion.div>
@@ -123,24 +123,24 @@ export default function Landing() {
         {/* Feature Grid */}
         <div className="grid md:grid-cols-3 gap-8">
           <FeatureItem 
-            title="VYBECORP DASHBOARD" 
-            desc="High-density factory operations console for monitoring revenue and production lines."
-            icon={Factory}
+            title="DEEP SPACE COMMAND" 
+            desc="Visual management of 20+ AI units in their specialized floating pods. Monitor work cycles and XP."
+            icon={Radio}
             color="hsl(var(--neon-magenta))"
-            href="/vybecorp"
+            href="/village"
             glow="panel-glow-magenta"
           />
           <FeatureItem 
-            title="AGENT VILLAGE" 
-            desc="Visual management of AI units in their specialized habitats. Monitor work/life cycles."
-            icon={Trees}
+            title="REVENUE HUB" 
+            desc="Autonomous sales and marketing agents finding business and closing deals in real-time."
+            icon={Target}
             color="hsl(var(--neon-green))"
             href="/village"
             glow="panel-glow-yellow"
           />
           <FeatureItem 
-            title="INFRASTRUCTURE" 
-            desc="Real-time mapping of nodes, zones, and data pathways across the global network."
+            title="TECH NEXUS" 
+            desc="Real-time mapping of nodes, security zones, and data pathways across the global network."
             icon={Server}
             color="hsl(var(--neon-cyan))"
             href="/infrastructure"

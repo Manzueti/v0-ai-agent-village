@@ -2,34 +2,34 @@ import { streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { NextRequest } from 'next/server';
-import { InfraNode, SystemHealth } from '@/lib/types';
+import { employees } from '@/lib/data';
 
 export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
-    const { nodes, health, zoneId, query, model = 'gemini-1.5-flash' } = await request.json() as {
-      nodes: InfraNode[];
-      health: SystemHealth;
-      zoneId?: string;
-      query?: string;
-      model?: string;
+    const { agentId, task } = await request.json() as {
+      agentId: string;
+      task?: string;
     };
 
-    const systemPrompt = `You are an expert AI infrastructure operator. Your role is to analyze infrastructure health, detect anomalies, predict failures, and recommend actions.
+    const agent = employees.find(e => e.id === agentId);
+    if (!agent) {
+      return new Response(JSON.stringify({ error: 'Agent not found' }), { status: 404 });
+    }
 
-Zones: Data Center, Network, Cloud, Security, Edge.
-Analysis goals:
-1. Identify health issues
-2. Predict failures
-3. Recommend actions (scale, restart, failover, reroute)
-4. Explain reasoning`;
+    const systemPrompt = `You are ${agent.name}, the ${agent.role} in the ${agent.department} department.
+Your personality is ${agent.personality}.
+Your system prompt: ${agent.systemPrompt}
 
-    const userPrompt = query 
-      ? `User query: ${query}\n\nState:\n${JSON.stringify({ nodes, health }, null, 2)}`
-      : `Analyze state:\n\n${JSON.stringify({ nodes, health, zoneId }, null, 2)}`;
+You are currently executing a mission in the space command center.
+Respond as the agent, describing your actions and progress.
+Keep it concise and game-like.`;
+
+    const userPrompt = task || "Find a business opportunity and report progress.";
 
     let modelInstance;
+    const model = agent.aiModel;
     
     if (model.startsWith('deepseek')) {
       const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -59,7 +59,7 @@ Analysis goals:
     return result.toTextStreamResponse();
   } catch (error: Error | unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error analyzing infrastructure:', errorMessage);
-    return new Response(`Failed to analyze infrastructure: ${errorMessage}`, { status: 500 });
+    console.error('Error executing agent task:', errorMessage);
+    return new Response(`Failed to execute agent task: ${errorMessage}`, { status: 500 });
   }
 }
