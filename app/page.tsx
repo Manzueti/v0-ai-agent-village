@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Cpu, Shield, Brain, Zap, Activity, 
-  ArrowRight, Radio, Server, Factory, Trees
+  ArrowRight, Radio, Server, Factory, Trees,
+  Target
 } from 'lucide-react';
 
 export default function Landing() {
