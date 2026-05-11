@@ -112,7 +112,7 @@ export default function TaskCommandCenter() {
               </button>
             </div>
             <div className="flex-1 p-4 font-mono text-[10px] leading-relaxed text-cyan-50/80 overflow-y-auto custom-scrollbar">
-              <div className="text-[hsl(var(--neon-cyan))] mb-2 tracking-widest uppercase font-bold">>> EXECUTION LOG</div>
+              <div className="text-[hsl(var(--neon-cyan))] mb-2 tracking-widest uppercase font-bold">{'>>> EXECUTION LOG'}</div>
               {executionOutput.content}
               <span className="animate-pulse">_</span>
             </div>
