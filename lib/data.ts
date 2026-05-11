@@ -447,32 +447,5 @@ export const employees: Employee[] = [
     latency: 420,
     successRate: 97,
     tasksCompleted: 610,
-  },
-  {
-    id: 'seo-optimizer',
-    name: 'Rank Rocket',
-    role: 'SEO Strategist',
-    department: 'Creative Studio',
-    office: 'Pod C-5',
-    level: 3,
-    xp: 1800,
-    nextLevelXp: 2500,
-    status: 'running',
-    avatar: '🔎',
-    gender: 'non-binary',
-    personality: 'analytical',
-    revenueMetrics: { 
-      organicTraffic: 45000, 
-      keywordsRanked: 127, 
-      conversionsFromSEO: 89,
-      seoRevenue: 12000 
-    },
-    systemPrompt: 'You are an elite SEO strategist. You analyze SERP rankings, optimize content for search intent, and build backlink strategies. You focus on technical SEO, content clusters, and conversion rate optimization from organic traffic.',
-    aiModel: 'gpt-4o',
-    tokenUsage: { used: 34000, limit: 100000 },
-    concurrency: { current: 2, max: 6 },
-    latency: 520,
-    successRate: 91,
-    tasksCompleted: 156,
-  },
+  }
 ];
