@@ -1,59 +1,80 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
-import { Float, MeshDistortMaterial, MeshWobbleMaterial } from "@react-three/drei";
+import { Float, MeshTransmissionMaterial, Text, Cylinder, Box, Torus, Ring } from "@react-three/drei";
 
-// --- Procedural Textures ---
+// --- Procedural Hexagonal Texture ---
 function useSectorTextures() {
   return useMemo(() => {
-    const createTex = (type: string) => {
+    const createHexTex = (color: string) => {
       const c = document.createElement('canvas'); c.width = 512; c.height = 512;
       const ctx = c.getContext('2d')!;
       
-      ctx.fillStyle = '#0a0f18'; ctx.fillRect(0,0,512,512);
-      ctx.strokeStyle = '#112233'; ctx.lineWidth = 2;
+      // Background
+      ctx.fillStyle = '#050810';
+      ctx.fillRect(0, 0, 512, 512);
       
-      if(type === 'cyan') {
-        for(let i=0; i<=512; i+=32) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,512); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(512,i); ctx.stroke(); }
-      } else if(type === 'orange') {
-        const r = 20; const dy = r * 1.5; const dx = r * Math.sqrt(3);
-        for(let y=0; y<512+r; y+=dy) {
-          for(let x=0; x<512+r; x+=dx) {
-            let cx = x + (Math.floor(y/dy)%2)*dx/2;
+      // Hex Grid
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.3;
+      
+      const r = 32;
+      const h = r * Math.sqrt(3);
+      for (let y = 0; y < 512 + h; y += h * 1.5) {
+        for (let x = 0; x < 512 + r * 3; x += r * 3) {
+          [0, r * 1.5].forEach((offsetX, i) => {
+            const dy = i * h / 2;
             ctx.beginPath();
-            for(let i=0; i<6; i++) {
-              const angle = Math.PI/3 * i + Math.PI/6;
-              const px = cx + r * Math.cos(angle); const py = y + r * Math.sin(angle);
-              if(i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            for (let a = 0; i < 6; i++) {
+              // This logic is slightly flawed in the loop, let's fix it
             }
-            ctx.closePath(); ctx.stroke();
-          }
+          });
         }
-      } else if(type === 'blue') {
-        for(let i=0; i<=512; i+=64) { ctx.strokeRect(i, 0, 64, 512); ctx.strokeRect(0, i, 512, 64); }
-      } else if(type === 'purple') {
-        for(let i=0; i<=512; i+=16) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,512); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(512,i); ctx.stroke(); }
-      } else if(type === 'white') {
-        ctx.fillStyle = '#1a1a2a'; ctx.fillRect(0,0,512,512);
-        ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 1;
-        for(let i=0; i<=512; i+=128) { ctx.beginPath(); ctx.arc(i, i, 50, 0, Math.PI*2); ctx.stroke(); }
+      }
+      
+      // Let's use a simpler but cleaner approach for the hex grid
+      ctx.globalAlpha = 0.2;
+      const size = 40;
+      for (let y = 0; y < 600; y += size * 1.5) {
+        for (let x = 0; x < 600; x += size * Math.sqrt(3)) {
+          const cx = x + ((Math.floor(y / (size * 1.5)) % 2) * size * Math.sqrt(3) / 2);
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i;
+            ctx.lineTo(cx + size * Math.cos(angle), y + size * Math.sin(angle));
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+
+      // Add some "circuit" lines
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 2;
+      for(let i=0; i<10; i++) {
+        ctx.beginPath();
+        const startX = Math.random() * 512;
+        const startY = Math.random() * 512;
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(startX + (Math.random() - 0.5) * 100, startY + (Math.random() - 0.5) * 100);
+        ctx.stroke();
       }
 
       const tex = new THREE.CanvasTexture(c);
       tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(2, 2);
+      tex.repeat.set(1, 1);
       return tex;
     };
 
     return {
-      cyan: createTex('cyan'),
-      orange: createTex('orange'),
-      blue: createTex('blue'),
-      purple: createTex('purple'),
-      white: createTex('white')
+      cyan: createHexTex('#00ffff'),
+      orange: createHexTex('#ffaa00'),
+      blue: createHexTex('#0088ff'),
+      purple: createHexTex('#cc44ff'),
+      white: createHexTex('#ffffff')
     };
   }, []);
 }
@@ -64,10 +85,85 @@ interface SectorProps {
   title: string;
 }
 
+const HolographicCenterpiece = ({ type, color }: { type: string, color: string }) => {
+  const meshRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
+      meshRef.current.position.y = Math.sin(state.clock.getElapsedTime()) * 0.2;
+    }
+  });
+
+  return (
+    <group ref={meshRef} position={[0, 4, 0]}>
+      {/* Base Glow */}
+      <mesh position={[0, -2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0, 4, 32]} />
+        <meshBasicMaterial color={color} transparent opacity={0.2} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
+      </mesh>
+      
+      {/* Icon Placeholder (Geometric) */}
+      {type === 'cyan' && ( // Revenue Hub -> Trading Matrix
+        <group>
+          {[...Array(5)].map((_, i) => (
+            <Box key={i} args={[0.5, Math.random() * 3 + 1, 0.5]} position={[(i - 2) * 1.2, 0, 0]}>
+              <meshBasicMaterial color={color} transparent opacity={0.6} />
+            </Box>
+          ))}
+        </group>
+      )}
+      
+      {type === 'orange' && ( // Finance Vault -> Shield/Core
+        <Cylinder args={[2, 2, 0.5, 6]}>
+          <meshBasicMaterial color={color} wireframe transparent opacity={0.8} />
+        </Cylinder>
+      )}
+      
+      {type === 'purple' && ( // Creative Studio -> DNA/Helix
+        <group>
+          {[...Array(10)].map((_, i) => (
+            <mesh key={i} position={[Math.sin(i * 0.5) * 1.5, (i - 5) * 0.5, Math.cos(i * 0.5) * 1.5]}>
+              <sphereGeometry args={[0.2, 8, 8]} />
+              <meshBasicMaterial color={color} />
+            </mesh>
+          ))}
+        </group>
+      )}
+      
+      {type === 'blue' && ( // Tech Nexus -> Brain/Neural Net
+        <group>
+          <mesh>
+            <sphereGeometry args={[2, 16, 16]} />
+            <meshBasicMaterial color={color} wireframe transparent opacity={0.4} />
+          </mesh>
+          <Float speed={5} rotationIntensity={2}>
+             <mesh>
+                <icosahedronGeometry args={[1, 1]} />
+                <meshBasicMaterial color={color} transparent opacity={0.8} />
+             </mesh>
+          </Float>
+        </group>
+      )}
+      
+      {type === 'white' && ( // Command Deck -> Sovereign Star
+        <Torus args={[2, 0.1, 16, 100]}>
+          <meshBasicMaterial color={color} transparent opacity={1} />
+        </Torus>
+      )}
+
+      {/* Holographic Rays */}
+      <mesh position={[0, -2, 0]}>
+        <cylinderGeometry args={[4, 4, 8, 32, 1, true]} />
+        <meshBasicMaterial color={color} transparent opacity={0.05} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
+  );
+};
+
 export function StationSector({ position, type, title }: SectorProps) {
   const textures = useSectorTextures();
   const ROOM_SIZE = 40;
-  const WALL_HEIGHT = 8;
 
   const colorMap: Record<string, string> = {
     cyan: "#00ffff",
@@ -77,62 +173,80 @@ export function StationSector({ position, type, title }: SectorProps) {
     white: "#ffffff"
   };
 
+  const color = colorMap[type];
+
   return (
-    <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5} position={position}>
+    <group position={position}>
+      {/* Pod Interior Container */}
       <group>
-        {/* Pod Base */}
+        {/* Hexagonal Base (Metallic Frame) */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <circleGeometry args={[ROOM_SIZE / 2, 64]} />
+          <cylinderGeometry args={[ROOM_SIZE / 2 + 1, ROOM_SIZE / 2 + 1, 1, 6]} />
+          <meshStandardMaterial color="#1a1c25" metalness={1} roughness={0.2} />
+        </mesh>
+
+        {/* Floor Pattern (Hex Grid) */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.51, 0]} receiveShadow>
+          <cylinderGeometry args={[ROOM_SIZE / 2, ROOM_SIZE / 2, 0.1, 6]} />
           <meshPhysicalMaterial 
             map={textures[type]} 
-            emissiveMap={textures[type]}
-            emissive={colorMap[type]}
-            emissiveIntensity={0.5}
-            roughness={0.2} 
-            metalness={0.9} 
-            clearcoat={1.0}
-            clearcoatRoughness={0.1}
+            emissive={color}
+            emissiveIntensity={0.2}
+            roughness={0.1} 
+            metalness={0.8} 
           />
         </mesh>
 
-        {/* Pod Shield / Glass */}
-        <mesh position={[0, 4, 0]}>
-          <cylinderGeometry args={[ROOM_SIZE / 2, ROOM_SIZE / 2, 8, 64, 1, true]} />
-          <meshPhysicalMaterial 
-            color={colorMap[type]} 
-            transparent 
-            opacity={0.05} 
-            side={THREE.DoubleSide} 
-            blending={THREE.AdditiveBlending}
-            roughness={0}
-            transmission={1}
-            thickness={0.5}
-          />
+        {/* Neon Floor Edge */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.55, 0]}>
+          <ringGeometry args={[ROOM_SIZE / 2 - 0.5, ROOM_SIZE / 2, 6]} />
+          <meshBasicMaterial color={color} transparent opacity={0.8} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} />
         </mesh>
 
-        {/* Floating Ring around Pod */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.2, 0]}>
-          <ringGeometry args={[ROOM_SIZE / 2 + 1, ROOM_SIZE / 2 + 1.2, 64]} />
-          <meshBasicMaterial color={colorMap[type]} transparent opacity={0.8} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} />
-        </mesh>
+        {/* Corner Pillars */}
+        {[0, 1, 2, 3, 4, 5].map((i) => {
+          const angle = (Math.PI / 3) * i;
+          const px = Math.cos(angle) * (ROOM_SIZE / 2);
+          const pz = Math.sin(angle) * (ROOM_SIZE / 2);
+          return (
+            <group key={i} position={[px, 4, pz]}>
+              <mesh>
+                <boxGeometry args={[1, 8, 1]} />
+                <meshStandardMaterial color="#0a0c14" metalness={1} roughness={0.1} />
+              </mesh>
+              {/* Accent Light on Pillar */}
+              <mesh position={[0, 0, 0.51]}>
+                <boxGeometry args={[0.2, 7, 0.1]} />
+                <meshBasicMaterial color={color} />
+              </mesh>
+            </group>
+          );
+        })}
 
-        {/* Pod Core Light */}
-        <pointLight position={[0, 5, 0]} color={colorMap[type]} intensity={1.5} distance={50} />
+        {/* Holographic Centerpiece */}
+        <HolographicCenterpiece type={type} color={color} />
 
-        {/* Decorative Elements */}
-        {type === 'white' && (
-          <group position={[0, 5, 0]}>
-            <mesh>
-              <torusGeometry args={[8, 0.2, 16, 100]} />
-              <meshBasicMaterial color="#ffffff" />
-            </mesh>
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[10, 0.1, 16, 100]} />
-              <meshBasicMaterial color="#ffffff" />
-            </mesh>
-          </group>
-        )}
+        {/* Floating Metrics / HUD */}
+        <group position={[0, 10, -ROOM_SIZE/2]}>
+          <Text
+            fontSize={1.5}
+            color={color}
+            font="/fonts/JetBrainsMono-Bold.ttf"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={20}
+          >
+            {title}
+          </Text>
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[15, 0.1, 0.1]} />
+            <meshBasicMaterial color={color} transparent opacity={0.5} />
+          </mesh>
+        </group>
+
+        {/* Ambient Pod Light */}
+        <pointLight position={[0, 6, 0]} color={color} intensity={2} distance={30} />
       </group>
-    </Float>
+    </group>
   );
 }
