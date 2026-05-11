@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { getModelInstance } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
 
@@ -7,13 +7,14 @@ export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, nodeId, node, replicaNode, operatorId, reason } = await request.json() as {
+    const { action, nodeId, node, replicaNode, operatorId, reason, model = 'gemini-1.5-flash' } = await request.json() as {
       action: 'failover' | 'scale' | 'restart' | 'heal' | 'reroute';
       nodeId: string;
       node: InfraNode;
       replicaNode?: InfraNode;
       operatorId: string;
       reason?: string;
+      model?: string;
     };
 
     const systemPrompt = `You are an AI infrastructure execution engine. You validate and execute infrastructure operations while ensuring zero downtime.
@@ -44,18 +45,10 @@ ${reason ? `Reason: ${reason}` : ''}
 
 Please validate the action, execute it, and report the outcome.`;
 
-    const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ error: 'GOOGLE_API_KEY not configured. Please check your environment variables.' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const google = createGoogleGenerativeAI({ apiKey });
+    const modelInstance = getModelInstance(model);
     
     const result = streamText({
-      model: google('gemini-2.5-flash'),
+      model: modelInstance as any,
       system: systemPrompt,
       prompt: userPrompt,
     });

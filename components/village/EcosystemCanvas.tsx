@@ -1,12 +1,14 @@
 "use client";
 
 import { OrbitControls, PerspectiveCamera, Stars, Sparkles, Float } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from "@react-three/postprocessing";
 import EcosystemNode from "./EcosystemNode";
 import { StationSector } from "./EcosystemSectors";
 import { employees } from "@/lib/data";
 import { Suspense, useMemo } from "react";
 import * as THREE from "three";
+import ErrorBoundary from "../ErrorBoundary";
 
 export default function EcosystemCanvas() {
   const sectors = [
@@ -36,65 +38,71 @@ export default function EcosystemCanvas() {
 
   return (
     <div className="w-full h-[800px] bg-[#03010a] rounded-xl border border-white/10 overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-      <Canvas shadows dpr={[1, 2]}>
-        <color attach="background" args={["#03010a"]} />
-        <PerspectiveCamera makeDefault position={[0, 80, 100]} fov={45} />
-        <OrbitControls 
-          enablePan={true} 
-          enableZoom={true} 
-          maxDistance={250} 
-          minDistance={20}
-          maxPolarAngle={Math.PI / 2.1}
-          makeDefault
-        />
+      <ErrorBoundary fallback={
+        <div className="flex items-center justify-center h-full bg-[#03010a] text-cyan-400 font-mono text-sm tracking-widest uppercase">
+          Neural Visualization Offline - WebGL Error
+        </div>
+      }>
+        <Canvas shadows dpr={[1, 2]}>
+          <color attach="background" args={["#03010a"]} />
+          <PerspectiveCamera makeDefault position={[0, 80, 100]} fov={45} />
+          <OrbitControls 
+            enablePan={true} 
+            enableZoom={true} 
+            maxDistance={250} 
+            minDistance={20}
+            maxPolarAngle={Math.PI / 2.1}
+            makeDefault
+          />
 
-        <fogExp2 attach="fog" args={["#03010a", 0.003]} />
+          <fogExp2 attach="fog" args={["#03010a", 0.003]} />
 
-        <ambientLight intensity={0.2} />
-        <pointLight position={[0, 50, 0]} intensity={3} color="#ffffff" castShadow />
-        <pointLight position={[-50, 20, -50]} intensity={2} color="#00ffff" />
-        <pointLight position={[50, 20, 50]} intensity={2} color="#ff00ff" />
+          <ambientLight intensity={0.2} />
+          <pointLight position={[0, 50, 0]} intensity={3} color="#ffffff" castShadow />
+          <pointLight position={[-50, 20, -50]} intensity={2} color="#00ffff" />
+          <pointLight position={[50, 20, 50]} intensity={2} color="#ff00ff" />
 
-        <Suspense fallback={null}>
-          {/* Global Particles */}
-          <Sparkles count={1000} scale={150} size={2} speed={0.5} opacity={0.3} color="#ffffff" />
-          <Sparkles count={500} scale={100} size={4} speed={1} opacity={0.2} color="#00ffff" />
+          <Suspense fallback={null}>
+            {/* Global Particles */}
+            <Sparkles count={1000} scale={150} size={2} speed={0.5} opacity={0.3} color="#ffffff" />
+            <Sparkles count={500} scale={100} size={4} speed={1} opacity={0.2} color="#00ffff" />
 
-          {/* Station Sectors (Floating Pods) */}
-          {sectors.map((s) => (
-            <StationSector 
-              key={s.id} 
-              position={s.pos as any} 
-              type={s.type} 
-              title={s.title} 
-            />
-          ))}
-
-          {/* AI Agents (Ecosystem Nodes) */}
-          <group>
-            {employeesWithSectors.map((agent) => (
-              <EcosystemNode 
-                key={agent.id} 
-                agent={agent} 
-                position={agent.pos} 
+            {/* Station Sectors (Floating Pods) */}
+            {sectors.map((s) => (
+              <StationSector 
+                key={s.id} 
+                position={s.pos as any} 
+                type={s.type} 
+                title={s.title} 
               />
             ))}
-          </group>
 
-          <Stars radius={200} depth={100} count={5000} factor={4} saturation={0} fade speed={1} />
+            {/* AI Agents (Ecosystem Nodes) */}
+            <group>
+              {employeesWithSectors.map((agent) => (
+                <EcosystemNode 
+                  key={agent.id} 
+                  agent={agent} 
+                  position={agent.pos} 
+                />
+              ))}
+            </group>
 
-          <EffectComposer disableNormalPass>
-            <Bloom 
-              intensity={2.0} 
-              luminanceThreshold={0.2} 
-              luminanceSmoothing={0.9} 
-            />
-            <ChromaticAberration offset={new THREE.Vector2(0.0015, 0.0015)} />
-            <Noise opacity={0.05} />
-            <Vignette eskil={false} offset={0.1} darkness={1.2} />
-          </EffectComposer>
-        </Suspense>
-      </Canvas>
+            <Stars radius={200} depth={100} count={5000} factor={4} saturation={0} fade speed={1} />
+
+            <EffectComposer disableNormalPass>
+              <Bloom 
+                intensity={2.0} 
+                luminanceThreshold={0.2} 
+                luminanceSmoothing={0.9} 
+              />
+              <ChromaticAberration offset={new THREE.Vector2(0.0015, 0.0015)} />
+              <Noise opacity={0.05} />
+              <Vignette eskil={false} offset={0.1} darkness={1.2} />
+            </EffectComposer>
+          </Suspense>
+        </Canvas>
+      </ErrorBoundary>
 
       {/* 4-Panel HUD Overlay */}
       <div className="absolute inset-0 pointer-events-none p-6 flex flex-col justify-between z-20">

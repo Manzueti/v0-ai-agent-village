@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Path to the hermes executable in the venv
-    const hermesPath = 'C:\\Users\\W7192277\\Documents\\GitHub\\hermes-agent\\venv\\Scripts\\hermes';
-    const projectDir = 'C:\\Users\\W7192277\\Documents\\GitHub\\hermes-agent';
+    const hermesPath = process.env.HERMES_PATH || 'hermes';
+    const projectDir = process.env.HERMES_PROJECT_DIR || process.cwd();
 
     // Execute the hermes chat command
     // We use -q for single query mode

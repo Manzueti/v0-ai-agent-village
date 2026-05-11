@@ -61,6 +61,16 @@ export type RevenueMetrics = {
   chatRevenue?: number;
 };
 
+export type AIModel = 
+  | 'gemini-1.5-flash' 
+  | 'gemini-1.5-pro'
+  | 'deepseek-chat' 
+  | 'deepseek-reasoner'
+  | 'claude-3-5-sonnet'
+  | 'claude-3-opus'
+  | 'gpt-4o'
+  | 'gpt-4o-mini';
+
 export type Employee = {
   id: string;
   name: string;
@@ -76,7 +86,7 @@ export type Employee = {
   personality?: 'analytical' | 'creative' | 'aggressive' | 'supportive' | 'stoic';
   systemPrompt: string;
   revenueMetrics?: RevenueMetrics;
-  aiModel: 'gemini-1.5-flash' | 'deepseek-chat' | 'deepseek-reasoner' | 'gpt-4o-mini';
+  aiModel: AIModel;
 
   // Metrics
   tokenUsage: { used: number; limit: number };
@@ -159,7 +169,7 @@ export interface AIOperator extends Employee {
     reasoning: string;
     outcome?: 'success' | 'pending' | 'failed';
   };
-  aiModel: string;
+  aiModel: AIModel;
 }
 
 export interface AIDecision {

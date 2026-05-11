@@ -87,7 +87,15 @@ const StatPill = ({ label, value, color }: { label: string; value: string; color
   </div>
 );
 
-const SidebarItem = ({ icon: Icon, label, active = false, badge, onClick }: any) => (
+interface SidebarItemProps {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  active?: boolean;
+  badge?: string;
+  onClick?: () => void;
+}
+
+const SidebarItem = ({ icon: Icon, label, active = false, badge, onClick }: SidebarItemProps) => (
   <button 
     onClick={onClick}
     className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded text-left text-xs transition-colors ${active ? "bg-[hsl(285_90%_65%/0.15)] text-[hsl(var(--neon-purple))]" : "text-muted-foreground hover:bg-[hsl(255_35%_16%)] hover:text-foreground"}`}
@@ -652,8 +660,15 @@ function AgentDetailPanel({
   );
 }
 
-function StatBox({ label, value, icon: Icon, color }: any) {
-  const colors: any = {
+interface StatBoxProps {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  color: 'green' | 'cyan' | 'purple' | 'yellow';
+}
+
+function StatBox({ label, value, icon: Icon, color }: StatBoxProps) {
+  const colors: Record<string, string> = {
     green: 'hsl(var(--neon-green))',
     cyan: 'hsl(var(--neon-cyan))',
     purple: 'hsl(var(--neon-purple))',

@@ -1,6 +1,5 @@
 import { streamText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
+import { getModelInstance } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
@@ -27,26 +26,7 @@ You speak in a professional, concise manner. Priority: system stability.`;
 
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
     
-    let modelInstance;
-    
-    if (model.startsWith('deepseek')) {
-      const apiKey = process.env.DEEPSEEK_API_KEY;
-      if (!apiKey) {
-        return new Response(JSON.stringify({ error: 'DEEPSEEK_API_KEY not configured.' }), { status: 500 });
-      }
-      const deepseek = createOpenAI({
-        apiKey,
-        baseURL: 'https://api.deepseek.com',
-      });
-      modelInstance = deepseek(model);
-    } else {
-      const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      if (!apiKey) {
-        return new Response(JSON.stringify({ error: 'GOOGLE_API_KEY not configured.' }), { status: 500 });
-      }
-      const google = createGoogleGenerativeAI({ apiKey });
-      modelInstance = google(model === 'gemini-2.5-flash' ? 'gemini-1.5-flash' : model);
-    }
+    const modelInstance = getModelInstance(model);
     
     const result = streamText({
       model: modelInstance as any,
