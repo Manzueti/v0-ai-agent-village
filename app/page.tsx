@@ -153,7 +153,7 @@ export default function Landing() {
       {/* Footer decoration */}
       <footer className="absolute bottom-0 left-0 right-0 h-10 border-t border-[hsl(var(--border))] bg-[hsl(var(--background)/0.8)] backdrop-blur-md flex items-center justify-between px-8">
         <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/60 uppercase">
-          <span>VYBECORP NEURAL OS</span>
+          <span>CYBEREMPIRE NEURAL OS</span>
           <span className="text-[hsl(var(--neon-cyan))]">● READY</span>
         </div>
         <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/60 uppercase">
@@ -198,7 +198,7 @@ function BootSequence() {
   const [text, setText] = useState('');
   
   const bootText = `
-> INITIALIZING VYBECORP KERNEL...
+> INITIALIZING CYBEREMPIRE KERNEL...
 > LOADING NEURAL NETWORK MODULES...
 > MOUNTING INFRASTRUCTURE MATRIX...
 > CONNECTING AI OPERATORS...

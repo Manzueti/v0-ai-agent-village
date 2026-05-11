@@ -110,7 +110,7 @@ export default function COEPlatform() {
             </div>
             <div>
               <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Center of Excellence</span>
-              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">VYBECORP Global Directive Matrix</span>
+              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">CYBEREMPIRE Global Directive Matrix</span>
             </div>
           </div>
           <div className="h-6 w-px bg-white/5" />

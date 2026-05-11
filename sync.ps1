@@ -1,4 +1,4 @@
-# VYBECORP Auto-Sync Script
+# CYBEREMPIRE Auto-Sync Script
 # Watches for changes and pushes to GitHub every 60 seconds
 
 Write-Host "🚀 Starting Neural Sync... Press Ctrl+C to stop." -ForegroundColor Cyan

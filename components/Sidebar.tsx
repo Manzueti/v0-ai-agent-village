@@ -17,7 +17,7 @@ export default function Sidebar() {
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home, shortcut: '⌘1' },
-    { name: 'VybeCorp', href: '/vybecorp', icon: Factory, shortcut: '⌘2' },
+    { name: 'CyberEmpire', href: '/cyberempire', icon: Factory, shortcut: '⌘2' },
     { name: 'Tasks', href: '/tasks', icon: Target, shortcut: '⌘T' },
     { name: 'Ecosystem', href: '/village', icon: Trees, shortcut: '⌘3' },
     { name: 'Infrastructure', href: '/infrastructure', icon: Server, shortcut: '⌘4' },

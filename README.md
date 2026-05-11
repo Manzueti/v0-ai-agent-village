@@ -1,4 +1,4 @@
-# VYBECORP - Deep Space Command Center
+# CYBEREMPIRE - Deep Space Command Center
 
 ✦ All changes for the Deep Space Command Center transformation have been successfully pushed to your GitHub repository.
 

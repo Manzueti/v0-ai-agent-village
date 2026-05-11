@@ -49,7 +49,7 @@ export default function AIControlPage() {
             </div>
             <div>
               <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Control Center</span>
-              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">VYBECORP Neural Oversight</span>
+              <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">CYBEREMPIRE Neural Oversight</span>
             </div>
           </div>
           <div className="h-6 w-px bg-white/5" />

@@ -175,7 +175,7 @@ const Index = () => {
             <div className="h-6 w-6 rounded-sm bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] grid place-items-center">
               <Factory className="h-3.5 w-3.5 text-background" />
             </div>
-            <span className="font-bold text-sm tracking-[0.25em]">VYBE<span className="text-[hsl(var(--neon-magenta))]">CORP</span></span>
+            <span className="font-bold text-sm tracking-[0.25em]">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></span>
           </div>
           <span className="text-[10px] text-muted-foreground tracking-wider px-2 py-0.5 rounded border border-[hsl(260_40%_22%)]">v0.5.0 — production</span>
         </div>

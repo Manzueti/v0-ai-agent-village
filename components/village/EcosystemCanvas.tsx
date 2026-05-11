@@ -174,7 +174,7 @@ export default function EcosystemCanvas() {
       {/* Floating Info Overlay */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 pointer-events-none select-none text-center">
         <div className="bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,255,255,0.2)]">
-          <h2 className="text-cyan-400 font-black text-sm tracking-[0.6em] uppercase">VYBECORP - DEEP SPACE COMMAND</h2>
+          <h2 className="text-cyan-400 font-black text-sm tracking-[0.6em] uppercase">CYBEREMPIRE - DEEP SPACE COMMAND</h2>
         </div>
       </div>
     </div>
