@@ -55,7 +55,7 @@ export default function Landing() {
               <Factory className="h-7 w-7 text-background" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white">VYBE<span className="text-[hsl(var(--neon-magenta))]">CORP</span></h1>
+              <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></h1>
               <p className="text-[10px] text-muted-foreground tracking-widest uppercase font-bold">Autonomous Enterprise Hub // v2.5.0</p>
             </div>
           </motion.div>
