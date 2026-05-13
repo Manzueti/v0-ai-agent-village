@@ -70,7 +70,10 @@ export default function COEPlatform() {
           })
         });
 
-        if (!response.ok) throw new Error('Failed to connect to COE Matrix');
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Failed to connect to COE Matrix');
+        }
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
