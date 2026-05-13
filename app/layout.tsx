@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Sidebar from '@/components/Sidebar'
+import FaroInitializer from '@/components/infrastructure/FaroInitializer'
 
 export const metadata: Metadata = {
   title: 'CyberEmpire // Autonomous workforce',
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased font-mono selection:bg-[hsl(var(--neon-purple)/0.3)] selection:text-white">
+        <FaroInitializer />
         <div className="flex h-screen w-full overflow-hidden bg-background/40 backdrop-blur-[2px]">
           <Sidebar />
           <main className="flex-1 overflow-auto relative scrollbar-hide">
