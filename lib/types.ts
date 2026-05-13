@@ -69,7 +69,9 @@ export type AIModel =
   | 'claude-3-5-sonnet'
   | 'claude-3-opus'
   | 'gpt-4o'
-  | 'gpt-4o-mini';
+  | 'gpt-4o-mini'
+  | 'grok-beta'
+  | 'grok-2';
 
 export type Employee = {
   id: string;

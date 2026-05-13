@@ -10,6 +10,7 @@ export function getModelInstance(modelId: string) {
   const hasGoogle = !!process.env.GOOGLE_API_KEY;
   const hasDeepseek = !!process.env.DEEPSEEK_API_KEY;
   const hasOpenAI = !!process.env.OPENAI_API_KEY;
+  const hasXAI = !!process.env.XAI_API_KEY;
 
   let finalModelId = modelId;
 
@@ -18,24 +19,34 @@ export function getModelInstance(modelId: string) {
     console.warn(`DEEPSEEK_API_KEY missing. Routing to fallback for ${modelId}`);
     if (hasGoogle) finalModelId = 'gemini-1.5-flash';
     else if (hasOpenAI) finalModelId = 'gpt-4o-mini';
+    else if (hasXAI) finalModelId = 'grok-beta';
   }
 
   if (modelId.startsWith('gpt') && !hasOpenAI) {
     console.warn(`OPENAI_API_KEY missing. Routing to fallback for ${modelId}`);
     if (hasGoogle) finalModelId = 'gemini-1.5-flash';
     else if (hasDeepseek) finalModelId = 'deepseek-chat';
+    else if (hasXAI) finalModelId = 'grok-beta';
   }
 
   if (modelId.startsWith('gemini') && !hasGoogle) {
     console.warn(`GOOGLE_API_KEY missing. Routing to fallback for ${modelId}`);
     if (hasOpenAI) finalModelId = 'gpt-4o-mini';
     else if (hasDeepseek) finalModelId = 'deepseek-chat';
+    else if (hasXAI) finalModelId = 'grok-beta';
+  }
+
+  if (modelId.startsWith('grok') && !hasXAI) {
+    console.warn(`XAI_API_KEY missing. Routing to fallback for ${modelId}`);
+    if (hasGoogle) finalModelId = 'gemini-1.5-flash';
+    else if (hasOpenAI) finalModelId = 'gpt-4o-mini';
+    else if (hasDeepseek) finalModelId = 'deepseek-chat';
   }
 
   // Google/Gemini
   if (finalModelId.startsWith('gemini')) {
     const apiKey = process.env.GOOGLE_API_KEY;
-    if (!apiKey) throw new Error('CRITICAL: No API keys configured. Please add GOOGLE_API_KEY, DEEPSEEK_API_KEY, or OPENAI_API_KEY to your environment variables.');
+    if (!apiKey) throw new Error('CRITICAL: No API keys configured. Please add GOOGLE_API_KEY, DEEPSEEK_API_KEY, OPENAI_API_KEY, or XAI_API_KEY to your environment variables.');
     const google = createGoogleGenerativeAI({ apiKey });
     return google(finalModelId);
   }
@@ -57,6 +68,17 @@ export function getModelInstance(modelId: string) {
     if (!apiKey) throw new Error('CRITICAL: No API keys configured.');
     const openai = createOpenAI({ apiKey });
     return openai(finalModelId);
+  }
+
+  // xAI / Grok (uses OpenAI-compatible API)
+  if (finalModelId.startsWith('grok')) {
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) throw new Error('CRITICAL: No API keys configured.');
+    const xai = createOpenAI({ 
+      apiKey, 
+      baseURL: 'https://api.x.ai/v1' 
+    });
+    return xai(finalModelId);
   }
 
   // Anthropic Claude (Requires @ai-sdk/anthropic)
