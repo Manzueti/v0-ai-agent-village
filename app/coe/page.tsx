@@ -65,7 +65,8 @@ export default function COEPlatform() {
             instruction: newLog.instruction,
             agentName: selectedAgent.name,
             agentRole: selectedAgent.role,
-            systemPrompt: selectedAgent.systemPrompt
+            systemPrompt: selectedAgent.systemPrompt,
+            model: selectedAgent.aiModel
           })
         });
 
