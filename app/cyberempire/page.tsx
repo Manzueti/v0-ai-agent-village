@@ -323,6 +323,68 @@ const Index = () => {
                     {`>> Neural sync active\n>> Processing frame 412\n>> Grid synchronized`}
                   </div>
                 </NeonPanel>
+
+                <div className="col-span-2 xl:col-span-3 mt-6">
+                  <div className="flex items-center justify-between mb-4 px-2">
+                    <div className="flex items-center gap-3">
+                      <Users className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+                      <h2 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Neural Personnel Registry</h2>
+                    </div>
+                    <div className="flex items-center gap-4 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                       <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))]" /> Online</div>
+                       <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-yellow))]" /> Idle</div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2">
+                    {agents.map((agent) => (
+                      <button 
+                        key={agent.id}
+                        onClick={() => { setSelectedAgentId(agent.id); setActiveView('agents'); }}
+                        className={`
+                          relative group p-2.5 rounded border transition-all duration-300 flex flex-col items-center
+                          ${selectedAgentId === agent.id 
+                            ? 'bg-[hsl(var(--neon-cyan)/0.1)] border-[hsl(var(--neon-cyan)/0.4)] panel-glow-cyan' 
+                            : 'bg-[hsl(255_45%_8%/0.5)] border-white/5 hover:border-white/20 hover:bg-white/5'}
+                        `}
+                      >
+                        <div className="w-12 h-12 mb-2 relative">
+                          <StylizedAvatar 
+                            color={agent.id === 'hermes' ? 'hsl(var(--neon-purple))' : 'hsl(var(--neon-cyan))'} 
+                            gender={agent.gender as any} 
+                            isWorking={agent.status === 'running'} 
+                          />
+                          <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[hsl(var(--background))] ${getStatusBg(agent.status)} ${agent.status === 'running' ? 'pulse-dot shadow-[0_0_8px_currentColor]' : ''}`} />
+                        </div>
+                        <div className="text-[10px] font-black text-white truncate w-full uppercase mb-0.5 tracking-tighter">{agent.name}</div>
+                        <div className="text-[7px] text-muted-foreground uppercase tracking-widest truncate w-full mb-1.5 opacity-60 font-bold">{agent.role}</div>
+                        
+                        {/* Micro Progress Bar */}
+                        <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden mb-1">
+                           <motion.div 
+                             className="h-full" 
+                             style={{ backgroundColor: agent.id === 'hermes' ? 'hsl(var(--neon-purple))' : 'hsl(var(--neon-cyan))' }}
+                             animate={agent.status === 'running' ? { opacity: [0.3, 1, 0.3], width: ['20%', '100%', '20%'] } : { width: '30%', opacity: 0.2 }}
+                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                           />
+                        </div>
+                        
+                        <div className="flex justify-between w-full text-[6px] font-black text-muted-foreground/40 uppercase tracking-tighter">
+                           <span>LVL.{agent.level}</span>
+                           <span>{agent.successRate}% SR</span>
+                        </div>
+                      </button>
+                    ))}
+                    
+                    {/* Add Placeholder Slots to make the grid look "technical" */}
+                    {Array.from({ length: Math.max(0, 16 - agents.length) }).map((_, i) => (
+                      <div key={`empty-${i}`} className="border border-dashed border-white/5 rounded-md p-3 flex flex-col items-center justify-center opacity-20 h-24">
+                        <div className="w-8 h-8 rounded-full border border-dashed border-white/20 mb-2" />
+                        <div className="h-1 w-12 bg-white/20 rounded-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             ) : (
               <motion.div 
