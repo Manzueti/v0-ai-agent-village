@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EcosystemCanvas = dynamic(() => import('@/components/village/EcosystemCanvas'), { ssr: false });
+const VirtualOffice   = dynamic(() => import('@/components/village/VirtualOffice'),   { ssr: false });
 
 import { 
   Trees, Cloud, Sun, Wind, 
@@ -19,7 +20,7 @@ import { useState, useEffect, useMemo } from 'react';
 // --- Types ---
 type SimState = 'day' | 'night' | 'emergency';
 type WeatherState = 'clear' | 'neural-rain' | 'flux';
-type ViewMode = 'grid' | 'visualizer';
+type ViewMode = 'grid' | 'visualizer' | 'office';
 
 // --- Sub-components ---
 
@@ -221,12 +222,19 @@ export default function VillagePage() {
               <RefreshCw className="w-4 h-4" />
             </button>
             <div className="w-px h-5 bg-white/5 mx-1" />
-            <button 
-              onClick={() => setViewMode(prev => prev === 'grid' ? 'visualizer' : 'grid')}
+            <button
+              onClick={() => setViewMode(prev => prev === 'visualizer' ? 'grid' : 'visualizer')}
               className={`p-1.5 rounded transition-all ${viewMode === 'visualizer' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)]' : 'text-muted-foreground hover:text-white'}`}
-              title="Toggle Ecosystem Visualizer"
+              title="Ecosystem Visualizer"
             >
-              {viewMode === 'grid' ? <Eye className="w-4 h-4" /> : <LayoutGrid className="w-4 h-4" />}
+              <Eye className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode(prev => prev === 'office' ? 'grid' : 'office')}
+              className={`p-1.5 rounded transition-all ${viewMode === 'office' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.3)]' : 'text-muted-foreground hover:text-white'}`}
+              title="3D Virtual Office"
+            >
+              <Factory className="w-4 h-4" />
             </button>
           </div>
 
@@ -244,13 +252,15 @@ export default function VillagePage() {
           <div className="mb-12 flex justify-between items-end">
             <div>
               <h1 className="text-5xl font-black text-white tracking-tight mb-3 uppercase leading-none">
-                {viewMode === 'visualizer' ? 'Ecosystem Overview' : (simState === 'emergency' ? 'Containment Sector' : 'Ecosystem Matrix')}
+                {viewMode === 'office' ? 'Virtual Office' : viewMode === 'visualizer' ? 'Ecosystem Overview' : (simState === 'emergency' ? 'Containment Sector' : 'Ecosystem Matrix')}
               </h1>
               <p className="text-muted-foreground font-bold text-[11px] uppercase tracking-[0.3em]">
-                {viewMode === 'visualizer' 
-                  ? 'Real-time 3D rendering of neural ecosystem nodes.' 
-                  : (simState === 'emergency' 
-                    ? 'Protocols enforced. Neural flux exceeding safety thresholds.' 
+                {viewMode === 'office'
+                  ? 'Watch agents review code, run standups, and ship — live.'
+                  : viewMode === 'visualizer'
+                  ? 'Real-time 3D rendering of neural ecosystem nodes.'
+                  : (simState === 'emergency'
+                    ? 'Protocols enforced. Neural flux exceeding safety thresholds.'
                     : 'Live execution monitoring in autonomous housing units.')}
               </p>
             </div>
@@ -268,7 +278,7 @@ export default function VillagePage() {
 
           <AnimatePresence mode="wait">
             {viewMode === 'grid' ? (
-              <motion.div 
+              <motion.div
                 key="grid"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -283,17 +293,17 @@ export default function VillagePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
                     >
-                      <AgentPod 
-                        agent={agent} 
-                        simState={simState} 
+                      <AgentPod
+                        agent={agent}
+                        simState={simState}
                         isGlobalSyncing={isSyncing}
                       />
                     </motion.div>
                   ))}
                 </div>
-                
+
                 {showLog && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 50 }}
@@ -302,6 +312,16 @@ export default function VillagePage() {
                     <MissionLog />
                   </motion.div>
                 )}
+              </motion.div>
+            ) : viewMode === 'office' ? (
+              <motion.div
+                key="office"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
+                className="flex justify-center items-center"
+              >
+                <VirtualOffice />
               </motion.div>
             ) : (
               <motion.div
