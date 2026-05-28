@@ -8,7 +8,7 @@ import {
   Package, Settings, ShoppingCart, Sparkles, Terminal, Workflow, Wrench, Zap,
   Send, ChevronRight, Coins, FlaskConical, Pickaxe, Truck, MessageSquare, Bell,
   Trophy, Target, Flame, Star, Award, CheckCircle2, Circle, X, Power, Play, Pause,
-  Clock, CheckCircle, Wifi, Radio, Brain, FileCode, Shield
+  Clock, CheckCircle, Wifi, Radio, Brain, FileCode, Shield, Users
 } from "lucide-react";
 import StylizedAvatar from "@/components/village/StylizedAvatar";
 import { motion, AnimatePresence } from 'framer-motion';

@@ -61,10 +61,11 @@ export type RevenueMetrics = {
   chatRevenue?: number;
 };
 
-export type AIModel = 
-  | 'gemini-1.5-flash' 
+export type AIModel =
+  | 'gemini-1.5-flash'
   | 'gemini-1.5-pro'
-  | 'deepseek-chat' 
+  | 'gemini-2.5-flash'
+  | 'deepseek-chat'
   | 'deepseek-reasoner'
   | 'claude-3-5-sonnet'
   | 'claude-3-opus'

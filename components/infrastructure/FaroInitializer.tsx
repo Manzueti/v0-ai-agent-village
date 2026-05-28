@@ -15,7 +15,6 @@ export default function FaroInitializer() {
         url: faroUrl,
         app: {
           name: 'cyber-empire',
-          id: faroAppId,
           version: '0.2.0',
         },
         instrumentations: [

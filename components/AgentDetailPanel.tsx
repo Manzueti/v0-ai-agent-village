@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { Employee, AgentStatus } from '@/lib/types';
-import { 
+import {
   X, TrendingUp, Zap, Shield, Clock, Activity, Cpu,
   DollarSign, Target, Users, BarChart3, CreditCard, Mail,
   MessageSquare, Globe, Search, PieChart, ArrowUpRight,
-  Wallet, Percent, Calendar, Award, Terminal, Command, Power, Microchip
+  Wallet, Percent, Calendar, Award, Terminal, Command, Power, Microchip,
+  CheckCircle2, Play, Pause, AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

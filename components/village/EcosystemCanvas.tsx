@@ -90,7 +90,7 @@ export default function EcosystemCanvas() {
 
             <Stars radius={200} depth={100} count={5000} factor={4} saturation={0} fade speed={1} />
 
-            <EffectComposer disableNormalPass>
+            <EffectComposer enableNormalPass={false}>
               <Bloom 
                 intensity={2.0} 
                 luminanceThreshold={0.2} 

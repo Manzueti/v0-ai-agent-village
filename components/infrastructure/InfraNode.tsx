@@ -10,7 +10,7 @@ interface InfraNodeProps {
   scale?: number;
 }
 
-const nodeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+const nodeIcons: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   'server': Server,
   'database': Database,
   'firewall': Shield,
