@@ -1,811 +1,694 @@
 "use client";
+// VirtualOffice.tsx — Pixel-art top-down AI station grid
 
-import { useRef, useMemo, useState, useCallback, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, PerspectiveCamera, Sparkles } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import * as THREE from "three";
+import { useMemo, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { employees } from "@/lib/data";
-import { Employee } from "@/lib/types";
-import ErrorBoundary from "../ErrorBoundary";
 
-// ─── Constants ──────────────────────────────────────────────────────────────
+// ─── Department config ────────────────────────────────────────────────────────
 
-type Activity = "coding" | "reviewing" | "standup" | "deploying" | "idle";
+const DEPT_CFG = {
+  "Revenue Hub":    { color: "#ff6a00", shadow: "#ff6a0055", label: "REVENUE HUB",     num: "01", sub: "Sales & Pipeline"         },
+  "Finance Vault":  { color: "#ffcc00", shadow: "#ffcc0055", label: "FINANCE VAULT",   num: "02", sub: "Capital & Risk"            },
+  "Creative Studio":{ color: "#cc44ff", shadow: "#cc44ff55", label: "CREATIVE STUDIO", num: "03", sub: "Content & Brand"           },
+  "Tech Nexus":     { color: "#00cfff", shadow: "#00cfff55", label: "TECH NEXUS",      num: "04", sub: "Engineering & Defense"     },
+  "Command Deck":   { color: "#00ff88", shadow: "#00ff8855", label: "COMMAND DECK",    num: "05", sub: "Strategic Operations"      },
+} as const;
 
-const DEPT_COLORS: Record<string, string> = {
-  "Revenue Hub":    "#00e5ff",
-  "Finance Vault":  "#ffb300",
-  "Creative Studio":"#ce93d8",
-  "Tech Nexus":     "#448aff",
-  "Command Deck":   "#69ff47",
-};
+type Dept = keyof typeof DEPT_CFG;
 
-// Department base positions and row layout
-const DEPT_BASES: Record<string, [number, number, number]> = {
-  "Revenue Hub":    [-36, 0, -28],
-  "Finance Vault":  [ 2,  0, -28],
-  "Creative Studio":[-36, 0,  10],
-  "Tech Nexus":     [ 2,  0,  10],
-  "Command Deck":   [-12, 0,  -6],
-};
+// ─── Pixel agent SVG sprite ───────────────────────────────────────────────────
 
-const PER_ROW = 4;
-const DESK_SPACING_X = 4.2;
-const DESK_SPACING_Z = 5.5;
-
-function getDeskPositions(dept: string, count: number): [number, number, number][] {
-  const base = DEPT_BASES[dept] ?? [0, 0, 0];
-  const out: [number, number, number][] = [];
-  for (let i = 0; i < count; i++) {
-    const col = i % PER_ROW;
-    const row = Math.floor(i / PER_ROW);
-    out.push([base[0] + col * DESK_SPACING_X, 0, base[2] + row * DESK_SPACING_Z]);
-  }
-  return out;
-}
-
-// ─── Office Room ─────────────────────────────────────────────────────────────
-
-function OfficeRoom() {
-  const floorMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#12122a", roughness: 0.85, metalness: 0.05 }), []);
-  const wallMat  = useMemo(() => new THREE.MeshStandardMaterial({ color: "#0e0e20", roughness: 1.0 }), []);
-  const ceilMat  = useMemo(() => new THREE.MeshStandardMaterial({ color: "#0b0b1a", roughness: 1.0 }), []);
-
+function PixelSprite({ color, size = 20 }: { color: string; size?: number }) {
   return (
-    <group>
-      {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow material={floorMat}>
-        <planeGeometry args={[120, 90]} />
-      </mesh>
-
-      {/* Floor grid overlay */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]}>
-        <planeGeometry args={[120, 90]} />
-        <meshBasicMaterial color="#1a2a6c" wireframe transparent opacity={0.12} />
-      </mesh>
-
-      {/* Ceiling */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 11, 0]} material={ceilMat}>
-        <planeGeometry args={[120, 90]} />
-      </mesh>
-
-      {/* Walls */}
-      <mesh position={[0, 5.5, -45]} material={wallMat}>
-        <planeGeometry args={[120, 11]} />
-      </mesh>
-      <mesh position={[0, 5.5, 45]} rotation={[0, Math.PI, 0]} material={wallMat}>
-        <planeGeometry args={[120, 11]} />
-      </mesh>
-      <mesh position={[-60, 5.5, 0]} rotation={[0, Math.PI / 2, 0]} material={wallMat}>
-        <planeGeometry args={[90, 11]} />
-      </mesh>
-      <mesh position={[60, 5.5, 0]} rotation={[0, -Math.PI / 2, 0]} material={wallMat}>
-        <planeGeometry args={[90, 11]} />
-      </mesh>
-
-      {/* Wall accent strips */}
-      <mesh position={[0, 10.5, -44.9]}>
-        <planeGeometry args={[120, 0.08]} />
-        <meshBasicMaterial color="#1a3a6c" transparent opacity={0.6} />
-      </mesh>
-      <mesh position={[0, 0.5, -44.9]}>
-        <planeGeometry args={[120, 0.06]} />
-        <meshBasicMaterial color="#1a2050" transparent opacity={0.5} />
-      </mesh>
-    </group>
-  );
-}
-
-// ─── Ceiling Lights ──────────────────────────────────────────────────────────
-
-function CeilingLight({ position }: { position: [number, number, number] }) {
-  return (
-    <group position={position}>
-      <mesh>
-        <boxGeometry args={[2.5, 0.08, 0.6]} />
-        <meshBasicMaterial color="#cce8ff" />
-      </mesh>
-      <pointLight intensity={18} distance={22} color="#bbd5ff" decay={2} castShadow shadow-mapSize={256} />
-    </group>
-  );
-}
-
-// ─── Monitor Screen ───────────────────────────────────────────────────────────
-
-const CODE_CONTENT: Record<Activity, { lines: string[]; title: string }> = {
-  coding: {
-    title: "editor.ts",
-    lines: [
-      "async fn run_agent() {",
-      "  let ctx = Context::new();",
-      "+ let res = model.infer(ctx)",
-      "+ .await?;",
-      "- old_sync_call(ctx);",
-      "  emit(res.tokens);",
-      "}",
-    ],
-  },
-  reviewing: {
-    title: "PR #482 · diff",
-    lines: [
-      "Files changed: 4",
-      "+ auth/session.ts",
-      "+ types/agent.d.ts",
-      "~ api/handler.ts",
-      "- legacy/sync.js",
-      "◎ 3 comments pending",
-    ],
-  },
-  standup: {
-    title: "Standup · today",
-    lines: [
-      "✓ Shipped PR #479",
-      "✓ Fixed rate limiter",
-      "→ Reviewing PR #482",
-      "→ Deploy staging",
-      "⚡ Blocker: none",
-    ],
-  },
-  deploying: {
-    title: "deploy · v2.4.1",
-    lines: [
-      "▶ Pipeline running",
-      "✓ lint  passed",
-      "✓ build passed",
-      "⟳ tests  87%",
-      "░░░░░████ 72%",
-    ],
-  },
-  idle: {
-    title: "idle",
-    lines: ["—", "awaiting task", "—"],
-  },
-};
-
-function MonitorScreen({ activity, color }: { activity: Activity; color: string }) {
-  const { lines, title } = CODE_CONTENT[activity];
-
-  return (
-    <group>
-      {/* Monitor bezel */}
-      <mesh>
-        <boxGeometry args={[1.5, 1.0, 0.06]} />
-        <meshStandardMaterial color="#111118" metalness={0.8} roughness={0.25} />
-      </mesh>
-      {/* Screen face */}
-      <mesh position={[0, 0, 0.032]}>
-        <planeGeometry args={[1.38, 0.88]} />
-        <meshBasicMaterial color="#04091a" />
-      </mesh>
-
-      {/* Screen content — HTML overlay */}
-      <Html position={[0, 0, 0.065]} transform scale={0.075} center>
-        <div
-          style={{
-            width: 180,
-            fontFamily: '"Courier New", monospace',
-            fontSize: 11,
-            padding: "6px 8px",
-            background: "transparent",
-            userSelect: "none",
-            lineHeight: 1.65,
-          }}
-        >
-          <div style={{ color, marginBottom: 4, fontSize: 9, letterSpacing: "0.1em", opacity: 0.9 }}>
-            ◈ {title}
-          </div>
-          {lines.map((line, i) => (
-            <div
-              key={i}
-              style={{
-                color: line.startsWith("+")
-                  ? "#4ec994"
-                  : line.startsWith("-")
-                  ? "#f47174"
-                  : line.startsWith("✓")
-                  ? "#4ec994"
-                  : line.startsWith("⚡")
-                  ? "#ffb74d"
-                  : line.startsWith("⟳") || line.startsWith("░")
-                  ? "#ffcc02"
-                  : "#7ea8c4",
-              }}
-            >
-              {line}
-            </div>
-          ))}
-        </div>
-      </Html>
-
-      {/* Stand neck */}
-      <mesh position={[0, -0.62, 0]}>
-        <boxGeometry args={[0.1, 0.24, 0.08]} />
-        <meshStandardMaterial color="#1a1a28" metalness={0.9} />
-      </mesh>
-      {/* Stand base */}
-      <mesh position={[0, -0.75, 0.06]}>
-        <boxGeometry args={[0.45, 0.04, 0.22]} />
-        <meshStandardMaterial color="#1a1a28" metalness={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-// ─── Agent Figure (seated) ────────────────────────────────────────────────────
-
-function AgentFigure({ color, activity }: { color: string; activity: Activity }) {
-  const root  = useRef<THREE.Group>(null);
-  const head  = useRef<THREE.Mesh>(null);
-  const lArm  = useRef<THREE.Group>(null);
-  const rArm  = useRef<THREE.Group>(null);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (root.current) root.current.position.y = Math.sin(t * 0.9) * 0.015;
-    if (head.current) {
-      if (activity === "coding" || activity === "reviewing") {
-        head.current.rotation.x = Math.sin(t * 0.35) * 0.12 - 0.08;
-        head.current.rotation.y = Math.sin(t * 0.28) * 0.08;
-      } else if (activity === "standup") {
-        head.current.rotation.x = 0;
-        head.current.rotation.y = Math.sin(t * 1.2) * 0.25;
-      } else {
-        head.current.rotation.x = Math.sin(t * 0.15) * 0.06;
-      }
-    }
-    if (activity === "coding") {
-      if (lArm.current) lArm.current.rotation.x = Math.sin(t * 8) * 0.18 - 0.55;
-      if (rArm.current) rArm.current.rotation.x = Math.cos(t * 8) * 0.18 - 0.55;
-    }
-  });
-
-  return (
-    <group ref={root}>
-      {/* Torso */}
-      <mesh position={[0, 0.55, 0]} castShadow>
-        <boxGeometry args={[0.38, 0.52, 0.22]} />
-        <meshStandardMaterial color="#1c1e38" metalness={0.2} roughness={0.75} />
-      </mesh>
-      {/* Shirt glow stripe */}
-      <mesh position={[0, 0.55, 0.115]}>
-        <planeGeometry args={[0.2, 0.3]} />
-        <meshBasicMaterial color={color} transparent opacity={0.25} />
-      </mesh>
+    <svg width={size} height={size * 1.45} viewBox="0 0 20 29" style={{ overflow: "visible", display: "block" }}>
+      {/* Shadow */}
+      <ellipse cx="10" cy="28" rx="5.5" ry="1.5" fill="rgba(0,0,0,0.55)" />
+      {/* Legs */}
+      <rect x="5.5" y="18" width="3.5" height="8" rx="1.5" fill={color} opacity="0.82" />
+      <rect x="11" y="18" width="3.5" height="8" rx="1.5" fill={color} opacity="0.82" />
+      {/* Body */}
+      <rect x="3.5" y="9" width="13" height="11" rx="2" fill={color} />
+      {/* Arms */}
+      <rect x="0" y="10" width="3.5" height="7" rx="1.5" fill={color} opacity="0.88" />
+      <rect x="16.5" y="10" width="3.5" height="7" rx="1.5" fill={color} opacity="0.88" />
+      {/* Neck */}
+      <rect x="8" y="6.5" width="4" height="3.5" fill={color} />
       {/* Head */}
-      <group position={[0, 0.97, 0]} ref={head}>
-        <mesh castShadow>
-          <boxGeometry args={[0.3, 0.3, 0.3]} />
-          <meshStandardMaterial color="#252545" metalness={0.15} roughness={0.65} />
-        </mesh>
-        {/* Eyes */}
-        <mesh position={[-0.08, 0.03, 0.152]}>
-          <boxGeometry args={[0.07, 0.028, 0.01]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-        <mesh position={[0.08, 0.03, 0.152]}>
-          <boxGeometry args={[0.07, 0.028, 0.01]} />
-          <meshBasicMaterial color={color} />
-        </mesh>
-      </group>
-      {/* Left arm */}
-      <group position={[-0.24, 0.72, 0.04]} ref={lArm}>
-        <mesh position={[0, -0.18, 0]} castShadow>
-          <boxGeometry args={[0.1, 0.36, 0.12]} />
-          <meshStandardMaterial color="#1c1e38" />
-        </mesh>
-      </group>
-      {/* Right arm */}
-      <group position={[0.24, 0.72, 0.04]} ref={rArm}>
-        <mesh position={[0, -0.18, 0]} castShadow>
-          <boxGeometry args={[0.1, 0.36, 0.12]} />
-          <meshStandardMaterial color="#1c1e38" />
-        </mesh>
-      </group>
-      {/* Legs (seated position — bent at hips) */}
-      <mesh position={[-0.1, 0.25, 0.18]} rotation={[0.9, 0, 0]} castShadow>
-        <boxGeometry args={[0.13, 0.34, 0.13]} />
-        <meshStandardMaterial color="#141424" />
-      </mesh>
-      <mesh position={[0.1, 0.25, 0.18]} rotation={[0.9, 0, 0]} castShadow>
-        <boxGeometry args={[0.13, 0.34, 0.13]} />
-        <meshStandardMaterial color="#141424" />
-      </mesh>
-    </group>
+      <circle cx="10" cy="5.5" r="5.5" fill={color} />
+      {/* Visor */}
+      <ellipse cx="10" cy="6.5" rx="3.5" ry="2.5" fill="rgba(0,220,255,0.5)" />
+      <ellipse cx="10" cy="6.5" rx="3.5" ry="2.5" fill="none" stroke="rgba(0,255,255,0.85)" strokeWidth="0.6" />
+      {/* Highlight */}
+      <ellipse cx="8.5" cy="4" rx="1.5" ry="1" fill="rgba(255,255,255,0.28)" />
+      {/* Glow ring */}
+      <circle cx="10" cy="5.5" r="5.5" fill="none" stroke={color} strokeWidth="0.6" opacity="0.45" />
+    </svg>
   );
 }
 
-// ─── Desk Unit ────────────────────────────────────────────────────────────────
+// ─── Walking agent (Framer Motion path) ──────────────────────────────────────
 
-interface DeskProps {
-  position: [number, number, number];
-  agent: Employee;
-  activity: Activity;
-  isSelected: boolean;
-  onSelect: () => void;
-}
+function WalkingAgent({
+  color, roomW, roomH, seed,
+}: { color: string; roomW: number; roomH: number; seed: number }) {
+  const pts = useMemo(() => {
+    const points: { x: number; y: number }[] = [];
+    let x = 20 + (seed * 73 % Math.max(roomW - 45, 1));
+    let y = 15 + (seed * 47 % Math.max(roomH - 35, 1));
+    for (let i = 0; i < 7; i++) {
+      points.push({ x, y });
+      x = 18 + Math.abs((x * 31 + seed * 17 + i * 53) % (roomW - 38));
+      y = 12 + Math.abs((y * 29 + seed * 13 + i * 41) % (roomH - 32));
+    }
+    return points;
+  }, [seed, roomW, roomH]);
 
-function DeskUnit({ position, agent, activity, isSelected, onSelect }: DeskProps) {
-  const color = DEPT_COLORS[agent.department] ?? "#00e5ff";
+  const dur = 9 + (seed % 6) * 1.8;
 
   return (
-    <group position={position}>
-      {/* Desk surface */}
-      <mesh position={[0, 0.76, 0]} castShadow receiveShadow onClick={onSelect}>
-        <boxGeometry args={[2.0, 0.07, 1.0]} />
-        <meshStandardMaterial color={isSelected ? "#1e2248" : "#16182e"} roughness={0.45} metalness={0.35} />
-      </mesh>
-
-      {/* Desk legs */}
-      {([ [-0.88, -0.38], [0.88, -0.38], [-0.88, 0.42], [0.88, 0.42] ] as [number, number][]).map(([x, z], i) => (
-        <mesh key={i} position={[x, 0.37, z]}>
-          <boxGeometry args={[0.06, 0.75, 0.06]} />
-          <meshStandardMaterial color="#0c0c1c" metalness={0.85} roughness={0.15} />
-        </mesh>
-      ))}
-
-      {/* Selected glow strip along front edge */}
-      {isSelected && (
-        <mesh position={[0, 0.8, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[2.0, 0.04]} />
-          <meshBasicMaterial color={color} transparent opacity={0.9} />
-        </mesh>
-      )}
-
-      {/* Keyboard */}
-      <mesh position={[0, 0.81, 0.12]}>
-        <boxGeometry args={[0.72, 0.025, 0.28]} />
-        <meshStandardMaterial color="#0d0d1e" roughness={0.7} />
-      </mesh>
-
-      {/* Monitor — back of desk */}
-      <group position={[0, 1.6, -0.26]}>
-        <MonitorScreen activity={activity} color={color} />
-      </group>
-
-      {/* Agent figure — seated at desk */}
-      <group position={[0, 0, 0.72]} rotation={[0, Math.PI, 0]}>
-        <AgentFigure color={color} activity={activity} />
-      </group>
-
-      {/* Chair seat */}
-      <mesh position={[0, 0.46, 0.92]} castShadow>
-        <boxGeometry args={[0.52, 0.06, 0.46]} />
-        <meshStandardMaterial color="#0e0e20" roughness={0.85} />
-      </mesh>
-      {/* Chair back */}
-      <mesh position={[0, 0.76, 1.14]}>
-        <boxGeometry args={[0.48, 0.5, 0.06]} />
-        <meshStandardMaterial color="#0e0e20" roughness={0.85} />
-      </mesh>
-      {/* Chair leg post */}
-      <mesh position={[0, 0.22, 0.92]}>
-        <boxGeometry args={[0.05, 0.44, 0.05]} />
-        <meshStandardMaterial color="#08081a" metalness={0.8} />
-      </mesh>
-
-      {/* Name badge HTML */}
-      <Html
-        position={[0, 2.9, 0]}
-        center
-        distanceFactor={20}
-        zIndexRange={[100, 0]}
-        occlude={false}
+    <motion.div
+      style={{ position: "absolute", top: 0, left: 0, zIndex: 4 }}
+      animate={{ x: pts.map(p => p.x), y: pts.map(p => p.y) }}
+      transition={{
+        duration: dur,
+        repeat: Infinity,
+        ease: "linear",
+        times: pts.map((_, i) => i / (pts.length - 1)),
+        repeatType: "loop",
+      }}
+    >
+      <motion.div
+        animate={{ y: [0, -2, 0] }}
+        transition={{ duration: 0.9 + (seed % 4) * 0.15, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div
-          onClick={onSelect}
-          style={{
-            background: isSelected ? "rgba(8,12,40,0.95)" : "rgba(5,8,28,0.82)",
-            border: `1px solid ${isSelected ? color : color + "33"}`,
-            borderRadius: 6,
-            padding: "5px 10px",
-            fontFamily: "monospace",
-            fontSize: 9,
-            color: "#c8d8f0",
-            whiteSpace: "nowrap",
-            cursor: "pointer",
-            boxShadow: isSelected ? `0 0 16px ${color}66` : "none",
-            transition: "all 0.2s",
-            lineHeight: 1.6,
-          }}
-        >
-          <span style={{ marginRight: 4 }}>{agent.avatar}</span>
-          <strong style={{ color: "#fff" }}>{agent.name}</strong>
-          <span style={{ color: "#8899bb", marginLeft: 4 }}>· {agent.role}</span>
-          <br />
-          <span style={{ color, fontSize: 8, letterSpacing: "0.12em" }}>
-            {activity === "idle" ? "◌ idle" : `▶ ${activity}`}
-          </span>
-        </div>
-      </Html>
-    </group>
+        <PixelSprite color={color} size={18} />
+      </motion.div>
+    </motion.div>
   );
 }
 
-// ─── Department Zone Marker ───────────────────────────────────────────────────
+// ─── SVG furniture: desks ─────────────────────────────────────────────────────
 
-function ZoneMarker({ position, label, color }: { position: [number, number, number]; label: string; color: string }) {
+function Desks({ color, x = 0, y = 0, cols = 3 }: { color: string; x?: number; y?: number; cols?: number }) {
   return (
-    <group position={position}>
-      {/* Floor tint */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]}>
-        <planeGeometry args={[18, 14]} />
-        <meshBasicMaterial color={color} transparent opacity={0.025} />
-      </mesh>
-      {/* Border lines */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 0]}>
-        <planeGeometry args={[18, 14]} />
-        <meshBasicMaterial color={color} wireframe transparent opacity={0.08} />
-      </mesh>
-
-      <Html position={[0, 0.3, -8]} center distanceFactor={28}>
-        <div style={{
-          fontFamily: "monospace",
-          fontSize: 8,
-          color,
-          letterSpacing: "0.25em",
-          textTransform: "uppercase",
-          opacity: 0.55,
-          userSelect: "none",
-          whiteSpace: "nowrap",
-        }}>
-          ▸ {label}
-        </div>
-      </Html>
-    </group>
-  );
-}
-
-// ─── Conference Table ─────────────────────────────────────────────────────────
-
-function ConferenceRoom({ standupAgents }: { standupAgents: Employee[] }) {
-  const ref = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (ref.current) {
-      (ref.current.material as THREE.MeshBasicMaterial).opacity =
-        0.08 + Math.sin(clock.getElapsedTime() * 1.5) * 0.03;
-    }
-  });
-
-  return (
-    <group position={[35, 0, -16]}>
-      {/* Room divider walls (glass-like) */}
-      <mesh position={[-6, 3.5, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[16, 7]} />
-        <meshBasicMaterial color="#1a3a6c" transparent opacity={0.08} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, 3.5, -8]}>
-        <planeGeometry args={[12, 7]} />
-        <meshBasicMaterial color="#1a3a6c" transparent opacity={0.08} side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* Table surface */}
-      <mesh position={[0, 0.78, 0]} castShadow receiveShadow>
-        <boxGeometry args={[7, 0.1, 3.5]} />
-        <meshStandardMaterial color="#1a1f3c" roughness={0.3} metalness={0.55} />
-      </mesh>
-      {/* Table legs */}
-      {([ [-3.2,-1.4],[ 3.2,-1.4],[-3.2,1.4],[ 3.2,1.4] ] as [number,number][]).map(([x,z],i)=>(
-        <mesh key={i} position={[x, 0.38, z]}>
-          <boxGeometry args={[0.1, 0.75, 0.1]} />
-          <meshStandardMaterial color="#0a0a1a" metalness={0.9} />
-        </mesh>
+    <g transform={`translate(${x},${y})`}>
+      {Array.from({ length: cols }).map((_, i) => (
+        <g key={i} transform={`translate(${i * 40}, 0)`}>
+          <rect x="0" y="0" width="34" height="16" rx="2" fill={color + "28"} stroke={color + "77"} strokeWidth="0.8" />
+          <rect x="8" y="2" width="16" height="9" rx="1" fill={color + "55"} />
+          <rect x="9" y="3" width="14" height="7" fill={color + "18"} stroke={color + "66"} strokeWidth="0.4" />
+          {/* tiny keyboard */}
+          <rect x="5" y="13" width="10" height="3" rx="0.5" fill={color + "33"} />
+          {/* chair */}
+          <circle cx="17" cy="24" r="7" fill={color + "33"} stroke={color + "55"} strokeWidth="0.8" />
+        </g>
       ))}
+    </g>
+  );
+}
 
-      {/* Holographic centerpiece */}
-      <mesh ref={ref} position={[0, 1.0, 0]}>
-        <boxGeometry args={[2.0, 0.6, 0.02]} />
-        <meshBasicMaterial color="#00e5ff" transparent opacity={0.1} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, 0.84, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[2.0, 1.0]} />
-        <meshBasicMaterial color="#00e5ff" transparent opacity={0.06} />
-      </mesh>
+// ─── SVG furniture: server racks ─────────────────────────────────────────────
 
-      {/* Whiteboard on wall */}
-      <group position={[0, 4.5, -7.8]}>
-        <mesh>
-          <boxGeometry args={[5, 2.5, 0.06]} />
-          <meshStandardMaterial color="#0f1428" roughness={0.2} metalness={0.4} />
-        </mesh>
-        <Html position={[0, 0, 0.05]} transform scale={0.1} center>
-          <div style={{
-            width: 480, height: 230,
-            fontFamily: "monospace", fontSize: 11,
-            color: "#7ea8c4", padding: "10px 14px",
-            lineHeight: 1.7, userSelect: "none",
-          }}>
-            <div style={{ color: "#00e5ff", marginBottom: 8, letterSpacing: "0.15em" }}>◈ SPRINT 14 · STANDUP</div>
-            <div style={{ color: "#4ec994" }}>✓  Shipped auth refactor (PR #479)</div>
-            <div style={{ color: "#4ec994" }}>✓  Fixed rate-limiter regression</div>
-            <div style={{ color: "#ffcc02" }}>→  Reviewing agent task router (PR #482)</div>
-            <div style={{ color: "#ffcc02" }}>→  Deploy staging env v2.4.1</div>
-            <div style={{ color: "#f47174" }}>⚡ Blocked: model API quota (Gemini)</div>
-          </div>
-        </Html>
-      </group>
+function Servers({ color, x = 0, y = 0 }: { color: string; x?: number; y?: number }) {
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {[0, 28, 56].map((ox) => (
+        <g key={ox} transform={`translate(${ox}, 0)`}>
+          <rect x="0" y="0" width="22" height="55" rx="2" fill={color + "1a"} stroke={color + "66"} strokeWidth="0.8" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <g key={i} transform={`translate(2, ${i * 7 + 2})`}>
+              <rect x="0" y="0" width="18" height="4.5" rx="0.8" fill={color + "33"} />
+              <circle cx="16" cy="2.2" r="1.2" fill={color} opacity={0.6 + (i % 3) * 0.15} />
+              <rect x="2" y="1.5" width="10" height="1.5" rx="0.5" fill={color + "44"} />
+            </g>
+          ))}
+        </g>
+      ))}
+    </g>
+  );
+}
 
-      {/* Attendees around table */}
-      {standupAgents.slice(0, 8).map((agent, i) => {
-        const total = Math.min(standupAgents.length, 8);
-        const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
-        const rx = Math.cos(angle) * 3.0;
-        const rz = Math.sin(angle) * 2.0;
-        const color = DEPT_COLORS[agent.department] ?? "#00e5ff";
-        return (
-          <group key={agent.id} position={[rx, 0, rz]} rotation={[0, -angle - Math.PI / 2, 0]}>
-            <AgentFigure color={color} activity="standup" />
-            <Html position={[0, 1.8, 0]} center distanceFactor={22}>
-              <div style={{
-                background: "rgba(4,8,26,0.85)",
-                border: `1px solid ${color}44`,
-                borderRadius: 4,
-                padding: "2px 7px",
-                fontFamily: "monospace",
-                fontSize: 8,
-                color: "#c8d8f0",
-                whiteSpace: "nowrap",
-              }}>
-                {agent.avatar} {agent.name.split(" ")[0]}
-              </div>
-            </Html>
-          </group>
-        );
+// ─── SVG furniture: circular platform / trading floor ─────────────────────────
+
+function CirclePlatform({ color, cx = 0, cy = 0, r = 32 }: { color: string; cx?: number; cy?: number; r?: number }) {
+  return (
+    <g transform={`translate(${cx},${cy})`}>
+      <circle cx="0" cy="0" r={r} fill={color + "0e"} stroke={color + "44"} strokeWidth="2" />
+      <circle cx="0" cy="0" r={r * 0.65} fill={color + "18"} stroke={color + "66"} strokeWidth="1.2" />
+      <circle cx="0" cy="0" r={r * 0.3} fill={color + "55"} stroke={color} strokeWidth="1.5" />
+      {[0, 60, 120, 180, 240, 300].map((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        const x1 = r * 0.3 * Math.cos(rad), y1 = r * 0.3 * Math.sin(rad);
+        const x2 = r * 0.65 * Math.cos(rad), y2 = r * 0.65 * Math.sin(rad);
+        return <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color + "66"} strokeWidth="1" />;
       })}
-
-      {/* Room label */}
-      <Html position={[0, 5.5, 0]} center distanceFactor={22}>
-        <div style={{
-          background: "rgba(0,229,255,0.07)",
-          border: "1px solid rgba(0,229,255,0.25)",
-          borderRadius: 4,
-          padding: "3px 12px",
-          fontFamily: "monospace",
-          fontSize: 8,
-          color: "#00e5ff",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          whiteSpace: "nowrap",
-        }}>
-          ◈ Standup Room
-        </div>
-      </Html>
-
-      {/* Accent light */}
-      <pointLight position={[0, 8, 0]} intensity={12} distance={18} color="#99ccff" decay={2} />
-    </group>
-  );
-}
-
-// ─── Office Scene (inside Canvas) ─────────────────────────────────────────────
-
-interface SceneProps {
-  agentActivities: Record<string, Activity>;
-  selectedId: string | null;
-  onSelect: (id: string) => void;
-}
-
-function OfficeSceneInner({ agentActivities, selectedId, onSelect }: SceneProps) {
-  const byDept = useMemo(() => {
-    const map: Record<string, Employee[]> = {};
-    for (const e of employees) {
-      (map[e.department] ??= []).push(e);
-    }
-    return map;
-  }, []);
-
-  const standupAgents = useMemo(() => employees.filter(e => e.status === "running").slice(0, 8), []);
-
-  const ceilingLights: [number, number, number][] = [
-    [-30, 10.9, -25], [-15, 10.9, -25], [0, 10.9, -25], [15, 10.9, -25], [30, 10.9, -25],
-    [-30, 10.9, -5],  [-15, 10.9, -5],  [0, 10.9, -5],  [15, 10.9, -5],  [30, 10.9, -5],
-    [-30, 10.9,  15], [-15, 10.9,  15], [0, 10.9,  15], [15, 10.9,  15], [30, 10.9,  15],
-    [45,  10.9, -25], [45,  10.9,  -5], [45, 10.9,  15],
-  ];
-
-  return (
-    <>
-      <OfficeRoom />
-
-      {ceilingLights.map((p, i) => (
-        <CeilingLight key={i} position={p} />
-      ))}
-
-      {/* Ambient warm fill */}
-      <ambientLight intensity={0.18} color="#b8c8f0" />
-
-      {/* Department zones */}
-      {Object.entries(DEPT_BASES).map(([dept, base]) => (
-        <ZoneMarker
-          key={dept}
-          position={[base[0] + 6, 0, base[2] + 5]}
-          label={dept}
-          color={DEPT_COLORS[dept] ?? "#ffffff"}
-        />
-      ))}
-
-      {/* Desk clusters per department */}
-      {Object.entries(byDept).map(([dept, agents]) => {
-        const positions = getDeskPositions(dept, agents.length);
-        return agents.map((agent, i) => (
-          <DeskUnit
-            key={agent.id}
-            position={positions[i]}
-            agent={agent}
-            activity={agentActivities[agent.id] ?? "idle"}
-            isSelected={selectedId === agent.id}
-            onSelect={() => onSelect(agent.id)}
-          />
-        ));
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        return <circle key={deg} cx={r * Math.cos(rad)} cy={r * Math.sin(rad)} r="2.5" fill={color} opacity="0.9" />;
       })}
-
-      {/* Conference / standup room */}
-      <ConferenceRoom standupAgents={standupAgents} />
-
-      {/* Floating ambient particles */}
-      <Sparkles count={120} scale={[100, 8, 80]} size={0.8} speed={0.1} opacity={0.08} color="#6688cc" />
-    </>
+    </g>
   );
 }
 
-// ─── HUD Overlay ──────────────────────────────────────────────────────────────
+// ─── SVG furniture: conference table ─────────────────────────────────────────
 
-function AgentPanel({ agentId, activities }: { agentId: string; activities: Record<string, Activity> }) {
-  const agent = employees.find(e => e.id === agentId);
-  if (!agent) return null;
-  const color = DEPT_COLORS[agent.department] ?? "#00e5ff";
-  const activity = activities[agent.id] ?? "idle";
+function ConfTable({ color, cx = 0, cy = 0 }: { color: string; cx?: number; cy?: number }) {
+  return (
+    <g transform={`translate(${cx},${cy})`}>
+      <ellipse cx="0" cy="0" rx="40" ry="22" fill={color + "1e"} stroke={color} strokeWidth="1.5" />
+      <ellipse cx="0" cy="0" rx="32" ry="16" fill={color + "0e"} stroke={color + "66"} strokeWidth="0.6" />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        const sx = deg % 180 === 0 ? 1.1 : 1;
+        const ex = (42 * sx) * Math.cos(rad), ey = (26 * sx) * Math.sin(rad) * 0.62;
+        return <circle key={deg} cx={ex} cy={ey} r="5.5" fill={color + "33"} stroke={color + "55"} strokeWidth="0.7" />;
+      })}
+      {/* center hologram */}
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill={color + "55"} />
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="none" stroke={color} strokeWidth="1.2" opacity="0.9" />
+    </g>
+  );
+}
+
+// ─── SVG furniture: hex vault ─────────────────────────────────────────────────
+
+function HexVault({ color, cx = 0, cy = 0 }: { color: string; cx?: number; cy?: number }) {
+  const pts = (r: number) =>
+    [0, 60, 120, 180, 240, 300]
+      .map((d) => {
+        const rad = (d * Math.PI) / 180;
+        return `${cx + r * Math.cos(rad)},${cy + r * Math.sin(rad)}`;
+      })
+      .join(" ");
+  return (
+    <g>
+      <polygon points={pts(36)} fill={color + "18"} stroke={color + "66"} strokeWidth="1.5" />
+      <polygon points={pts(24)} fill={color + "28"} stroke={color + "88"} strokeWidth="1" />
+      <circle cx={cx} cy={cy} r="10" fill={color + "66"} stroke={color} strokeWidth="1.8" />
+      <circle cx={cx} cy={cy} r="4" fill={color} />
+    </g>
+  );
+}
+
+// ─── Room furniture switcher ──────────────────────────────────────────────────
+
+function RoomFurniture({ dept, color, w, h }: { dept: Dept; color: string; w: number; h: number }) {
+  const ch = h;
+  return (
+    <svg
+      style={{ position: "absolute", inset: 0, overflow: "visible", pointerEvents: "none" }}
+      width={w}
+      height={ch}
+    >
+      {dept === "Revenue Hub" && (
+        <>
+          <Desks color={color} x={8} y={38} cols={3} />
+          <CirclePlatform color={color} cx={w - 52} cy={ch / 2 + 14} r={30} />
+          <Desks color={color} x={8} y={ch - 52} cols={2} />
+        </>
+      )}
+      {dept === "Finance Vault" && (
+        <>
+          <HexVault color={color} cx={w / 2} cy={ch / 2 - 6} />
+          <Desks color={color} x={8} y={ch - 55} cols={3} />
+        </>
+      )}
+      {dept === "Creative Studio" && (
+        <>
+          <ConfTable color={color} cx={w / 2} cy={ch / 2 + 5} />
+          <Desks color={color} x={8} y={ch - 55} cols={2} />
+        </>
+      )}
+      {dept === "Tech Nexus" && (
+        <>
+          <Servers color={color} x={8} y={35} />
+          <CirclePlatform color={color} cx={w / 2 + 30} cy={ch / 2 + 6} r={24} />
+          <Desks color={color} x={8} y={ch - 55} cols={2} />
+        </>
+      )}
+      {dept === "Command Deck" && (
+        <>
+          <ConfTable color={color} cx={w / 2 - 10} cy={ch / 2 + 2} />
+          <Servers color={color} x={w - 90} y={28} />
+          <Desks color={color} x={8} y={18} cols={2} />
+        </>
+      )}
+    </svg>
+  );
+}
+
+// ─── Corner stats ─────────────────────────────────────────────────────────────
+
+function CornerStats({ dept, color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
+  const running = agents.filter((a) => a.status === "running");
+  const eff = running.length
+    ? Math.round(running.reduce((s, a) => s + a.successRate, 0) / running.length)
+    : 0;
 
   return (
     <div
-      className="absolute bottom-5 left-5 rounded-xl p-4 w-60 pointer-events-none"
       style={{
-        background: "rgba(6,10,30,0.88)",
-        border: `1px solid ${color}55`,
-        boxShadow: `0 0 20px ${color}22`,
+        position: "absolute",
+        top: 32,
+        left: 6,
+        zIndex: 8,
+        background: "rgba(4,4,18,0.82)",
+        border: `1px solid ${color}33`,
+        borderRadius: 3,
+        padding: "5px 7px",
         fontFamily: "monospace",
+        fontSize: 8,
+        lineHeight: 1.7,
+        color: "#ffffff88",
+        backdropFilter: "blur(4px)",
+        pointerEvents: "none",
       }}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">{agent.avatar}</span>
-        <div>
-          <div className="text-white text-xs font-bold">{agent.name}</div>
-          <div className="text-[10px] uppercase tracking-wider" style={{ color }}>{agent.role}</div>
+      <div style={{ color, marginBottom: 2, letterSpacing: "0.08em", fontWeight: "bold" }}>
+        SYSTEM STATUS
+      </div>
+      <div>
+        <span style={{ color: "#44ff88" }}>● ONLINE</span>
+      </div>
+      <div>Power <span style={{ color }}>97%</span></div>
+      <div>Agents <span style={{ color }}>{running.length}/{agents.length}</span></div>
+      <div>Efficiency <span style={{ color: eff > 80 ? "#44ff88" : "#ffcc00" }}>{eff}%</span></div>
+    </div>
+  );
+}
+
+// ─── Activity queue ───────────────────────────────────────────────────────────
+
+function ActivityQueue({ dept, color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
+  const items = agents.slice(0, 4);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 26,
+        right: 6,
+        zIndex: 8,
+        background: "rgba(4,4,18,0.82)",
+        border: `1px solid ${color}33`,
+        borderRadius: 3,
+        padding: "4px 7px",
+        fontFamily: "monospace",
+        fontSize: 7.5,
+        lineHeight: 1.6,
+        backdropFilter: "blur(4px)",
+        pointerEvents: "none",
+        maxWidth: 110,
+      }}
+    >
+      {items.map((a) => (
+        <div key={a.id} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ color: "#ffffff88", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 60 }}>
+            {a.name.split(" ")[0]}
+          </span>
+          <span style={{ color: a.status === "running" ? "#44ff88" : "#ff5555", flexShrink: 0 }}>
+            {a.status === "running" ? "ACTIVE" : "IDLE"}
+          </span>
         </div>
-      </div>
-      <div className="space-y-1.5 text-[10px]">
-        {[
-          ["Dept",    agent.department,                   "#8899cc"],
-          ["Model",   agent.aiModel,                      "#8899cc"],
-          ["Activity",activity.toUpperCase(),             color    ],
-          ["Tasks",   String(agent.tasksCompleted),       "#c8d8f0"],
-          ["Success", `${agent.successRate}%`,            "#4ec994"],
-          ["Level",   `${agent.level}  (${agent.xp} XP)`,"#8899cc"],
-        ].map(([k, v, c]) => (
-          <div key={k} className="flex justify-between">
-            <span className="text-white/40">{k}</span>
-            <span style={{ color: c }}>{v}</span>
-          </div>
-        ))}
-      </div>
-      {/* XP bar */}
-      <div className="mt-3">
-        <div className="h-0.5 w-full rounded-full bg-white/5 overflow-hidden">
-          <div
-            className="h-full rounded-full"
-            style={{ width: `${(agent.xp / agent.nextLevelXp) * 100}%`, background: color }}
+      ))}
+    </div>
+  );
+}
+
+// ─── Single room tile ─────────────────────────────────────────────────────────
+
+const ROOM_W = 240;
+const ROOM_H = 205;
+
+function OfficeRoom({
+  dept,
+  agents,
+  selected,
+  onSelect,
+}: {
+  dept: Dept;
+  agents: typeof employees;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const cfg = DEPT_CFG[dept];
+  const { color, shadow } = cfg;
+
+  return (
+    <div
+      onClick={onSelect}
+      style={{
+        position: "relative",
+        width: ROOM_W,
+        height: ROOM_H,
+        background: "#070714",
+        border: `2px solid ${color}`,
+        boxShadow: selected
+          ? `0 0 0 2px ${color}, 0 0 30px ${shadow}, inset 0 0 40px ${shadow}`
+          : `0 0 18px ${shadow}, inset 0 0 22px ${shadow}`,
+        borderRadius: 5,
+        overflow: "hidden",
+        cursor: "pointer",
+        flexShrink: 0,
+        transition: "box-shadow 0.2s",
+      }}
+    >
+      {/* Floor grid */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(${color}14 1px, transparent 1px),
+            linear-gradient(90deg, ${color}14 1px, transparent 1px)
+          `,
+          backgroundSize: "22px 22px",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Top wall / header */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 30,
+          background: `linear-gradient(to bottom, ${color}2a, transparent)`,
+          borderBottom: `1px solid ${color}44`,
+          zIndex: 9,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 8px",
+          pointerEvents: "none",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "monospace",
+            fontSize: 9,
+            fontWeight: "bold",
+            color,
+            letterSpacing: "0.18em",
+          }}
+        >
+          {cfg.label} <span style={{ opacity: 0.5, fontSize: 7 }}>{cfg.num}</span>
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <motion.span
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            style={{
+              display: "block",
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              background: "#44ff88",
+              boxShadow: "0 0 5px #44ff88",
+            }}
           />
+          <span style={{ fontFamily: "monospace", fontSize: 7, color: "#44ff88", letterSpacing: "0.1em" }}>
+            ONLINE
+          </span>
         </div>
-        <div className="text-[8px] text-white/25 mt-1">
-          {agent.xp} / {agent.nextLevelXp} XP
-        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 24,
+          background: "rgba(0,0,0,0.65)",
+          borderTop: `1px solid ${color}33`,
+          zIndex: 9,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 8px",
+          pointerEvents: "none",
+        }}
+      >
+        <span style={{ fontFamily: "monospace", fontSize: 7, color: "#ffffff44" }}>
+          {cfg.sub.toUpperCase()}
+        </span>
+        <span style={{ fontFamily: "monospace", fontSize: 7, color: color + "cc" }}>
+          {agents.filter((a) => a.status === "running").length} ACTIVE
+        </span>
+      </div>
+
+      {/* Furniture layer */}
+      <div style={{ position: "absolute", inset: 0, top: 30, bottom: 24, pointerEvents: "none" }}>
+        <RoomFurniture
+          dept={dept}
+          color={color}
+          w={ROOM_W}
+          h={ROOM_H - 54}
+        />
+      </div>
+
+      {/* Corner stats */}
+      <CornerStats dept={dept} color={color} agents={agents} />
+
+      {/* Activity queue */}
+      <ActivityQueue dept={dept} color={color} agents={agents} />
+
+      {/* Agents walking */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          top: 30,
+          bottom: 24,
+          overflow: "hidden",
+        }}
+      >
+        {agents.slice(0, 6).map((a, i) => (
+          <WalkingAgent
+            key={a.id}
+            color={color}
+            roomW={ROOM_W - 36}
+            roomH={ROOM_H - 58}
+            seed={i * 11 + dept.charCodeAt(0) + dept.charCodeAt(2)}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-// ─── Main Export ──────────────────────────────────────────────────────────────
+// ─── Global metrics bar ───────────────────────────────────────────────────────
 
-export default function VirtualOffice() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+function MetricsBar() {
+  const [revenue, setRevenue] = useState(6469.92);
+  const [orders, setOrders] = useState(82);
+  const working = employees.filter((e) => e.status === "running").length;
 
-  const agentActivities = useMemo<Record<string, Activity>>(() => {
-    const acts: Activity[] = ["coding", "reviewing", "deploying", "idle"];
-    return Object.fromEntries(
-      employees.map((e, i) => [
-        e.id,
-        e.status !== "running" ? "idle" : acts[i % 3] as Activity,
-      ])
-    );
+  useEffect(() => {
+    const t = setInterval(() => {
+      setRevenue((v) => +(v + (Math.random() * 14 - 4)).toFixed(2));
+      if (Math.random() > 0.72) setOrders((v) => v + 1);
+    }, 1800);
+    return () => clearInterval(t);
   }, []);
 
-  const handleSelect = useCallback((id: string) => {
-    setSelectedId(prev => (prev === id ? null : id));
-  }, []);
-
-  const working   = employees.filter(e => e.status === "running").length;
-  const idle      = employees.filter(e => e.status !== "running").length;
-  const reviewing = Object.values(agentActivities).filter(a => a === "reviewing").length;
-  const deploying = Object.values(agentActivities).filter(a => a === "deploying").length;
+  const stats = [
+    { k: "REVENUE", v: `$${revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, c: "#44ff88" },
+    { k: "ORDERS", v: `${orders}`, c: "#00cfff" },
+    { k: "PRODUCTS", v: "14 LIVE", c: "#ffcc00" },
+    { k: "AGENTS", v: `${working}/${employees.length} ACTIVE`, c: "#ff6a00" },
+  ];
 
   return (
-    <div className="w-full h-[820px] bg-[#06080f] rounded-xl border border-white/10 overflow-hidden relative shadow-[0_0_60px_rgba(0,0,0,0.9)]">
-      <ErrorBoundary
-        fallback={
-          <div className="flex items-center justify-center h-full text-cyan-400 font-mono text-sm uppercase tracking-widest">
-            Virtual Office Offline — WebGL Error
-          </div>
-        }
-      >
-        <Canvas shadows dpr={[1, 1.5]}>
-          <color attach="background" args={["#06080f"]} />
-          <PerspectiveCamera makeDefault position={[0, 32, 58]} fov={52} />
-          <OrbitControls
-            enablePan
-            enableZoom
-            maxDistance={140}
-            minDistance={6}
-            maxPolarAngle={Math.PI / 2.08}
-            makeDefault
-          />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 36,
+        padding: "10px 20px",
+        background: "rgba(4,4,20,0.98)",
+        borderBottom: "1px solid #ffffff12",
+        fontFamily: "monospace",
+      }}
+    >
+      {stats.map(({ k, v, c }) => (
+        <div key={k} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 9, color: "#ffffff44", letterSpacing: "0.2em" }}>{k}:</span>
+          <motion.span
+            animate={{ opacity: [1, 0.75, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            style={{ fontSize: 12, fontWeight: "bold", color: c, letterSpacing: "0.05em" }}
+          >
+            {v}
+          </motion.span>
+        </div>
+      ))}
 
-          <Suspense fallback={null}>
-            <OfficeSceneInner
-              agentActivities={agentActivities}
-              selectedId={selectedId}
-              onSelect={handleSelect}
-            />
-            <EffectComposer enableNormalPass={false}>
-              <Bloom intensity={0.5} luminanceThreshold={0.6} luminanceSmoothing={0.85} />
-              <Vignette eskil={false} offset={0.2} darkness={0.9} />
-            </EffectComposer>
-          </Suspense>
-        </Canvas>
-      </ErrorBoundary>
+      {/* right side live indicator */}
+      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+        <motion.span
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 1.2, repeat: Infinity }}
+          style={{ display: "block", width: 6, height: 6, borderRadius: "50%", background: "#44ff88", boxShadow: "0 0 6px #44ff88" }}
+        />
+        <span style={{ fontSize: 9, color: "#44ff8888", letterSpacing: "0.2em" }}>LIVE</span>
+      </div>
+    </div>
+  );
+}
 
-      {/* ── Status bar ── */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20">
-        <div
-          className="flex items-center gap-4 px-6 py-2 rounded-full text-[10px] font-mono"
-          style={{ background: "rgba(4,8,26,0.75)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
-        >
-          <span className="text-green-400">● {working} working</span>
-          <span className="text-white/30">|</span>
-          <span className="text-blue-400">⟳ {reviewing} reviewing</span>
-          <span className="text-white/30">|</span>
-          <span className="text-yellow-400">▶ {deploying} deploying</span>
-          <span className="text-white/30">|</span>
-          <span className="text-white/40">◌ {idle} idle</span>
-          <span className="text-white/30">|</span>
-          <span className="text-cyan-400">◈ standup active</span>
+// ─── Expansion slot tile ──────────────────────────────────────────────────────
+
+function ExpansionSlot() {
+  return (
+    <div
+      style={{
+        width: ROOM_W,
+        height: ROOM_H,
+        border: "1px dashed #ffffff14",
+        borderRadius: 5,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        background: "rgba(255,255,255,0.01)",
+      }}
+    >
+      <span style={{ fontFamily: "monospace", fontSize: 22, opacity: 0.12 }}>+</span>
+      <span style={{ fontFamily: "monospace", fontSize: 8, color: "#ffffff1a", letterSpacing: "0.25em" }}>
+        EXPANSION SLOT
+      </span>
+    </div>
+  );
+}
+
+// ─── Selected dept detail bar ─────────────────────────────────────────────────
+
+function DetailBar({ dept, agents }: { dept: Dept; agents: typeof employees }) {
+  const cfg = DEPT_CFG[dept];
+  const running = agents.filter((a) => a.status === "running");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 8 }}
+      style={{
+        padding: "12px 20px",
+        borderTop: `1px solid ${cfg.color}44`,
+        background: "rgba(4,4,20,0.95)",
+        fontFamily: "monospace",
+        display: "flex",
+        gap: 28,
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+      }}
+    >
+      <div>
+        <div style={{ color: cfg.color, fontSize: 10, letterSpacing: "0.2em", marginBottom: 4 }}>
+          {cfg.label}
+        </div>
+        <div style={{ color: "#ffffff55", fontSize: 8 }}>
+          {running.length}/{agents.length} agents · {cfg.sub}
         </div>
       </div>
 
-      {/* ── Selected agent panel ── */}
-      {selectedId && (
-        <AgentPanel agentId={selectedId} activities={agentActivities} />
-      )}
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+        {agents.slice(0, 6).map((agent) => (
+          <div key={agent.id}>
+            <div style={{ color: "#ffffffcc", fontSize: 9, marginBottom: 2 }}>
+              {agent.avatar} {agent.name.split(" ")[0]}
+            </div>
+            <div style={{ fontSize: 7, color: agent.status === "running" ? "#44ff88" : "#ff5555" }}>
+              {agent.status.toUpperCase()}
+            </div>
+            <div style={{ fontSize: 7, color: cfg.color + "aa", marginTop: 1 }}>
+              {agent.aiModel}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
-      {/* ── Controls hint ── */}
+// ─── Main export ──────────────────────────────────────────────────────────────
+
+export default function VirtualOffice() {
+  const [selectedDept, setSelectedDept] = useState<Dept | null>(null);
+
+  const byDept = useMemo(() => {
+    const m: Record<string, typeof employees> = {};
+    for (const e of employees) {
+      (m[e.department] ??= []).push(e);
+    }
+    return m;
+  }, []);
+
+  const depts = Object.keys(DEPT_CFG) as Dept[];
+
+  return (
+    <div
+      style={{
+        background: "#04040f",
+        borderRadius: 12,
+        overflow: "hidden",
+        border: "1px solid #ffffff0d",
+        boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+        width: "100%",
+      }}
+    >
+      {/* Global metrics */}
+      <MetricsBar />
+
+      {/* Room grid */}
       <div
-        className="absolute bottom-4 right-4 text-right pointer-events-none"
-        style={{ fontFamily: "monospace", fontSize: 9, color: "rgba(255,255,255,0.18)" }}
+        style={{
+          padding: "14px 14px 10px",
+          display: "grid",
+          gridTemplateColumns: `repeat(3, ${ROOM_W}px)`,
+          gap: 10,
+          justifyContent: "center",
+          background: "#04040f",
+        }}
       >
-        drag to orbit · scroll to zoom
-        <br />
-        click agent to inspect
+        {depts.map((dept) => (
+          <OfficeRoom
+            key={dept}
+            dept={dept}
+            agents={byDept[dept] ?? []}
+            selected={selectedDept === dept}
+            onSelect={() => setSelectedDept(dept === selectedDept ? null : dept)}
+          />
+        ))}
+        <ExpansionSlot />
       </div>
 
-      {/* ── Deselect click area ── */}
-      {selectedId && (
-        <button
-          className="absolute top-14 right-4 z-20 text-[9px] font-mono text-white/30 hover:text-white/60 border border-white/10 px-2 py-1 rounded"
-          onClick={() => setSelectedId(null)}
-        >
-          ✕ deselect
-        </button>
+      {/* Detail panel */}
+      {selectedDept && (
+        <DetailBar dept={selectedDept} agents={byDept[selectedDept] ?? []} />
       )}
+
+      {/* Footer */}
+      <div
+        style={{
+          padding: "6px 20px",
+          borderTop: "1px solid #ffffff08",
+          background: "rgba(4,4,20,0.95)",
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 20,
+        }}
+      >
+        <span style={{ fontFamily: "monospace", fontSize: 8, color: "#ffffff22", letterSpacing: "0.15em" }}>
+          drag to scroll · click room to inspect
+        </span>
+      </div>
     </div>
   );
 }
