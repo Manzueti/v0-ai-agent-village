@@ -341,7 +341,8 @@ function OfficeRoom({
         position: "relative",
         width: ROOM_W,
         height: ROOM_H,
-        background: "#070714",
+        background: "rgba(4,4,20,0.72)",
+        backdropFilter: "blur(1px)",
         border: `2px solid ${color}`,
         boxShadow: selected
           ? `0 0 0 2px ${color}, 0 0 30px ${shadow}, inset 0 0 40px ${shadow}`
@@ -351,6 +352,7 @@ function OfficeRoom({
         cursor: "pointer",
         flexShrink: 0,
         transition: "box-shadow 0.2s",
+        zIndex: 1,
       }}
     >
       {/* Floor grid */}
@@ -359,8 +361,8 @@ function OfficeRoom({
           position: "absolute",
           inset: 0,
           backgroundImage: `
-            linear-gradient(${color}14 1px, transparent 1px),
-            linear-gradient(90deg, ${color}14 1px, transparent 1px)
+            linear-gradient(${color}0a 1px, transparent 1px),
+            linear-gradient(90deg, ${color}0a 1px, transparent 1px)
           `,
           backgroundSize: "22px 22px",
           pointerEvents: "none",
@@ -557,6 +559,8 @@ function ExpansionSlot() {
         justifyContent: "center",
         gap: 8,
         background: "rgba(255,255,255,0.01)",
+        zIndex: 1,
+        position: "relative",
       }}
     >
       <span style={{ fontFamily: "monospace", fontSize: 22, opacity: 0.12 }}>+</span>
@@ -654,9 +658,14 @@ export default function VirtualOffice() {
           gridTemplateColumns: `repeat(3, ${ROOM_W}px)`,
           gap: 10,
           justifyContent: "center",
-          background: "#04040f",
+          position: "relative",
+          backgroundImage: "url('/dungeon-map.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
+        {/* dark tint so neon pops against the warm stone */}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(2,2,12,0.55)", pointerEvents: "none", zIndex: 0 }} />
         {depts.map((dept) => (
           <OfficeRoom
             key={dept}
