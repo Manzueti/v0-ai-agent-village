@@ -285,7 +285,7 @@ export default function NodeDetailPanel({
               
               <div className="bg-[hsl(var(--background)/0.6)] p-4 rounded border border-white/5 relative z-10">
                 <p className="text-[10px] font-medium text-slate-400 leading-relaxed font-mono italic opacity-70">
-                  "{operator.systemPrompt.slice(0, 120)}..."
+                  &ldquo;{operator.systemPrompt.slice(0, 120)}...&rdquo;
                 </p>
               </div>
             </div>
@@ -307,7 +307,7 @@ export default function NodeDetailPanel({
                     </span>
                   </div>
                   <p className="text-[11px] font-medium text-slate-300 leading-relaxed italic">
-                    "{operator.lastDecision.reasoning}"
+                    &ldquo;{operator.lastDecision.reasoning}&rdquo;
                   </p>
                   <div className="mt-4 pt-4 border-t border-white/5 text-[8px] font-black text-muted-foreground/40 uppercase tracking-[0.3em] flex justify-between">
                     <span>Neural_Timestamp</span>

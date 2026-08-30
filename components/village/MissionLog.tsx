@@ -13,18 +13,17 @@ interface MissionUpdate {
   type: 'success' | 'warning' | 'info' | 'critical';
 }
 
+const INITIAL_UPDATES: MissionUpdate[] = [
+  { id: '1', agentName: 'Sarah Hunter', department: 'Revenue Hub', update: 'Scanning Sector 7 for new business leads...', timestamp: 'SYSTEM', type: 'info' },
+  { id: '2', agentName: 'Kai Chen', department: 'Finance Vault', update: 'Executed high-frequency trade on GEN stock. Profit: +1.2%', timestamp: 'SYSTEM', type: 'success' },
+  { id: '3', agentName: 'Major Kusanagi', department: 'Tech Nexus', update: 'Blocked unauthorized access attempt from Pod B-2.', timestamp: 'SYSTEM', type: 'critical' },
+];
+
 export default function MissionLog() {
-  const [updates, setUpdates] = useState<MissionUpdate[]>([]);
+  const [updates, setUpdates] = useState<MissionUpdate[]>(INITIAL_UPDATES);
 
   useEffect(() => {
     // Simulate incoming mission updates
-    const initialUpdates: MissionUpdate[] = [
-      { id: '1', agentName: 'Sarah Hunter', department: 'Revenue Hub', update: 'Scanning Sector 7 for new business leads...', timestamp: new Date().toLocaleTimeString(), type: 'info' },
-      { id: '2', agentName: 'Kai Chen', department: 'Finance Vault', update: 'Executed high-frequency trade on GEN stock. Profit: +1.2%', timestamp: new Date().toLocaleTimeString(), type: 'success' },
-      { id: '3', agentName: 'Major Kusanagi', department: 'Tech Nexus', update: 'Blocked unauthorized access attempt from Pod B-2.', timestamp: new Date().toLocaleTimeString(), type: 'critical' },
-    ];
-    setUpdates(initialUpdates);
-
     const interval = setInterval(() => {
       const rand = Math.random();
       if (rand > 0.7) {

@@ -2,6 +2,13 @@
 
 import { motion } from 'framer-motion';
 
+const AVATAR_PARTICLES = Array.from({ length: 5 }, (_, index) => ({
+  left: 20 + ((index * 37) % 60),
+  top: 20 + ((index * 23) % 60),
+  duration: 2 + ((index * 11) % 20) / 10,
+  delay: ((index * 17) % 20) / 10,
+}));
+
 interface StylizedAvatarProps {
   gender: 'male' | 'female' | 'non-binary';
   color: string;
@@ -195,13 +202,13 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
       </svg>
       
       {/* Floating Particles */}
-      {[...Array(5)].map((_, i) => (
+      {AVATAR_PARTICLES.map((particle, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full bg-white opacity-20"
           style={{
-            left: `${20 + Math.random() * 60}%`,
-            top: `${20 + Math.random() * 60}%`,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
           }}
           animate={{
             y: [0, -20, 0],
@@ -209,9 +216,9 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
             scale: [0.5, 1.2, 0.5]
           }}
           transition={{
-            duration: 2 + Math.random() * 2,
+            duration: particle.duration,
             repeat: Infinity,
-            delay: Math.random() * 2
+            delay: particle.delay,
           }}
         />
       ))}

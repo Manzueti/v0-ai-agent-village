@@ -112,7 +112,7 @@ export default function AIDecisionLog({ decisions, operators, maxItems = 10 }: A
                   
                   {/* Reasoning */}
                   <p className="text-[10px] text-muted-foreground/60 leading-relaxed font-medium line-clamp-2 italic">
-                    "{decision.reasoning}"
+                    &ldquo;{decision.reasoning}&rdquo;
                   </p>
                   
                   {/* Automation Badge */}

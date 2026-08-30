@@ -8,6 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 const EcosystemCanvas = dynamic(() => import('@/components/village/EcosystemCanvas'), { ssr: false });
 const VirtualOffice   = dynamic(() => import('@/components/village/VirtualOffice'),   { ssr: false });
 
+const NEURAL_RAIN_DROPS = Array.from({ length: 30 }, (_, index) => ({
+  x: (index * 37) % 101,
+  duration: 1 + ((index * 17) % 20) / 10,
+  delay: ((index * 23) % 20) / 10,
+}));
+
 import { 
   Trees, Cloud, Sun, Wind, 
   ChevronRight, Brain, Activity, Terminal,
@@ -36,16 +42,16 @@ const TechGrid = () => {
 const NeuralRain = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {[...Array(30)].map((_, i) => (
+      {NEURAL_RAIN_DROPS.map((drop, i) => (
         <motion.div
           key={i}
-          initial={{ y: -100, x: Math.random() * 100 + '%' }}
+          initial={{ y: -100, x: `${drop.x}%` }}
           animate={{ y: '110vh' }}
           transition={{ 
-            duration: 1 + Math.random() * 2, 
+            duration: drop.duration,
             repeat: Infinity, 
             ease: "linear",
-            delay: Math.random() * 2
+            delay: drop.delay,
           }}
           className="absolute w-px h-20 bg-gradient-to-b from-transparent via-[hsl(var(--neon-cyan)/0.4)] to-transparent"
         />

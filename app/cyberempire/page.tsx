@@ -475,7 +475,7 @@ const Index = () => {
               <span className="text-[10px] tracking-[0.25em] uppercase text-[hsl(var(--neon-magenta))] font-bold">Last Milestone</span>
             </div>
             <div className="text-[10px] text-white font-bold">$2,000 Revenue Reached</div>
-            <div className="text-[8px] text-muted-foreground mt-1">Unlocked "Two Grand" achievement</div>
+            <div className="text-[8px] text-muted-foreground mt-1">Unlocked &ldquo;Two Grand&rdquo; achievement</div>
           </div>
         </aside>
       </div>

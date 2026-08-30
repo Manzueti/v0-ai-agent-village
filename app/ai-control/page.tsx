@@ -148,7 +148,7 @@ export default function AIControlPage() {
                           {operator.lastDecision.action}
                         </div>
                         <div className="text-[10px] text-muted-foreground font-medium leading-relaxed italic">
-                          "{operator.lastDecision.reasoning}"
+                          &ldquo;{operator.lastDecision.reasoning}&rdquo;
                         </div>
                       </div>
                     )}

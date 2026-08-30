@@ -26,20 +26,23 @@ export default function RedundancyView({
   } | null>(null);
 
   const nodePair = getNodePair(nodeId);
+  const primaryId = nodePair?.primary.id;
   
   useEffect(() => {
-    if (nodePair) {
-      const status = checkSyncStatus(nodePair.primary.id);
-      setSyncStatus(status);
-      
-      // Refresh sync status periodically
-      const interval = setInterval(() => {
-        setSyncStatus(checkSyncStatus(nodePair.primary.id));
-      }, 5000);
-      
-      return () => clearInterval(interval);
-    }
-  }, [nodeId]);
+    if (!primaryId) return;
+
+    const refreshSyncStatus = () => {
+      setSyncStatus(checkSyncStatus(primaryId));
+    };
+
+    const initialRefresh = setTimeout(refreshSyncStatus, 0);
+    const interval = setInterval(refreshSyncStatus, 5000);
+
+    return () => {
+      clearTimeout(initialRefresh);
+      clearInterval(interval);
+    };
+  }, [primaryId]);
 
   if (!nodePair) {
     return (

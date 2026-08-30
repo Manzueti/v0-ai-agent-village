@@ -5,6 +5,13 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Float, MeshTransmissionMaterial, Text, Cylinder, Box, Torus, Ring } from "@react-three/drei";
 
+const REVENUE_BAR_HEIGHTS = [1.4, 2.8, 1.9, 3.6, 2.3] as const;
+
+function seededUnit(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
 // --- Procedural Hexagonal Texture ---
 function useSectorTextures() {
   return useMemo(() => {
@@ -21,21 +28,7 @@ function useSectorTextures() {
       ctx.lineWidth = 1;
       ctx.globalAlpha = 0.3;
       
-      const r = 32;
-      const h = r * Math.sqrt(3);
-      for (let y = 0; y < 512 + h; y += h * 1.5) {
-        for (let x = 0; x < 512 + r * 3; x += r * 3) {
-          [0, r * 1.5].forEach((offsetX, i) => {
-            const dy = i * h / 2;
-            ctx.beginPath();
-            for (let a = 0; i < 6; i++) {
-              // This logic is slightly flawed in the loop, let's fix it
-            }
-          });
-        }
-      }
-      
-      // Let's use a simpler but cleaner approach for the hex grid
+      // Draw a clean hex grid.
       ctx.globalAlpha = 0.2;
       const size = 40;
       for (let y = 0; y < 600; y += size * 1.5) {
@@ -56,10 +49,13 @@ function useSectorTextures() {
       ctx.lineWidth = 2;
       for(let i=0; i<10; i++) {
         ctx.beginPath();
-        const startX = Math.random() * 512;
-        const startY = Math.random() * 512;
+        const startX = seededUnit(i + color.length) * 512;
+        const startY = seededUnit(i + color.length + 20) * 512;
         ctx.moveTo(startX, startY);
-        ctx.lineTo(startX + (Math.random() - 0.5) * 100, startY + (Math.random() - 0.5) * 100);
+        ctx.lineTo(
+          startX + (seededUnit(i + color.length + 40) - 0.5) * 100,
+          startY + (seededUnit(i + color.length + 60) - 0.5) * 100,
+        );
         ctx.stroke();
       }
 
@@ -106,8 +102,8 @@ const HolographicCenterpiece = ({ type, color }: { type: string, color: string }
       {/* Icon Placeholder (Geometric) */}
       {type === 'cyan' && ( // Revenue Hub -> Trading Matrix
         <group>
-          {[...Array(5)].map((_, i) => (
-            <Box key={i} args={[0.5, Math.random() * 3 + 1, 0.5]} position={[(i - 2) * 1.2, 0, 0]}>
+          {REVENUE_BAR_HEIGHTS.map((height, i) => (
+            <Box key={i} args={[0.5, height, 0.5]} position={[(i - 2) * 1.2, 0, 0]}>
               <meshBasicMaterial color={color} transparent opacity={0.6} />
             </Box>
           ))}

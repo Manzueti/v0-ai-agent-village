@@ -20,6 +20,13 @@ interface AgentPodProps {
   isGlobalSyncing?: boolean;
 }
 
+function getRandomActivity(simState: AgentPodProps['simState']) {
+  if (simState === 'night') return 'Neural Resting...';
+  if (simState === 'emergency') return 'CONTAINING ERROR...';
+  const activities = ['Refining logic...', 'Analyzing data...', 'Neural sync active', 'Optimizing routes', 'Thinking...', 'Executing directive', 'Matrix stable'];
+  return activities[Math.floor(Math.random() * activities.length)];
+}
+
 export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [activity, setActivity] = useState('Processing...');
@@ -69,11 +76,18 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
   }, [agent.role, simState]);
 
   useEffect(() => {
-    if (isGlobalSyncing) {
+    if (!isGlobalSyncing) return;
+
+    const startSync = setTimeout(() => {
       setIsRebooting(true);
       setActivity('GLOBAL SYNCING...');
-      setTimeout(() => setIsRebooting(false), 2000);
-    }
+    }, 0);
+    const finishSync = setTimeout(() => setIsRebooting(false), 2000);
+
+    return () => {
+      clearTimeout(startSync);
+      clearTimeout(finishSync);
+    };
   }, [isGlobalSyncing]);
 
   useEffect(() => {
@@ -87,7 +101,7 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
         const newX = (Math.random() - 0.5) * range;
         const newY = (Math.random() - 0.5) * range;
         setPosition({ x: newX, y: newY });
-        setActivity(getRandomActivity());
+        setActivity(getRandomActivity(simState));
         setTimeout(() => {
           setIsWalking(false);
           setIsWorking(true);
@@ -97,13 +111,6 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
     const interval = setInterval(moveAgent, simState === 'night' ? 10000 : 5000);
     return () => clearInterval(interval);
   }, [simState, isRebooting, isGlobalSyncing]);
-
-  const getRandomActivity = () => {
-    if (simState === 'night') return 'Neural Resting...';
-    if (simState === 'emergency') return 'CONTAINING ERROR...';
-    const activities = ['Refining logic...', 'Analyzing data...', 'Neural sync active', 'Optimizing routes', 'Thinking...', 'Executing directive', 'Matrix stable'];
-    return activities[Math.floor(Math.random() * activities.length)];
-  };
 
   const handleReboot = (e: React.MouseEvent) => {
     e.stopPropagation();

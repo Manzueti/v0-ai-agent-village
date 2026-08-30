@@ -10,6 +10,11 @@ import { Suspense, useMemo } from "react";
 import * as THREE from "three";
 import ErrorBoundary from "../ErrorBoundary";
 
+function seededUnit(seed: number) {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
 export default function EcosystemCanvas() {
   const sectors = [
     { id: 'Revenue Hub', type: 'cyan', title: 'REVENUE HUB', pos: [-35, 0, -35] },
@@ -21,13 +26,13 @@ export default function EcosystemCanvas() {
 
   // Map employees to sectors
   const employeesWithSectors = useMemo(() => {
-    return employees.map((agent) => {
+    return employees.map((agent, index) => {
       const sector = sectors.find(s => s.id === agent.department) || sectors[0];
       
-      // Random position within the sector [ROOM_SIZE=40]
-      const offsetX = (Math.random() - 0.5) * 30;
-      const offsetZ = (Math.random() - 0.5) * 30;
-      const offsetY = agent.department === 'Command Deck' ? 0 : (Math.random() - 0.5) * 5;
+      // Stable position within the sector [ROOM_SIZE=40].
+      const offsetX = (seededUnit(index + 1) - 0.5) * 30;
+      const offsetZ = (seededUnit(index + 101) - 0.5) * 30;
+      const offsetY = agent.department === 'Command Deck' ? 0 : (seededUnit(index + 201) - 0.5) * 5;
       
       return {
         ...agent,

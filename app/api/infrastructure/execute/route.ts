@@ -3,7 +3,7 @@ import { getModelInstance } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {

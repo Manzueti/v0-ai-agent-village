@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 import { InfraNode, SystemHealth } from '@/lib/types';
 import { getModelInstance } from '@/lib/ai-models';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
