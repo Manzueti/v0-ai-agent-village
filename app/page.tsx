@@ -1,80 +1,111 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { Cpu, Shield, Activity, ArrowRight, Radio, Server, Factory, Target } from 'lucide-react';
+import {
+  ArrowRight, Bot, BrainCircuit, Building2, CheckCircle2, CircleDollarSign,
+  Code2, Factory, Palette, Scale, ShieldCheck, Sparkles, Target, Workflow,
+} from 'lucide-react';
 
-// ── Lazy-load each section (ssr:false keeps them client-only) ─────────────────
-
-const VillagePage     = dynamic(() => import('./village/page'),        { ssr: false });
-const TasksPage       = dynamic(() => import('./tasks/page'),          { ssr: false });
-const CyberEmpirePage = dynamic(() => import('./cyberempire/page'),    { ssr: false });
-const COEPage         = dynamic(() => import('./coe/page'),            { ssr: false });
-const AIControlPage   = dynamic(() => import('./ai-control/page'),     { ssr: false });
-const InfraPage       = dynamic(() => import('./infrastructure/page'), { ssr: false });
+const VillagePage = dynamic(() => import('./village/page'), { ssr: false });
+const TasksPage = dynamic(() => import('./tasks/page'), { ssr: false });
+const CyberEmpirePage = dynamic(() => import('./cyberempire/page'), { ssr: false });
+const COEPage = dynamic(() => import('./coe/page'), { ssr: false });
+const AIControlPage = dynamic(() => import('./ai-control/page'), { ssr: false });
+const InfraPage = dynamic(() => import('./infrastructure/page'), { ssr: false });
 
 const SECTIONS: Record<string, React.ComponentType> = {
-  village:        VillagePage,
-  tasks:          TasksPage,
-  cyberempire:    CyberEmpirePage,
-  coe:            COEPage,
-  'ai-control':   AIControlPage,
+  village: VillagePage,
+  tasks: TasksPage,
+  cyberempire: CyberEmpirePage,
+  coe: COEPage,
+  'ai-control': AIControlPage,
   infrastructure: InfraPage,
 };
 
-// ── Section router ────────────────────────────────────────────────────────────
+const METRICS = [
+  { value: '20', label: 'Agents online', detail: 'Across 5 business units' },
+  { value: '93%', label: 'Autonomous completion', detail: 'Last 30 operating cycles' },
+  { value: '24/7', label: 'Company uptime', detail: 'Follow-the-sun execution' },
+  { value: '3', label: 'Human approvals', detail: 'Awaiting executive review' },
+] as const;
+
+const EXECUTIVES = [
+  { name: 'ATLAS', role: 'Chief Executive Agent', status: 'Allocating Q3 objectives', color: 'hsl(var(--neon-magenta))' },
+  { name: 'ORBIT', role: 'Chief Operating Agent', status: 'Resolving 4 dependencies', color: 'hsl(var(--neon-cyan))' },
+  { name: 'SENTRY', role: 'Chief Governance Agent', status: 'All policies enforced', color: 'hsl(var(--neon-green))' },
+] as const;
+
+const DEPARTMENTS = [
+  {
+    name: 'Growth & Revenue',
+    mandate: 'Find demand, qualify opportunities, and turn market signals into durable revenue.',
+    agents: '5 agents', output: '+18% pipeline velocity', icon: CircleDollarSign,
+    color: 'hsl(var(--neon-green))', href: '/?s=cyberempire',
+  },
+  {
+    name: 'Product & Creative',
+    mandate: 'Research customer needs, design experiences, and ship campaigns as one continuous loop.',
+    agents: '4 agents', output: '3 launches active', icon: Palette,
+    color: 'hsl(var(--neon-magenta))', href: '/?s=village',
+  },
+  {
+    name: 'Engineering & Systems',
+    mandate: 'Build, deploy, observe, and repair the digital infrastructure that powers the company.',
+    agents: '5 agents', output: '99.99% availability', icon: Code2,
+    color: 'hsl(var(--neon-cyan))', href: '/?s=infrastructure',
+  },
+  {
+    name: 'Finance & Intelligence',
+    mandate: 'Forecast cash, model scenarios, and continuously optimize how resources are allocated.',
+    agents: '3 agents', output: '12.4 mo. runway', icon: BrainCircuit,
+    color: 'hsl(var(--neon-yellow))', href: '/?s=cyberempire',
+  },
+  {
+    name: 'Governance & Operations',
+    mandate: 'Enforce policy, audit decisions, manage exceptions, and route high-impact choices to humans.',
+    agents: '3 agents', output: '0 policy breaches', icon: Scale,
+    color: 'hsl(var(--neon-purple))', href: '/?s=ai-control',
+  },
+] as const;
+
+const OPERATING_LOOP = [
+  { step: '01', title: 'Set objective', detail: 'Humans define the mission, budget, policy, and decision boundaries.', icon: Sparkles },
+  { step: '02', title: 'Agent planning', detail: 'Executive agents decompose goals into owned, measurable workstreams.', icon: CheckCircle2 },
+  { step: '03', title: 'Autonomous execution', detail: 'Specialist agents collaborate, use tools, and deliver verifiable outputs.', icon: Workflow },
+  { step: '04', title: 'Review & escalate', detail: 'Results are audited continuously; exceptions return to human leadership.', icon: ShieldCheck },
+] as const;
 
 function ActiveSection() {
   const searchParams = useSearchParams();
-  const s = searchParams.get('s') ?? '';
-  const Section = SECTIONS[s];
+  const sectionKey = searchParams.get('s') ?? '';
+  const Section = SECTIONS[sectionKey];
 
   return (
     <AnimatePresence mode="wait">
-      {Section ? (
-        <motion.div
-          key={s}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-        >
-          <Section />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="home"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-        >
-          <HomeSection />
-        </motion.div>
-      )}
+      <motion.div
+        key={Section ? sectionKey : 'home'}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        {Section ? <Section /> : <HomeSection />}
+      </motion.div>
     </AnimatePresence>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center h-full font-mono text-muted-foreground/40 text-xs tracking-[0.3em] uppercase">
-        <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>
-          INITIALIZING...
-        </motion.span>
-      </div>
-    }>
+    <Suspense fallback={<div className="flex h-full items-center justify-center font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground/40">INITIALIZING...</div>}>
       <ActiveSection />
     </Suspense>
   );
 }
-
-// ── Home section ──────────────────────────────────────────────────────────────
 
 function HomeSection() {
   const [time, setTime] = useState('');
@@ -87,114 +118,159 @@ function HomeSection() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-transparent relative overflow-hidden scanlines font-mono">
-      <div className="fixed inset-0 cyber-grid opacity-20 pointer-events-none" />
-      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[hsl(var(--neon-cyan)/0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[hsl(var(--neon-magenta)/0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '2s' }} />
+    <div className="scanlines relative min-h-screen overflow-hidden bg-transparent font-mono">
+      <div className="cyber-grid pointer-events-none fixed inset-0 opacity-20" />
+      <div className="pointer-events-none fixed left-[-10%] top-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-[hsl(var(--neon-cyan)/0.15)] blur-[120px]" />
+      <div className="pointer-events-none fixed bottom-[-10%] right-[-10%] h-[50%] w-[50%] animate-pulse rounded-full bg-[hsl(var(--neon-magenta)/0.1)] blur-[120px]" style={{ animationDelay: '2s' }} />
 
-      <div className="container mx-auto px-6 py-24 relative z-10">
-        {/* Header */}
-        <header className="flex justify-between items-start mb-20">
+      <div className="container relative z-10 mx-auto max-w-7xl px-6 py-16 lg:py-20">
+        <header className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between lg:mb-24">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] grid place-items-center shadow-[0_0_25px_hsl(var(--neon-magenta)/0.5)]">
+            <div className="grid h-14 w-14 place-items-center rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] shadow-[0_0_25px_hsl(var(--neon-magenta)/0.5)]">
               <Factory className="h-7 w-7 text-background" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></h1>
-              <p className="text-[10px] text-muted-foreground tracking-widest uppercase font-bold">Autonomous Enterprise Hub // v2.5.0</p>
+              <h1 className="text-2xl font-black uppercase tracking-[0.4em] text-white">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></h1>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Autonomous AI Company // Operating System</p>
             </div>
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="text-right">
-            <div className="text-3xl font-black tracking-tighter tabular-nums text-[hsl(var(--neon-cyan))] text-glow">{time}</div>
-            <div className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase">System Time // UTC-0</div>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="text-left sm:text-right">
+            <div className="text-glow text-3xl font-black tabular-nums tracking-tighter text-[hsl(var(--neon-cyan))]">{time}</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">System Time // UTC-0</div>
           </motion.div>
         </header>
 
-        {/* Hero */}
-        <div className="grid lg:grid-cols-2 gap-16 items-center mb-32">
+        <div className="mb-24 grid items-center gap-14 lg:mb-32 lg:grid-cols-[1.08fr_0.92fr]">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <div className="inline-block px-4 py-1.5 rounded bg-[hsl(var(--neon-cyan)/0.1)] border border-[hsl(var(--neon-cyan)/0.4)] text-[11px] text-[hsl(var(--neon-cyan))] font-bold tracking-[0.3em] uppercase mb-8 panel-glow-cyan">
-              <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--neon-cyan))] inline-block mr-2 animate-pulse" />
-              Neural Network Online
+            <div className="panel-glow-cyan mb-8 inline-block rounded border border-[hsl(var(--neon-cyan)/0.4)] bg-[hsl(var(--neon-cyan)/0.1)] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--neon-cyan))]">
+              <span className="mr-2 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[hsl(var(--neon-cyan))]" />
+              Autonomous Company Online
             </div>
-            <h2 className="text-6xl lg:text-8xl font-black tracking-tight mb-8 leading-[0.9]">
-              MANAGE THE <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--neon-cyan))] via-[hsl(var(--neon-purple))] to-[hsl(var(--neon-magenta))]">FUTURE</span> <br />
-              OF WORK.
+            <h2 className="mb-8 text-5xl font-black leading-[0.9] tracking-tight sm:text-6xl lg:text-8xl">
+              THE COMPANY <br />
+              <span className="bg-gradient-to-r from-[hsl(var(--neon-cyan))] via-[hsl(var(--neon-purple))] to-[hsl(var(--neon-magenta))] bg-clip-text text-transparent">RUN BY</span>{' '}<br />
+              AI AGENTS.
             </h2>
-            <p className="text-muted-foreground text-xl mb-12 max-w-xl leading-relaxed">
-              Coordinate an autonomous AI workforce of 20+ agents across specialized space pods. Manage revenue, design, and infrastructure from the ultimate Deep Space Command Center.
+            <p className="mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              Set the mission. Define the guardrails. A coordinated workforce of executive and specialist agents plans, executes, measures, and improves every function of the business.
             </p>
             <div className="flex flex-wrap gap-6">
-              <Link href="/?s=village" className="px-10 py-5 bg-[hsl(var(--neon-purple))] text-background font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-purple)/0.9)] transition-all shadow-[0_0_30px_hsl(var(--neon-purple)/0.5)] transform hover:scale-105 active:scale-95">
-                Initialize Command
-              </Link>
-              <Link href="/?s=infrastructure" className="px-10 py-5 bg-transparent border border-[hsl(var(--neon-cyan)/0.5)] text-[hsl(var(--neon-cyan))] font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all transform hover:scale-105 active:scale-95">
-                View Matrix
-              </Link>
+              <Link href="/?s=village" className="rounded bg-[hsl(var(--neon-purple))] px-8 py-5 font-black uppercase tracking-widest text-background shadow-[0_0_30px_hsl(var(--neon-purple)/0.5)] transition-all hover:scale-105 sm:px-10">Enter Agent Network</Link>
+              <Link href="/?s=tasks" className="rounded border border-[hsl(var(--neon-cyan)/0.5)] px-8 py-5 font-black uppercase tracking-widest text-[hsl(var(--neon-cyan))] transition-all hover:scale-105 hover:bg-[hsl(var(--neon-cyan)/0.1)] sm:px-10">Open Work Queue</Link>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="relative">
-            <div className="aspect-square relative rounded-md overflow-hidden border border-[hsl(var(--neon-cyan)/0.3)] bg-[hsl(var(--card)/0.6)] backdrop-blur-md p-10 panel-glow-cyan scanlines shadow-2xl">
-              <div className="grid grid-cols-2 gap-8 h-full">
-                <div className="flex flex-col gap-8">
-                  <StatusCard label="CPU LOAD"  value="42.8%"    color="hsl(var(--neon-cyan))"    icon={Cpu}      />
-                  <StatusCard label="NET SPEED" value="12.4 GB/S" color="hsl(var(--neon-green))"   icon={Radio}    />
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}>
+            <div className="panel-glow-cyan relative overflow-hidden rounded-md border border-[hsl(var(--neon-cyan)/0.3)] bg-[hsl(var(--card)/0.7)] p-7 shadow-2xl backdrop-blur-md sm:p-9">
+              <div className="scanlines pointer-events-none absolute inset-0 opacity-15" />
+              <div className="relative">
+                <div className="mb-6 flex items-start justify-between gap-6 border-b border-white/10 pb-6">
+                  <div>
+                    <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--neon-cyan))]">Primary company objective</div>
+                    <h3 className="text-2xl font-black leading-tight text-white sm:text-3xl">Become the operating layer for autonomous business.</h3>
+                  </div>
+                  <Target className="h-8 w-8 shrink-0 text-[hsl(var(--neon-magenta))]" />
                 </div>
-                <div className="flex flex-col gap-8 pt-16">
-                  <StatusCard label="UPTIME"    value="99.99%"   color="hsl(var(--neon-yellow))"  icon={Activity} />
-                  <StatusCard label="SECURITY"  value="OPTIMAL"  color="hsl(var(--neon-magenta))" icon={Shield}   />
+                <div className="mb-8">
+                  <div className="mb-2 flex justify-between text-[10px] font-bold uppercase tracking-widest">
+                    <span className="text-muted-foreground">Objective progress</span>
+                    <span className="text-[hsl(var(--neon-green))]">68%</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-white/5">
+                    <motion.div initial={{ width: 0 }} animate={{ width: '68%' }} transition={{ delay: 0.7, duration: 1 }} className="h-full bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-green))] shadow-[0_0_12px_hsl(var(--neon-cyan))]" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {EXECUTIVES.map((agent, index) => (
+                    <motion.div key={agent.name} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.55 + index * 0.1 }} className="flex items-center gap-4 rounded border border-white/5 bg-black/20 p-4">
+                      <div className="grid h-10 w-10 place-items-center rounded border border-white/10 bg-white/5" style={{ color: agent.color }}><Bot className="h-5 w-5" /></div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                          <span className="font-black tracking-widest text-white">{agent.name}</span>
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{agent.role}</span>
+                        </div>
+                        <p className="mt-1 truncate text-xs" style={{ color: agent.color }}>{agent.status}</p>
+                      </div>
+                      <span className="h-2 w-2 rounded-full bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]" />
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Feature grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          <FeatureCard title="DEEP SPACE COMMAND" desc="Visual management of 20+ AI units in their specialized floating pods. Monitor work cycles and XP." icon={Radio}  color="hsl(var(--neon-magenta))" href="/?s=village"        glow="panel-glow-magenta" />
-          <FeatureCard title="REVENUE HUB"         desc="Autonomous sales and marketing agents finding business and closing deals in real-time."             icon={Target} color="hsl(var(--neon-green))"   href="/?s=cyberempire"   glow="panel-glow-yellow"  />
-          <FeatureCard title="TECH NEXUS"           desc="Real-time mapping of nodes, security zones, and data pathways across the global network."           icon={Server} color="hsl(var(--neon-cyan))"   href="/?s=infrastructure" glow="panel-glow-cyan"    />
-        </div>
+        <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-28 grid border-y border-white/10 sm:grid-cols-2 xl:grid-cols-4" aria-label="Company performance">
+          {METRICS.map((metric) => (
+            <div key={metric.label} className="border-white/10 px-6 py-7 sm:border-r">
+              <div className="mb-2 text-3xl font-black text-white">{metric.value}</div>
+              <div className="mb-1 text-[10px] font-black uppercase tracking-[0.24em] text-[hsl(var(--neon-cyan))]">{metric.label}</div>
+              <div className="text-xs text-muted-foreground">{metric.detail}</div>
+            </div>
+          ))}
+        </motion.section>
+
+        <section className="mb-28" aria-labelledby="organization-title">
+          <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="mb-4 flex items-center gap-2 text-[hsl(var(--neon-magenta))]">
+                <Building2 className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">The agent organization</span>
+              </div>
+              <h2 id="organization-title" className="text-4xl font-black tracking-tight text-white sm:text-5xl">Every function has an owner.</h2>
+            </div>
+            <p className="max-w-xl leading-relaxed text-muted-foreground">Departments operate independently inside shared goals, budgets, memory, and governance. Agents hand work to one another instead of waiting for meetings.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {DEPARTMENTS.map((department, index) => {
+              const Icon = department.icon;
+              return (
+                <motion.div key={department.name} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.06 }}>
+                  <Link href={department.href} className="group block h-full rounded-md border bg-[hsl(var(--card)/0.6)] p-7 backdrop-blur-md transition-all hover:bg-[hsl(var(--card)/0.85)]" style={{ borderColor: department.color }}>
+                    <div className="mb-8 flex items-start justify-between gap-4">
+                      <div className="grid h-12 w-12 place-items-center rounded border border-white/10 bg-black/20" style={{ color: department.color }}><Icon className="h-6 w-6" /></div>
+                      <span className="rounded border border-white/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">{department.agents}</span>
+                    </div>
+                    <h3 className="mb-3 text-xl font-black uppercase tracking-wider text-white">{department.name}</h3>
+                    <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{department.mandate}</p>
+                    <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4">
+                      <span className="text-xs font-bold" style={{ color: department.color }}>{department.output}</span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-white" />
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="mb-24 grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16" aria-labelledby="operating-model-title">
+          <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="panel-glow-magenta rounded-md border border-[hsl(var(--neon-purple)/0.35)] bg-[hsl(var(--card)/0.65)] p-8 lg:p-10">
+            <Workflow className="mb-8 h-10 w-10 text-[hsl(var(--neon-purple))]" />
+            <div className="mb-4 text-[10px] font-black uppercase tracking-[0.3em] text-[hsl(var(--neon-purple))]">Operating model</div>
+            <h2 id="operating-model-title" className="mb-6 text-4xl font-black leading-tight text-white">Autonomous by default. Human-governed by design.</h2>
+            <p className="mb-8 leading-relaxed text-muted-foreground">Agents can act quickly inside explicit limits. Material spend, policy exceptions, strategic pivots, and sensitive decisions always escalate to a person.</p>
+            <Link href="/?s=ai-control" className="inline-flex items-center gap-3 text-xs font-black uppercase tracking-[0.22em] text-[hsl(var(--neon-purple))] transition-colors hover:text-white">Open governance console <ArrowRight className="h-4 w-4" /></Link>
+          </motion.div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {OPERATING_LOOP.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div key={item.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="rounded-md border border-white/10 bg-black/20 p-6">
+                  <div className="mb-6 flex items-center justify-between"><span className="text-3xl font-black text-white/10">{item.step}</span><Icon className="h-5 w-5 text-[hsl(var(--neon-cyan))]" /></div>
+                  <h3 className="mb-3 font-black uppercase tracking-widest text-white">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+
+        <footer className="flex flex-col gap-5 border-t border-white/10 pt-8 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground/60 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-x-8 gap-y-2"><span>CYBEREMPIRE COMPANY OS</span><span className="text-[hsl(var(--neon-green))]">● ALL SYSTEMS OPERATIONAL</span></div>
+          <span>Human-governed autonomy // © 2026</span>
+        </footer>
       </div>
-
-      <footer className="absolute bottom-0 left-0 right-0 h-10 border-t border-[hsl(var(--border))] bg-[hsl(var(--background)/0.8)] backdrop-blur-md flex items-center justify-between px-8">
-        <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/60 uppercase">
-          <span>CYBEREMPIRE NEURAL OS</span>
-          <span className="text-[hsl(var(--neon-cyan))]">● READY</span>
-        </div>
-        <div className="flex gap-8 text-[10px] font-bold tracking-[0.3em] text-muted-foreground/60 uppercase">
-          <span>ZERO DOWNTIME ARCHITECTURE</span>
-          <span>© 2026</span>
-        </div>
-      </footer>
     </div>
-  );
-}
-
-function StatusCard({ label, value, color, icon: Icon }: { label: string; value: string; color: string; icon: React.ComponentType<{ className?: string }> }) {
-  return (
-    <div className="flex-1 bg-[hsl(var(--background)/0.7)] border border-white/5 p-6 rounded relative overflow-hidden group hover:border-[currentColor]/40 transition-colors" style={{ color }}>
-      <Icon className="w-9 h-9 mb-5 opacity-40 group-hover:opacity-100 transition-opacity" />
-      <div className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase mb-1.5">{label}</div>
-      <div className="text-3xl font-black tracking-tight tabular-nums text-white group-hover:text-[currentColor] transition-colors">{value}</div>
-    </div>
-  );
-}
-
-function FeatureCard({ title, desc, icon: Icon, color, href, glow }: { title: string; desc: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string; href: string; glow: string }) {
-  return (
-    <Link href={href} className="block group h-full">
-      <div className={`h-full bg-[hsl(var(--card)/0.5)] backdrop-blur-md border border-white/5 p-10 rounded-md transition-all hover:bg-[hsl(var(--card)/0.8)] hover:border-[currentColor]/40 ${glow} relative overflow-hidden flex flex-col`} style={{ borderColor: `${color}44` }}>
-        <div className="absolute inset-0 scanlines opacity-10 pointer-events-none" />
-        <Icon className="w-12 h-12 mb-8 transition-transform group-hover:scale-110 duration-500" style={{ color }} />
-        <h3 className="text-xl font-black tracking-widest uppercase mb-4 text-white">{title}</h3>
-        <p className="text-muted-foreground text-base leading-relaxed mb-8 flex-1">{desc}</p>
-        <div className="flex items-center gap-3 text-[11px] font-black tracking-[0.4em] uppercase" style={{ color }}>
-          Initialize Access <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
-        </div>
-      </div>
-    </Link>
   );
 }

@@ -6,8 +6,8 @@ import Sidebar from '@/components/Sidebar'
 import FaroInitializer from '@/components/infrastructure/FaroInitializer'
 
 export const metadata: Metadata = {
-  title: 'CyberEmpire // Autonomous workforce',
-  description: 'Enterprise infrastructure managed by autonomous AI operators.',
+  title: 'CyberEmpire // Autonomous AI Company',
+  description: 'A human-governed company operated by coordinated AI agents across strategy, growth, finance, product, engineering, and operations.',
 }
 
 export default function RootLayout({
