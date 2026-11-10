@@ -9,6 +9,10 @@ import {
   RefreshCw, Layers, Brain
 } from 'lucide-react';
 import { useState } from 'react';
+import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
+import { useAiStatus } from '@/hooks/use-ai-status';
+import { readAiFailure } from '@/lib/ai-client';
+import { MISSING_API_KEY_CODE, MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
 
 export default function TaskCommandCenter() {
   const { 
@@ -17,6 +21,9 @@ export default function TaskCommandCenter() {
     updateStatus, executeTask 
   } = useTasks();
   
+  const ai = useAiStatus();
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [activeView, setActiveView] = useState<'board' | 'matrix'>('board');
   const [executionOutput, setExecutionOutput] = useState<{taskId: string, content: string} | null>(null);
 
@@ -24,11 +31,30 @@ export default function TaskCommandCenter() {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
+    if (unavailable) {
+      setExecutionOutput({
+        taskId,
+        content: ai.loading ? 'Checking AI provider status...' : (ai.message || MISSING_API_KEY_MESSAGE),
+      });
+      return;
+    }
+
     setExecutionOutput({ taskId, content: '' });
     updateStatus(taskId, 'in_progress');
 
     const response = await executeTask(taskId);
-    if (response && response.body) {
+    if (!response) {
+      setExecutionOutput({ taskId, content: 'Could not start this mission.' });
+      updateStatus(taskId, 'failed');
+      return;
+    }
+    if (!response.ok) {
+      const failure = await readAiFailure(response);
+      setExecutionOutput({ taskId, content: failure.message });
+      updateStatus(taskId, failure.code === MISSING_API_KEY_CODE ? 'assigned' : 'failed');
+      return;
+    }
+    if (response.body) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       
@@ -74,6 +100,8 @@ export default function TaskCommandCenter() {
         </div>
       </header>
 
+      {missingKey && <ApiKeyNotice message={ai.message} />}
+
       {/* Main View Area */}
       <div className="flex-1 min-h-0 overflow-hidden">
         {loading ? (
@@ -86,6 +114,7 @@ export default function TaskCommandCenter() {
             onAutoAssign={autoAssign} 
             onExecute={handleExecute}
             onStatusChange={updateStatus}
+            executeDisabled={unavailable}
           />
         )}
       </div>

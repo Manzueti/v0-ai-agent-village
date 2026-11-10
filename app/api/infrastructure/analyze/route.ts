@@ -1,9 +1,7 @@
 import { streamText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
 import type { NextRequest } from 'next/server';
 import { InfraNode, SystemHealth } from '@/lib/types';
-import { getModelInstance } from '@/lib/ai-models';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 
 export const runtime = 'nodejs';
 
@@ -30,10 +28,11 @@ Analysis goals:
       ? `User query: ${query}\n\nState:\n${JSON.stringify({ nodes, health }, null, 2)}`
       : `Analyze state:\n\n${JSON.stringify({ nodes, health, zoneId }, null, 2)}`;
 
-    const modelInstance = getModelInstance(model);
+    const resolved = resolveModel(model);
+    if (!resolved.ok) return modelFailureResponse(resolved);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: systemPrompt,
       prompt: userPrompt,
     });

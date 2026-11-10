@@ -3,6 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { chatWithAI, generateInfrastructureContext } from '@/lib/ai-operators';
+import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
+import { useAiStatus } from '@/hooks/use-ai-status';
+import { AiRequestError } from '@/lib/ai-client';
+import { MISSING_API_KEY_CODE, MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
 
 interface Message {
   id: string;
@@ -16,6 +20,9 @@ interface GeminiChatProps {
 }
 
 export default function GeminiChat({ className = '' }: GeminiChatProps) {
+  const ai = useAiStatus();
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -28,6 +35,23 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const seededMissingKey = useRef(false);
+
+  useEffect(() => {
+    if (!missingKey || seededMissingKey.current) return;
+    seededMissingKey.current = true;
+    setMessages((prev) => {
+      if (prev.some((message) => message.role === 'user')) return prev;
+      return [
+        {
+          id: 'missing-key',
+          role: 'assistant',
+          content: ai.message || MISSING_API_KEY_MESSAGE,
+          timestamp: new Date(),
+        },
+      ];
+    });
+  }, [missingKey, ai.message]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,7 +63,7 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || unavailable) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -89,13 +113,18 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
         );
       }
     } catch (error) {
-      console.error('Error chatting with AI:', error);
+      const missingKey = error instanceof AiRequestError && error.code === MISSING_API_KEY_CODE;
+      if (!missingKey) console.error('Error chatting with AI:', error);
       setMessages(prev => [
         ...prev,
         {
           id: Date.now().toString(),
           role: 'assistant',
-          content: 'Sorry, I encountered an error while processing your request. Please make sure the GOOGLE_API_KEY is configured and try again.',
+          content: missingKey
+            ? (error instanceof Error ? error.message : MISSING_API_KEY_MESSAGE)
+            : error instanceof Error
+              ? error.message
+              : 'Sorry, I encountered an error while processing your request.',
           timestamp: new Date(),
         },
       ]);
@@ -124,10 +153,18 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
           <p className="text-xs text-slate-400">Infrastructure Control Center</p>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs text-emerald-400">Online</span>
+          <div className={`w-2 h-2 rounded-full animate-pulse ${missingKey ? 'bg-amber-400' : ai.loading ? 'bg-slate-400' : 'bg-emerald-400'}`} />
+          <span className={`text-xs ${missingKey ? 'text-amber-300' : ai.loading ? 'text-slate-400' : 'text-emerald-400'}`}>
+            {ai.loading ? 'Checking' : missingKey ? 'Add your API key' : 'Online'}
+          </span>
         </div>
       </div>
+
+      {missingKey && (
+        <div className="px-4 pt-3">
+          <ApiKeyNotice message={ai.message} />
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -178,7 +215,7 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
       </div>
 
       {/* Suggested Questions */}
-      {messages.length === 1 && (
+      {messages.length === 1 && !missingKey && !ai.loading && (
         <div className="px-4 pb-2">
           <p className="text-xs text-slate-500 mb-2">Suggested questions:</p>
           <div className="flex flex-wrap gap-2">
@@ -203,13 +240,13 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about your infrastructure..."
+            placeholder={ai.loading ? 'Checking provider...' : missingKey ? 'Add your API key to ask about infrastructure' : 'Ask about your infrastructure...'}
             className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            disabled={isLoading}
+            disabled={isLoading || unavailable}
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || unavailable}
             className="px-4 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
           >
             {isLoading ? (

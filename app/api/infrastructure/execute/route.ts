@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
 
@@ -45,10 +45,11 @@ ${reason ? `Reason: ${reason}` : ''}
 
 Please validate the action, execute it, and report the outcome.`;
 
-    const modelInstance = getModelInstance(model);
-    
+    const resolved = resolveModel(model);
+    if (!resolved.ok) return modelFailureResponse(resolved);
+
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: systemPrompt,
       prompt: userPrompt,
     });

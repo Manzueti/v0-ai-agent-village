@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -26,10 +26,11 @@ You speak in a professional, concise manner. Priority: system stability.`;
 
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
     
-    const modelInstance = getModelInstance(model);
-    
+    const resolved = resolveModel(model);
+    if (!resolved.ok) return modelFailureResponse(resolved);
+
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: systemPrompt,
       prompt: lastUserMessage?.content || 'Hello',
     });

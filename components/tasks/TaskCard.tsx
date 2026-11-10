@@ -12,9 +12,10 @@ interface TaskCardProps {
   task: Task;
   onAutoAssign: (id: string) => void;
   onExecute: (id: string) => void;
+  executeDisabled?: boolean;
 }
 
-export default function TaskCard({ task, onAutoAssign, onExecute }: TaskCardProps) {
+export default function TaskCard({ task, onAutoAssign, onExecute, executeDisabled = false }: TaskCardProps) {
   const agent = task.assignedTo ? employees.find(e => e.id === task.assignedTo) : null;
 
   const priorityColors = {
@@ -81,7 +82,8 @@ export default function TaskCard({ task, onAutoAssign, onExecute }: TaskCardProp
         {task.status === 'assigned' && (
           <button 
             onClick={() => onExecute(task.id)}
-            className="w-full py-2 bg-[hsl(var(--neon-purple)/0.1)] border border-[hsl(var(--neon-purple)/0.3)] text-[hsl(var(--neon-purple))] rounded flex items-center justify-center gap-2 hover:bg-[hsl(var(--neon-purple)/0.2)] transition-all group/btn"
+            disabled={executeDisabled}
+            className="w-full py-2 bg-[hsl(var(--neon-purple)/0.1)] border border-[hsl(var(--neon-purple)/0.3)] text-[hsl(var(--neon-purple))] rounded flex items-center justify-center gap-2 hover:bg-[hsl(var(--neon-purple)/0.2)] transition-all group/btn disabled:opacity-40 disabled:pointer-events-none"
           >
             <Zap className="w-3 h-3 group-hover/btn:fill-current" />
             <span className="text-[9px] font-black uppercase tracking-[0.2em]">Initiate Execution</span>

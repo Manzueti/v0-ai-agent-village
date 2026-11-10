@@ -1,5 +1,6 @@
-import { InfraNode, AIDecision, SystemHealth, ZoneId } from './types';
+import { InfraNode, ZoneId } from './types';
 import { nodes, systemHealth, getNodesByZone, getOperatorForZone, getNodePair } from './infrastructure-data';
+import { aiFailureFromResponse } from './ai-client';
 
 /**
  * Analyze a zone using Gemini AI
@@ -20,7 +21,7 @@ export async function analyzeZone(zoneId: ZoneId): Promise<ReadableStream<Uint8A
     }),
   });
 
-  if (!response.ok) throw new Error('Failed to analyze zone');
+  if (!response.ok || !response.body) throw await aiFailureFromResponse(response);
   return response.body;
 }
 
@@ -51,7 +52,7 @@ export async function executeFailover(
     }),
   });
 
-  if (!response.ok) throw new Error('Failed to execute failover');
+  if (!response.ok || !response.body) throw await aiFailureFromResponse(response);
   return response.body;
 }
 
@@ -78,7 +79,7 @@ export async function executeHeal(
     }),
   });
 
-  if (!response.ok) throw new Error('Failed to execute heal');
+  if (!response.ok || !response.body) throw await aiFailureFromResponse(response);
   return response.body;
 }
 
@@ -96,7 +97,7 @@ export async function getSystemRecommendations(): Promise<ReadableStream<Uint8Ar
     }),
   });
 
-  if (!response.ok) throw new Error('Failed to get recommendations');
+  if (!response.ok || !response.body) throw await aiFailureFromResponse(response);
   return response.body;
 }
 
@@ -116,7 +117,7 @@ export async function chatWithAI(
     }),
   });
 
-  if (!response.ok) throw new Error('Failed to chat with AI');
+  if (!response.ok || !response.body) throw await aiFailureFromResponse(response);
   return response.body;
 }
 

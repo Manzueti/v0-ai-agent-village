@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 import { employees } from '@/lib/data';
-import { Employee } from '@/lib/types';
+import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
+import { useAiStatus } from '@/hooks/use-ai-status';
+import { readAiFailure } from '@/lib/ai-client';
+import { MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
 import { 
   Send, Bot, Terminal, Zap, Shield, Brain, Activity, Target, CheckCircle2, ChevronRight, Play, Loader2, Database, Factory, Sparkles, Command, Cpu
 } from 'lucide-react';
@@ -19,6 +22,9 @@ type ExecutionLog = {
 };
 
 export default function COEPlatform() {
+  const ai = useAiStatus();
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [selectedAgentId, setSelectedAgentId] = useState<string>(employees[0].id);
   const [instruction, setInstruction] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
@@ -27,7 +33,7 @@ export default function COEPlatform() {
   const selectedAgent = employees.find(a => a.id === selectedAgentId);
 
   const handleExecute = async () => {
-    if (!instruction.trim() || !selectedAgent || isExecuting) return;
+    if (!instruction.trim() || !selectedAgent || isExecuting || unavailable) return;
 
     const newLogId = Date.now().toString();
     const newLog: ExecutionLog = {
@@ -50,11 +56,16 @@ export default function COEPlatform() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: `[COE DIRECTIVE]: ${newLog.instruction}` })
         });
-        const data = await response.json();
-        
+        const data = response.ok ? await response.json() : null;
+        const failure = response.ok ? null : await readAiFailure(response);
+
         setLogs(prev => prev.map(log => 
           log.id === newLogId 
-            ? { ...log, status: data.error ? 'error' : 'completed', result: data.response || data.error }
+            ? {
+                ...log,
+                status: data?.response ? 'completed' : 'error',
+                result: data?.response || failure?.message || data?.message || MISSING_API_KEY_MESSAGE,
+              }
             : log
         ));
       } else {
@@ -71,8 +82,8 @@ export default function COEPlatform() {
         });
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || 'Failed to connect to COE Matrix');
+          const failure = await readAiFailure(response);
+          throw new Error(failure.message);
         }
 
         const reader = response.body?.getReader();
@@ -91,9 +102,10 @@ export default function COEPlatform() {
           ));
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Execution failed';
       setLogs(prev => prev.map(log => 
-        log.id === newLogId ? { ...log, status: 'error', result: error.message || 'Execution failed' } : log
+        log.id === newLogId ? { ...log, status: 'error', result: message } : log
       ));
     } finally {
       setIsExecuting(false);
@@ -209,17 +221,23 @@ export default function COEPlatform() {
               <Command className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
               New Operational Directive
             </h2>
+            {missingKey && (
+              <div className="mb-4 relative z-10">
+                <ApiKeyNotice message={ai.message} />
+              </div>
+            )}
             <div className="relative flex-1 flex flex-col z-10">
               <textarea
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
-                placeholder={`Dispatch high-level instructions to ${selectedAgent?.name}...`}
+                placeholder={ai.loading ? 'Checking provider...' : missingKey ? 'Add your API key before dispatching a directive' : `Dispatch high-level instructions to ${selectedAgent?.name}...`}
+                disabled={unavailable}
                 className="flex-1 w-full bg-[hsl(var(--background)/0.6)] border border-white/5 rounded-md p-6 text-sm text-white font-mono placeholder:text-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-purple)/0.4)] transition-all resize-none mb-6 custom-scrollbar scrollbar-hide shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
               />
               <div className="flex justify-end shrink-0">
                 <button
                   onClick={handleExecute}
-                  disabled={!instruction.trim() || isExecuting}
+                  disabled={!instruction.trim() || isExecuting || unavailable}
                   className={`
                     px-10 py-4 bg-[hsl(var(--neon-purple))] hover:bg-[hsl(var(--neon-purple)/0.9)] 
                     disabled:bg-white/5 disabled:text-muted-foreground/20 

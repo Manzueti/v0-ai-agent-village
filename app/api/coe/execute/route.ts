@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -30,16 +30,17 @@ Your task:
 
 Respond in a professional, technical, and authoritative tone, consistent with the CyberEmpire style. Identify yourself as being powered by ${model.includes('gemini') ? 'Gemini' : model.includes('deepseek') ? 'DeepSeek' : 'Neural Core'}.`;
 
-    const modelInstance = getModelInstance(model);
-    
+    const resolved = resolveModel(model);
+    if (!resolved.ok) return modelFailureResponse(resolved);
+
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: corePrompt,
       prompt: `Execute the directive for ${agentName}: ${instruction}`,
     });
 
     return result.toTextStreamResponse();
-  } catch (error: any) {
+  } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in COE execution:', errorMessage);
     return new Response(`Failed to execute COE directive: ${errorMessage}`, { status: 500 });
