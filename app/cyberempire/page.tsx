@@ -534,7 +534,8 @@ function AgentDetailPanel({
   onToggleStatus: (id: string, status: string) => void;
 }) {
   const ai = useAiStatus();
-  const blocked = !ai.loading && !ai.ready;
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'config' | 'chat'>('overview');
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -546,7 +547,7 @@ function AgentDetailPanel({
   }, [agent.id]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isThinking || blocked) return;
+    if (!inputValue.trim() || isThinking || unavailable) return;
     const userMessage = inputValue.trim();
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInputValue('');
@@ -651,7 +652,7 @@ function AgentDetailPanel({
         
         {activeTab === 'chat' && (
            <div className="h-full flex flex-col">
-            {blocked && (
+            {missingKey && (
               <div className="mb-4">
                 <ApiKeyNotice message={ai.message} />
               </div>
@@ -671,11 +672,11 @@ function AgentDetailPanel({
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder={blocked ? 'ADD YOUR API KEY TO DISPATCH' : 'DISPATCH COMMAND...'}
-                disabled={blocked}
+                placeholder={ai.loading ? 'CHECKING PROVIDER...' : missingKey ? 'ADD YOUR API KEY TO DISPATCH' : 'DISPATCH COMMAND...'}
+                disabled={unavailable}
                 className="w-full bg-white/5 border border-white/10 rounded p-4 pr-12 font-mono text-xs text-white focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)] disabled:opacity-50"
               />
-              <button onClick={handleSendMessage} disabled={blocked} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--neon-cyan))] disabled:opacity-40">
+              <button onClick={handleSendMessage} disabled={unavailable} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--neon-cyan))] disabled:opacity-40">
                 <Zap className="w-5 h-5" />
               </button>
             </div>

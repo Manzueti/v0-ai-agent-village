@@ -23,7 +23,8 @@ type ExecutionLog = {
 
 export default function COEPlatform() {
   const ai = useAiStatus();
-  const blocked = !ai.loading && !ai.ready;
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [selectedAgentId, setSelectedAgentId] = useState<string>(employees[0].id);
   const [instruction, setInstruction] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
@@ -32,7 +33,7 @@ export default function COEPlatform() {
   const selectedAgent = employees.find(a => a.id === selectedAgentId);
 
   const handleExecute = async () => {
-    if (!instruction.trim() || !selectedAgent || isExecuting || blocked) return;
+    if (!instruction.trim() || !selectedAgent || isExecuting || unavailable) return;
 
     const newLogId = Date.now().toString();
     const newLog: ExecutionLog = {
@@ -220,7 +221,7 @@ export default function COEPlatform() {
               <Command className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
               New Operational Directive
             </h2>
-            {blocked && (
+            {missingKey && (
               <div className="mb-4 relative z-10">
                 <ApiKeyNotice message={ai.message} />
               </div>
@@ -229,14 +230,14 @@ export default function COEPlatform() {
               <textarea
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
-                placeholder={blocked ? 'Add your API key before dispatching a directive' : `Dispatch high-level instructions to ${selectedAgent?.name}...`}
-                disabled={blocked}
+                placeholder={ai.loading ? 'Checking provider...' : missingKey ? 'Add your API key before dispatching a directive' : `Dispatch high-level instructions to ${selectedAgent?.name}...`}
+                disabled={unavailable}
                 className="flex-1 w-full bg-[hsl(var(--background)/0.6)] border border-white/5 rounded-md p-6 text-sm text-white font-mono placeholder:text-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-purple)/0.4)] transition-all resize-none mb-6 custom-scrollbar scrollbar-hide shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
               />
               <div className="flex justify-end shrink-0">
                 <button
                   onClick={handleExecute}
-                  disabled={!instruction.trim() || isExecuting || blocked}
+                  disabled={!instruction.trim() || isExecuting || unavailable}
                   className={`
                     px-10 py-4 bg-[hsl(var(--neon-purple))] hover:bg-[hsl(var(--neon-purple)/0.9)] 
                     disabled:bg-white/5 disabled:text-muted-foreground/20 

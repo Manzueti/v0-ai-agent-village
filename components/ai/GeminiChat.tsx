@@ -21,7 +21,8 @@ interface GeminiChatProps {
 
 export default function GeminiChat({ className = '' }: GeminiChatProps) {
   const ai = useAiStatus();
-  const blocked = !ai.loading && !ai.ready;
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -37,17 +38,20 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
   const seededMissingKey = useRef(false);
 
   useEffect(() => {
-    if (!blocked || seededMissingKey.current) return;
+    if (!missingKey || seededMissingKey.current) return;
     seededMissingKey.current = true;
-    setMessages([
-      {
-        id: 'missing-key',
-        role: 'assistant',
-        content: ai.message || MISSING_API_KEY_MESSAGE,
-        timestamp: new Date(),
-      },
-    ]);
-  }, [blocked, ai.message]);
+    setMessages((prev) => {
+      if (prev.some((message) => message.role === 'user')) return prev;
+      return [
+        {
+          id: 'missing-key',
+          role: 'assistant',
+          content: ai.message || MISSING_API_KEY_MESSAGE,
+          timestamp: new Date(),
+        },
+      ];
+    });
+  }, [missingKey, ai.message]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -59,7 +63,7 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || blocked) return;
+    if (!input.trim() || isLoading || unavailable) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -149,14 +153,14 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
           <p className="text-xs text-slate-400">Infrastructure Control Center</p>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full animate-pulse ${blocked ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-          <span className={`text-xs ${blocked ? 'text-amber-300' : 'text-emerald-400'}`}>
-            {blocked ? 'Add your API key' : 'Online'}
+          <div className={`w-2 h-2 rounded-full animate-pulse ${missingKey ? 'bg-amber-400' : ai.loading ? 'bg-slate-400' : 'bg-emerald-400'}`} />
+          <span className={`text-xs ${missingKey ? 'text-amber-300' : ai.loading ? 'text-slate-400' : 'text-emerald-400'}`}>
+            {ai.loading ? 'Checking' : missingKey ? 'Add your API key' : 'Online'}
           </span>
         </div>
       </div>
 
-      {blocked && (
+      {missingKey && (
         <div className="px-4 pt-3">
           <ApiKeyNotice message={ai.message} />
         </div>
@@ -211,7 +215,7 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
       </div>
 
       {/* Suggested Questions */}
-      {messages.length === 1 && !blocked && (
+      {messages.length === 1 && !missingKey && !ai.loading && (
         <div className="px-4 pb-2">
           <p className="text-xs text-slate-500 mb-2">Suggested questions:</p>
           <div className="flex flex-wrap gap-2">
@@ -236,13 +240,13 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={blocked ? 'Add your API key to ask about infrastructure' : 'Ask about your infrastructure...'}
+            placeholder={ai.loading ? 'Checking provider...' : missingKey ? 'Add your API key to ask about infrastructure' : 'Ask about your infrastructure...'}
             className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            disabled={isLoading || blocked}
+            disabled={isLoading || unavailable}
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading || blocked}
+            disabled={!input.trim() || isLoading || unavailable}
             className="px-4 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
           >
             {isLoading ? (

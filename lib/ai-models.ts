@@ -13,6 +13,9 @@ const PLACEHOLDER_KEY = /^your_.+_here$/i;
 
 const MODEL_ALIASES: Record<string, string> = {
   'gemini-2.5-flash': 'gemini-1.5-flash',
+  // Retired Claude 3.5 / 3 ids. The API accepts the current Sonnet and Opus aliases.
+  'claude-3-5-sonnet': 'claude-sonnet-4-5',
+  'claude-3-opus': 'claude-opus-4-6',
 };
 
 type ProviderId = 'google' | 'deepseek' | 'openai' | 'xai' | 'anthropic';
@@ -30,7 +33,7 @@ const FALLBACKS: { provider: ProviderId; modelId: string }[] = [
   { provider: 'openai', modelId: 'gpt-4o-mini' },
   { provider: 'deepseek', modelId: 'deepseek-chat' },
   { provider: 'xai', modelId: 'grok-beta' },
-  { provider: 'anthropic', modelId: 'claude-3-5-sonnet' },
+  { provider: 'anthropic', modelId: 'claude-sonnet-4-5' },
 ];
 
 export type ResolvedModel =

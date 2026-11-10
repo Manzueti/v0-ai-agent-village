@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
 import { useAiStatus } from '@/hooks/use-ai-status';
 import { readAiFailure } from '@/lib/ai-client';
-import { MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
+import { MISSING_API_KEY_CODE, MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
 
 export default function TaskCommandCenter() {
   const { 
@@ -22,7 +22,8 @@ export default function TaskCommandCenter() {
   } = useTasks();
   
   const ai = useAiStatus();
-  const blocked = !ai.loading && !ai.ready;
+  const missingKey = !ai.loading && !ai.ready;
+  const unavailable = ai.loading || missingKey;
   const [activeView, setActiveView] = useState<'board' | 'matrix'>('board');
   const [executionOutput, setExecutionOutput] = useState<{taskId: string, content: string} | null>(null);
 
@@ -30,8 +31,11 @@ export default function TaskCommandCenter() {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    if (blocked) {
-      setExecutionOutput({ taskId, content: ai.message || MISSING_API_KEY_MESSAGE });
+    if (unavailable) {
+      setExecutionOutput({
+        taskId,
+        content: ai.loading ? 'Checking AI provider status...' : (ai.message || MISSING_API_KEY_MESSAGE),
+      });
       return;
     }
 
@@ -47,7 +51,7 @@ export default function TaskCommandCenter() {
     if (!response.ok) {
       const failure = await readAiFailure(response);
       setExecutionOutput({ taskId, content: failure.message });
-      updateStatus(taskId, 'failed');
+      updateStatus(taskId, failure.code === MISSING_API_KEY_CODE ? 'assigned' : 'failed');
       return;
     }
     if (response.body) {
@@ -96,7 +100,7 @@ export default function TaskCommandCenter() {
         </div>
       </header>
 
-      {blocked && <ApiKeyNotice message={ai.message} />}
+      {missingKey && <ApiKeyNotice message={ai.message} />}
 
       {/* Main View Area */}
       <div className="flex-1 min-h-0 overflow-hidden">
@@ -110,6 +114,7 @@ export default function TaskCommandCenter() {
             onAutoAssign={autoAssign} 
             onExecute={handleExecute}
             onStatusChange={updateStatus}
+            executeDisabled={unavailable}
           />
         )}
       </div>
