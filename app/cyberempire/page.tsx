@@ -11,6 +11,10 @@ import {
   Clock, CheckCircle, Wifi, Radio, Brain, FileCode, Shield, Users
 } from "lucide-react";
 import StylizedAvatar from "@/components/village/StylizedAvatar";
+import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
+import { useAiStatus } from '@/hooks/use-ai-status';
+import { readAiFailure } from '@/lib/ai-client';
+import { MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NeonPanel = ({
@@ -529,6 +533,8 @@ function AgentDetailPanel({
   onClose: () => void;
   onToggleStatus: (id: string, status: string) => void;
 }) {
+  const ai = useAiStatus();
+  const blocked = !ai.loading && !ai.ready;
   const [activeTab, setActiveTab] = useState<'overview' | 'metrics' | 'config' | 'chat'>('overview');
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -540,7 +546,7 @@ function AgentDetailPanel({
   }, [agent.id]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isThinking) return;
+    if (!inputValue.trim() || isThinking || blocked) return;
     const userMessage = inputValue.trim();
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInputValue('');
@@ -551,9 +557,17 @@ function AgentDetailPanel({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage }),
       });
+      if (!response.ok) {
+        const failure = await readAiFailure(response);
+        setMessages(prev => [...prev, { role: 'assistant', content: failure.message }]);
+        return;
+      }
       const data = await response.json();
-      if (data.response) setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-    } catch (error) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.response || data.message || MISSING_API_KEY_MESSAGE,
+      }]);
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Failed to connect to Hermes Matrix.' }]);
     } finally {
       setIsThinking(false);
@@ -637,6 +651,11 @@ function AgentDetailPanel({
         
         {activeTab === 'chat' && (
            <div className="h-full flex flex-col">
+            {blocked && (
+              <div className="mb-4">
+                <ApiKeyNotice message={ai.message} />
+              </div>
+            )}
             <div className="flex-1 space-y-6 mb-6">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -652,10 +671,11 @@ function AgentDetailPanel({
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="DISPATCH COMMAND..."
-                className="w-full bg-white/5 border border-white/10 rounded p-4 pr-12 font-mono text-xs text-white focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)]"
+                placeholder={blocked ? 'ADD YOUR API KEY TO DISPATCH' : 'DISPATCH COMMAND...'}
+                disabled={blocked}
+                className="w-full bg-white/5 border border-white/10 rounded p-4 pr-12 font-mono text-xs text-white focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)] disabled:opacity-50"
               />
-              <button onClick={handleSendMessage} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--neon-cyan))]">
+              <button onClick={handleSendMessage} disabled={blocked} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--neon-cyan))] disabled:opacity-40">
                 <Zap className="w-5 h-5" />
               </button>
             </div>

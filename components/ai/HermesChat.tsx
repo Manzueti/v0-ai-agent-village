@@ -1,8 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Sparkles, Zap, Terminal, Command } from 'lucide-react';
+import { Bot, User, Loader2, Zap, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ApiKeyNotice } from '@/components/ai/ApiKeyNotice';
+import { useAiStatus } from '@/hooks/use-ai-status';
+import { MISSING_API_KEY_MESSAGE } from '@/lib/ai-key-copy';
+import { readAiFailure } from '@/lib/ai-client';
 
 interface Message {
   id: string;
@@ -15,12 +19,17 @@ interface HermesChatProps {
   className?: string;
 }
 
+const ONLINE_GREETING =
+  'Local Matrix Online. I am Hermes, your local Thinking Agent. I have direct access to your system tools and infrastructure. How can I assist you today?';
+
 export default function HermesChat({ className = '' }: HermesChatProps) {
+  const ai = useAiStatus();
+  const blocked = !ai.loading && !ai.ready;
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: 'Local Matrix Online. I am Hermes, your local Thinking Agent. I have direct access to your system tools and infrastructure. How can I assist you today?',
+      content: ONLINE_GREETING,
       timestamp: new Date(),
     },
   ]);
@@ -28,6 +37,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const seededMissingKey = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,9 +47,22 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (!blocked || seededMissingKey.current) return;
+    seededMissingKey.current = true;
+    setMessages([
+      {
+        id: 'missing-key',
+        role: 'assistant',
+        content: ai.message || MISSING_API_KEY_MESSAGE,
+        timestamp: new Date(),
+      },
+    ]);
+  }, [blocked, ai.message]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || blocked) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -59,18 +82,20 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
         body: JSON.stringify({ message: userMessage.content }),
       });
 
-      const data = await response.json();
-      
+      const data = response.ok
+        ? await response.json()
+        : null;
+      const failure = response.ok ? null : await readAiFailure(response);
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || `Error: ${data.error || 'Unknown error'}`,
+        content: data?.response || failure?.message || MISSING_API_KEY_MESSAGE,
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error chatting with Hermes:', error);
+    } catch {
       setMessages(prev => [
         ...prev,
         {
@@ -104,11 +129,19 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
           <h2 className="text-[11px] font-black text-white tracking-[0.3em] uppercase">Hermes Neural Hub</h2>
           <p className="text-[9px] text-[hsl(var(--neon-cyan))] font-black uppercase tracking-[0.2em]">Neural Processing Node // v2.5.0</p>
         </div>
-        <div className="ml-auto flex items-center gap-3 px-3 py-1 bg-[hsl(var(--neon-green)/0.05)] border border-[hsl(var(--neon-green)/0.2)] rounded">
-          <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] pulse-dot shadow-[0_0_8px_currentColor]" />
-          <span className="text-[9px] text-[hsl(var(--neon-green))] font-black tracking-widest uppercase">UPLINK_STABLE</span>
+        <div className={`ml-auto flex items-center gap-3 px-3 py-1 rounded border ${blocked ? 'bg-[hsl(var(--neon-yellow)/0.08)] border-[hsl(var(--neon-yellow)/0.35)]' : 'bg-[hsl(var(--neon-green)/0.05)] border-[hsl(var(--neon-green)/0.2)]'}`}>
+          <div className={`w-1.5 h-1.5 rounded-full pulse-dot shadow-[0_0_8px_currentColor] ${blocked ? 'bg-[hsl(var(--neon-yellow))]' : 'bg-[hsl(var(--neon-green))]'}`} />
+          <span className={`text-[9px] font-black tracking-widest uppercase ${blocked ? 'text-[hsl(var(--neon-yellow))]' : 'text-[hsl(var(--neon-green))]'}`}>
+            {blocked ? 'ADD_API_KEY' : 'UPLINK_STABLE'}
+          </span>
         </div>
       </div>
+
+      {blocked && (
+        <div className="px-6 pt-4">
+          <ApiKeyNotice message={ai.message} />
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-[hsl(var(--background)/0.2)]">
@@ -172,7 +205,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
       </div>
 
       {/* Suggested Questions */}
-      {messages.length === 1 && (
+      {messages.length === 1 && !blocked && (
         <div className="px-6 py-4 bg-[hsl(var(--background)/0.4)] border-t border-white/5">
           <p className="text-[9px] font-black text-muted-foreground/40 mb-3 uppercase tracking-[0.3em]">Operational Presets:</p>
           <div className="flex flex-wrap gap-3">
@@ -198,9 +231,9 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="DISPATCH COMMAND..."
+              placeholder={blocked ? 'ADD YOUR API KEY TO DISPATCH' : 'DISPATCH COMMAND...'}
               className="w-full bg-[hsl(var(--background)/0.6)] border border-white/10 rounded-md px-5 py-4 text-xs font-mono text-white placeholder-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)] transition-all shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
-              disabled={isLoading}
+              disabled={isLoading || blocked}
             />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/20 pointer-events-none uppercase tracking-widest">
               Matrix_Flow_In
@@ -208,7 +241,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
           </div>
           <button
             type="submit"
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || blocked}
             className={`px-8 py-4 bg-[hsl(var(--neon-cyan))] hover:bg-[hsl(var(--neon-cyan)/0.9)] disabled:bg-white/5 disabled:text-muted-foreground/20 text-background rounded-md transition-all shadow-[0_0_20px_hsl(var(--neon-cyan)/0.4)] flex items-center justify-center transform hover:scale-[1.02] active:scale-[0.98]`}
           >
             {isLoading ? (

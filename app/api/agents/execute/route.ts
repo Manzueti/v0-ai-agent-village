@@ -1,8 +1,7 @@
 import { streamText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 
 export const runtime = 'nodejs';
 
@@ -28,30 +27,11 @@ Keep it concise and game-like.`;
 
     const userPrompt = task || "Find a business opportunity and report progress.";
 
-    let modelInstance;
-    const model = agent.aiModel;
-    
-    if (model.startsWith('deepseek')) {
-      const apiKey = process.env.DEEPSEEK_API_KEY;
-      if (!apiKey) {
-        return new Response(JSON.stringify({ error: 'DEEPSEEK_API_KEY not configured.' }), { status: 500 });
-      }
-      const deepseek = createOpenAI({
-        apiKey,
-        baseURL: 'https://api.deepseek.com',
-      });
-      modelInstance = deepseek(model);
-    } else {
-      const apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      if (!apiKey) {
-        return new Response(JSON.stringify({ error: 'GOOGLE_API_KEY not configured.' }), { status: 500 });
-      }
-      const google = createGoogleGenerativeAI({ apiKey });
-      modelInstance = google(model === 'gemini-2.5-flash' ? 'gemini-1.5-flash' : model);
-    }
+    const resolved = resolveModel(agent.aiModel);
+    if (!resolved.ok) return modelFailureResponse(resolved);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: systemPrompt,
       prompt: userPrompt,
     });

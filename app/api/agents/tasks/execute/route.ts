@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { modelFailureResponse, resolveModel } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
 
@@ -28,17 +28,19 @@ Description: ${taskDescription}
 Please perform the task and provide a detailed report of your actions and findings. 
 Speak in character according to your personality.`;
 
-    const modelInstance = getModelInstance(agent.aiModel);
+    const resolved = resolveModel(agent.aiModel);
+    if (!resolved.ok) return modelFailureResponse(resolved);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: resolved.model,
       system: systemPrompt,
       prompt: `Begin execution of task ${taskId}: ${taskTitle}`,
     });
 
     return result.toTextStreamResponse();
-  } catch (error: any) {
-    console.error('Error in task execution:', error);
-    return new Response(`Failed to execute task: ${error.message}`, { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in task execution:', errorMessage);
+    return new Response(`Failed to execute task: ${errorMessage}`, { status: 500 });
   }
 }

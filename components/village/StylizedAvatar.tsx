@@ -86,45 +86,31 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
           </motion.g>
         )}
 
-        {/* Legs (Animated when walking) */}
+        {/* Legs. The parent already bobs while walking. Do not animate the
+            path `d`: framer-motion writes `d="undefined"` and the browser logs it. */}
         <g className="opacity-80">
-          <motion.path
-            d="M40,90 L40,110"
-            stroke={hexColor}
-            strokeWidth="3"
-            strokeLinecap="round"
-            animate={isWalking ? {
-              d: ["M40,90 L35,110", "M40,90 L45,105", "M40,90 L35,110"]
-            } : { d: "M40,90 L40,105" }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          />
-          <motion.path
-            d="M60,90 L60,110"
-            stroke={hexColor}
-            strokeWidth="3"
-            strokeLinecap="round"
-            animate={isWalking ? {
-              d: ["M60,90 L65,105", "M60,90 L55,110", "M60,90 L65,105"]
-            } : { d: "M60,90 L60,105" }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          />
+          <path d="M40,90 L40,105" stroke={hexColor} strokeWidth="3" strokeLinecap="round" />
+          <path d="M60,90 L60,105" stroke={hexColor} strokeWidth="3" strokeLinecap="round" />
         </g>
 
-        {/* Body Base */}
-        <motion.path
-          d={gender === 'female' 
-            ? "M30,90 Q30,70 50,70 Q70,70 70,90 L70,95 L30,95 Z" 
+        {/* Body Base. Scale is not animated on the path itself: framer-motion
+            writes an invalid `d` while interpolating SVG scale. */}
+        <path
+          d={gender === 'female'
+            ? "M30,90 Q30,70 50,70 Q70,70 70,90 L70,95 L30,95 Z"
             : "M25,90 Q25,65 50,65 Q75,65 75,90 L75,95 L25,95 Z"
           }
           fill="url(#skinGradient)"
-          animate={isWorking ? { scale: [1, 1.01, 1] } : {}}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           className="opacity-90"
         />
 
         {/* Bioluminescent Markings */}
-        <g className="opacity-40">
-          <motion.path
+        <motion.g
+          className="opacity-40"
+          animate={{ opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <path
             d={gender === 'female'
               ? "M45,75 Q50,80 55,75 M40,82 Q50,85 60,82"
               : "M40,70 Q50,75 60,70 M35,80 Q50,85 65,80"
@@ -132,10 +118,8 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
             fill="none"
             stroke="white"
             strokeWidth="0.5"
-            animate={{ opacity: [0.2, 0.6, 0.2] }}
-            transition={{ duration: 2, repeat: Infinity }}
           />
-        </g>
+        </motion.g>
 
         {/* Shoulders / Suit details */}
         <path
@@ -176,14 +160,17 @@ export default function StylizedAvatar({ gender, color, className = '', isWalkin
         </g>
 
         {/* Neural Interface Details */}
-        <motion.path
-          d="M50,20 L50,30 M40,25 L45,30 M60,25 L55,30"
-          stroke={hexColor}
-          strokeWidth="1"
-          fill="none"
+        <motion.g
           animate={{ opacity: isWorking ? [0.4, 1, 0.4] : [0.2, 0.8, 0.2] }}
           transition={{ duration: isWorking ? 0.8 : 3, repeat: Infinity }}
-        />
+        >
+          <path
+            d="M50,20 L50,30 M40,25 L45,30 M60,25 L55,30"
+            stroke={hexColor}
+            strokeWidth="1"
+            fill="none"
+          />
+        </motion.g>
 
         {/* Gender Specific Details */}
         {gender === 'female' && (

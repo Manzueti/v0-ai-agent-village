@@ -1,108 +1,153 @@
+import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
-// import { createAnthropic } from '@ai-sdk/anthropic'; // Install @ai-sdk/anthropic to use Claude
-import { streamText } from 'ai';
-import { AIModel } from './types';
+import { streamText, type LanguageModel } from 'ai';
+import {
+  AI_PROVIDER_ENV_NAMES,
+  MISSING_API_KEY_CODE,
+  MISSING_API_KEY_MESSAGE,
+  type AiProviderEnv,
+} from './ai-key-copy';
 
-export type ModelProvider = 'google' | 'openai' | 'deepseek' | 'anthropic';
+const PLACEHOLDER_KEY = /^your_.+_here$/i;
 
-export function getModelInstance(modelId: string) {
-  const hasGoogle = !!process.env.GOOGLE_API_KEY;
-  const hasDeepseek = !!process.env.DEEPSEEK_API_KEY;
-  const hasOpenAI = !!process.env.OPENAI_API_KEY;
-  const hasXAI = !!process.env.XAI_API_KEY;
+const MODEL_ALIASES: Record<string, string> = {
+  'gemini-2.5-flash': 'gemini-1.5-flash',
+};
 
-  let finalModelId = modelId;
+type ProviderId = 'google' | 'deepseek' | 'openai' | 'xai' | 'anthropic';
 
-  // Fallback Logic: If requested key is missing, reroute to an available provider
-  if (modelId.startsWith('deepseek') && !hasDeepseek) {
-    console.warn(`DEEPSEEK_API_KEY missing. Routing to fallback for ${modelId}`);
-    if (hasGoogle) finalModelId = 'gemini-1.5-flash';
-    else if (hasOpenAI) finalModelId = 'gpt-4o-mini';
-    else if (hasXAI) finalModelId = 'grok-beta';
+const PROVIDER_ENV: Record<ProviderId, AiProviderEnv> = {
+  google: 'GOOGLE_API_KEY',
+  deepseek: 'DEEPSEEK_API_KEY',
+  openai: 'OPENAI_API_KEY',
+  xai: 'XAI_API_KEY',
+  anthropic: 'ANTHROPIC_API_KEY',
+};
+
+const FALLBACKS: { provider: ProviderId; modelId: string }[] = [
+  { provider: 'google', modelId: 'gemini-1.5-flash' },
+  { provider: 'openai', modelId: 'gpt-4o-mini' },
+  { provider: 'deepseek', modelId: 'deepseek-chat' },
+  { provider: 'xai', modelId: 'grok-beta' },
+  { provider: 'anthropic', modelId: 'claude-3-5-sonnet' },
+];
+
+export type ResolvedModel =
+  | { ok: true; model: LanguageModel; modelId: string }
+  | { ok: false; code: typeof MISSING_API_KEY_CODE | 'unsupported_model'; message: string };
+
+function readEnvKey(name: string): string | null {
+  const value = process.env[name];
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed || PLACEHOLDER_KEY.test(trimmed)) return null;
+  return trimmed;
+}
+
+export function readProviderKey(name: AiProviderEnv): string | null {
+  if (name === 'GOOGLE_API_KEY') {
+    return readEnvKey('GOOGLE_API_KEY') ?? readEnvKey('GOOGLE_GENERATIVE_AI_API_KEY');
+  }
+  return readEnvKey(name);
+}
+
+export function configuredProviders(): AiProviderEnv[] {
+  return AI_PROVIDER_ENV_NAMES.filter((name) => readProviderKey(name) !== null);
+}
+
+export function aiStatusPayload() {
+  const configured = configuredProviders();
+  const ready = configured.length > 0;
+  return {
+    ready,
+    configured,
+    missing: AI_PROVIDER_ENV_NAMES.filter((name) => !configured.includes(name)),
+    code: ready ? null : MISSING_API_KEY_CODE,
+    message: ready ? null : MISSING_API_KEY_MESSAGE,
+  };
+}
+
+function providerForModel(modelId: string): ProviderId | null {
+  if (modelId.startsWith('gemini')) return 'google';
+  if (modelId.startsWith('deepseek')) return 'deepseek';
+  if (modelId.startsWith('gpt')) return 'openai';
+  if (modelId.startsWith('grok')) return 'xai';
+  if (modelId.startsWith('claude')) return 'anthropic';
+  return null;
+}
+
+function instantiate(provider: ProviderId, modelId: string, apiKey: string): LanguageModel {
+  if (provider === 'google') return createGoogleGenerativeAI({ apiKey })(modelId);
+  if (provider === 'deepseek') {
+    return createOpenAI({ apiKey, baseURL: 'https://api.deepseek.com' })(modelId);
+  }
+  if (provider === 'openai') return createOpenAI({ apiKey })(modelId);
+  if (provider === 'xai') {
+    return createOpenAI({ apiKey, baseURL: 'https://api.x.ai/v1' })(modelId);
+  }
+  return createAnthropic({ apiKey })(modelId);
+}
+
+/** Resolve a model without throwing. Missing keys return a structured failure. */
+export function resolveModel(requestedModelId: string): ResolvedModel {
+  const configured = new Set(configuredProviders());
+  if (configured.size === 0) {
+    return { ok: false, code: MISSING_API_KEY_CODE, message: MISSING_API_KEY_MESSAGE };
   }
 
-  if (modelId.startsWith('gpt') && !hasOpenAI) {
-    console.warn(`OPENAI_API_KEY missing. Routing to fallback for ${modelId}`);
-    if (hasGoogle) finalModelId = 'gemini-1.5-flash';
-    else if (hasDeepseek) finalModelId = 'deepseek-chat';
-    else if (hasXAI) finalModelId = 'grok-beta';
+  let modelId = MODEL_ALIASES[requestedModelId] ?? requestedModelId;
+  const requestedProvider = providerForModel(modelId);
+  if (!requestedProvider) {
+    return {
+      ok: false,
+      code: 'unsupported_model',
+      message: `Unsupported model: ${requestedModelId}`,
+    };
   }
 
-  if (modelId.startsWith('gemini') && !hasGoogle) {
-    console.warn(`GOOGLE_API_KEY missing. Routing to fallback for ${modelId}`);
-    if (hasOpenAI) finalModelId = 'gpt-4o-mini';
-    else if (hasDeepseek) finalModelId = 'deepseek-chat';
-    else if (hasXAI) finalModelId = 'grok-beta';
+  if (!configured.has(PROVIDER_ENV[requestedProvider])) {
+    const fallback = FALLBACKS.find((entry) => configured.has(PROVIDER_ENV[entry.provider]));
+    if (!fallback) {
+      return { ok: false, code: MISSING_API_KEY_CODE, message: MISSING_API_KEY_MESSAGE };
+    }
+    modelId = fallback.modelId;
   }
 
-  if (modelId.startsWith('grok') && !hasXAI) {
-    console.warn(`XAI_API_KEY missing. Routing to fallback for ${modelId}`);
-    if (hasGoogle) finalModelId = 'gemini-1.5-flash';
-    else if (hasOpenAI) finalModelId = 'gpt-4o-mini';
-    else if (hasDeepseek) finalModelId = 'deepseek-chat';
+  const provider = providerForModel(modelId);
+  if (!provider) {
+    return {
+      ok: false,
+      code: 'unsupported_model',
+      message: `Unsupported model: ${modelId}`,
+    };
   }
 
-  // Google/Gemini
-  if (finalModelId.startsWith('gemini')) {
-    const apiKey = process.env.GOOGLE_API_KEY;
-    if (!apiKey) throw new Error('CRITICAL: No API keys configured. Please add GOOGLE_API_KEY, DEEPSEEK_API_KEY, OPENAI_API_KEY, or XAI_API_KEY to your environment variables.');
-    const google = createGoogleGenerativeAI({ apiKey });
-    return google(finalModelId);
-  }
-  
-  // DeepSeek (uses OpenAI-compatible API)
-  if (finalModelId.startsWith('deepseek')) {
-    const apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) throw new Error('CRITICAL: No API keys configured.');
-    const deepseek = createOpenAI({ 
-      apiKey, 
-      baseURL: 'https://api.deepseek.com' 
-    });
-    return deepseek(finalModelId);
-  }
-  
-  // OpenAI GPT
-  if (finalModelId.startsWith('gpt')) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) throw new Error('CRITICAL: No API keys configured.');
-    const openai = createOpenAI({ apiKey });
-    return openai(finalModelId);
+  const apiKey = readProviderKey(PROVIDER_ENV[provider]);
+  if (!apiKey) {
+    return { ok: false, code: MISSING_API_KEY_CODE, message: MISSING_API_KEY_MESSAGE };
   }
 
-  // xAI / Grok (uses OpenAI-compatible API)
-  if (finalModelId.startsWith('grok')) {
-    const apiKey = process.env.XAI_API_KEY;
-    if (!apiKey) throw new Error('CRITICAL: No API keys configured.');
-    const xai = createOpenAI({ 
-      apiKey, 
-      baseURL: 'https://api.x.ai/v1' 
-    });
-    return xai(finalModelId);
-  }
+  return { ok: true, model: instantiate(provider, modelId, apiKey), modelId };
+}
 
-  // Anthropic Claude (Requires @ai-sdk/anthropic)
-  /*
-  if (finalModelId.startsWith('claude')) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
-    const anthropic = createAnthropic({ apiKey });
-    return anthropic(finalModelId);
-  }
-  */
-  
-  throw new Error(`Unknown or unsupported model: ${finalModelId}`);
+export function modelFailureResponse(failure: Extract<ResolvedModel, { ok: false }>): Response {
+  return Response.json(
+    { error: failure.code, code: failure.code, message: failure.message },
+    { status: failure.code === MISSING_API_KEY_CODE ? 503 : 400 },
+  );
 }
 
 export async function streamWithModel(
   modelId: string,
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
 ) {
-  const model = getModelInstance(modelId);
-  return streamText({ 
-    model: model as any, 
-    system: systemPrompt, 
-    prompt: userPrompt 
+  const resolved = resolveModel(modelId);
+  if (!resolved.ok) return modelFailureResponse(resolved);
+  return streamText({
+    model: resolved.model,
+    system: systemPrompt,
+    prompt: userPrompt,
   });
 }
