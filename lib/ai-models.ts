@@ -59,14 +59,11 @@ export function configuredProviders(): AiProviderEnv[] {
   return AI_PROVIDER_ENV_NAMES.filter((name) => readProviderKey(name) !== null);
 }
 
+/** Public status. Does not name which provider keys are set. */
 export function aiStatusPayload() {
-  const configured = configuredProviders();
-  const ready = configured.length > 0;
+  const ready = configuredProviders().length > 0;
   return {
     ready,
-    configured,
-    missing: AI_PROVIDER_ENV_NAMES.filter((name) => !configured.includes(name)),
-    code: ready ? null : MISSING_API_KEY_CODE,
     message: ready ? null : MISSING_API_KEY_MESSAGE,
   };
 }
