@@ -18,3 +18,6 @@ next.user-config.*
 node_modules
 .next/
 .DS_Store
+# Python bytecode (from .claude/skills scripts)
+__pycache__/
+*.pyc
