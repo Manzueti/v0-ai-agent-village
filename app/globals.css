@@ -616,3 +616,8 @@
 .hub-badge-error { background: rgba(239, 68, 68, 0.1); color: var(--hub-accent-red); border: 1px solid rgba(239, 68, 68, 0.15); }
 .hub-badge-paused { background: rgba(245, 158, 11, 0.1); color: var(--hub-accent-yellow); border: 1px solid rgba(245, 158, 11, 0.15); }
 
+
+/* Readable sans for long-form copy (headings and data stay mono) */
+.font-body {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
