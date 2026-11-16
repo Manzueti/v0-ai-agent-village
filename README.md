@@ -34,6 +34,12 @@ Your latest build is now live on GitHub. You can pull these changes on any machi
 
 ---
 
+## 🫀 Automaton Colony
+
+Village agents now have to earn their own (simulated) compute: survival tiers, heartbeat, constitution, SOUL.md and self-replication, based on [Conway-Research/automaton](https://github.com/Conway-Research/automaton). Open `/?s=automaton`. See [docs/automaton.md](docs/automaton.md).
+
+---
+
 ## Getting Started
 
 First, run the development server:

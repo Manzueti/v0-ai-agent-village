@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Home, Server, Brain, Settings,
-  Activity, Terminal, Wifi, Target, Trees, Factory
+  Activity, Terminal, Wifi, Target, Trees, Factory, HeartPulse
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { name: 'Ecosystem',      href: '/?s=village',           section: 'village',        icon: Trees,    shortcut: '⌘3' },
   { name: 'Infrastructure', href: '/?s=infrastructure',    section: 'infrastructure', icon: Server,   shortcut: '⌘4' },
   { name: 'AI Control',     href: '/?s=ai-control',        section: 'ai-control',     icon: Brain,    shortcut: '⌘5' },
+  { name: 'Automaton',      href: '/?s=automaton',         section: 'automaton',      icon: HeartPulse, shortcut: '⌘7' },
   { name: 'COE',            href: '/?s=coe',               section: 'coe',            icon: Target,   shortcut: '⌘6' },
   { name: 'Settings',       href: '#',                     section: '__settings__',   icon: Settings, shortcut: '⌘,' },
 ] as const;
@@ -28,6 +29,7 @@ const PATH_TO_SECTION: Record<string, string> = {
   '/coe':            'coe',
   '/ai-control':     'ai-control',
   '/infrastructure': 'infrastructure',
+  '/automaton':      'automaton',
 };
 
 export default function Sidebar() {

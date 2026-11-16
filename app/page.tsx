@@ -16,6 +16,7 @@ const CyberEmpirePage = dynamic(() => import('./cyberempire/page'),    { ssr: fa
 const COEPage         = dynamic(() => import('./coe/page'),            { ssr: false });
 const AIControlPage   = dynamic(() => import('./ai-control/page'),     { ssr: false });
 const InfraPage       = dynamic(() => import('./infrastructure/page'), { ssr: false });
+const AutomatonPage   = dynamic(() => import('./automaton/page'),      { ssr: false });
 
 const SECTIONS: Record<string, React.ComponentType> = {
   village:        VillagePage,
@@ -24,6 +25,7 @@ const SECTIONS: Record<string, React.ComponentType> = {
   coe:            COEPage,
   'ai-control':   AIControlPage,
   infrastructure: InfraPage,
+  automaton:      AutomatonPage,
 };
 
 // ── Section router ────────────────────────────────────────────────────────────
