@@ -36,11 +36,12 @@
   --input: 217 33% 15%;
   --ring: 186 100% 50%;
 
-  --neon-cyan: 190 100% 55%;
-  --neon-magenta: 320 100% 60%;
-  --neon-yellow: 48 100% 60%;
-  --neon-green: 140 80% 55%;
-  --neon-purple: 270 90% 65%;
+  /* Futurist palette: cyan primary, emerald accent, cool violet secondary, rose alerts */
+  --neon-cyan: 187 95% 55%;
+  --neon-magenta: 340 90% 62%;
+  --neon-yellow: 45 95% 60%;
+  --neon-green: 155 75% 52%;
+  --neon-purple: 252 90% 72%;
   --neon-orange: 25 100% 60%;
   --neon-pink: 335 95% 65%;
 
@@ -57,8 +58,9 @@
 }
 
 @theme inline {
-  --font-sans: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', 'Inter Variable', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -97,13 +99,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#020408] text-[#e2e8f0] font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200;
-    background-image:
-      radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
-      radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-[#02040a] text-[#e2e8f0] font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-100;
     min-height: 100vh;
+    font-feature-settings: 'cv11', 'ss01';
   }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+  .tabular-nums { font-family: var(--font-mono); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -640,4 +644,103 @@
 .glow-box-active {
   box-shadow: 0 0 25px 0px rgba(6, 182, 212, 0.35);
   border: 1px solid rgba(6, 182, 212, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Futurist backdrop (replaces the old map background)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.app-backdrop {
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(14, 116, 144, 0.18), transparent 60%),
+    linear-gradient(180deg, #030712 0%, #02040a 55%, #010205 100%);
+}
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.aurora-a { width: 52vw; height: 52vw; top: -22vw; left: 8vw;  background: radial-gradient(circle, rgba(34, 211, 238, 0.35), transparent 65%); animation: aurora-drift 26s ease-in-out infinite alternate; }
+.aurora-b { width: 44vw; height: 44vw; bottom: -18vw; right: -6vw; background: radial-gradient(circle, rgba(16, 185, 129, 0.28), transparent 65%); animation: aurora-drift 32s ease-in-out infinite alternate-reverse; }
+.aurora-c { width: 34vw; height: 34vw; top: 30%; right: 22%;   background: radial-gradient(circle, rgba(129, 140, 248, 0.18), transparent 65%); animation: aurora-drift 38s ease-in-out infinite alternate; }
+@keyframes aurora-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(4vw, 3vw, 0) scale(1.08); }
+  100% { transform: translate3d(-3vw, 5vw, 0) scale(0.96); }
+}
+.backdrop-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(34, 211, 238, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 211, 238, 0.055) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 30%, transparent 100%);
+}
+.backdrop-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Glass surfaces
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.glass-panel,
+.glow-box {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.62), rgba(2, 6, 15, 0.72));
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(34, 211, 238, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(2, 6, 15, 0.6),
+    0 20px 50px -20px rgba(0, 0, 0, 0.8),
+    0 0 30px -12px rgba(34, 211, 238, 0.18);
+}
+.glow-box-active {
+  border-color: rgba(34, 211, 238, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 24px -4px rgba(34, 211, 238, 0.45);
+}
+.hairline-top { position: relative; }
+.hairline-top::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.7), transparent);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Accessibility (UI/UX Pro Max priorities 1, 6, 7)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Visible keyboard focus everywhere */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--neon-cyan));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Raise the tiniest label sizes used across the app to a readable minimum */
+.text-\[7px\] { font-size: 9px; }
+.text-\[8px\] { font-size: 9.5px; }
+.text-\[9px\] { font-size: 10px; }
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .aurora { animation: none; }
 }

@@ -78,7 +78,7 @@ export default function BusinessBuilderPage() {
 
       <div className="flex-1 min-h-0 flex gap-4">
         {/* Chat */}
-        <section className="flex-1 min-w-0 flex flex-col rounded-md bg-[#020408]/85 backdrop-blur-md glow-box overflow-hidden">
+        <section className="flex-1 min-w-0 flex flex-col rounded-xl glow-box overflow-hidden">
           <div className="flex items-center gap-2 p-3 border-b border-cyan-500/15 overflow-x-auto">
             <span className="text-[9px] text-muted-foreground uppercase tracking-widest shrink-0 mr-1">Co-founder</span>
             {advisors.map((a) => (
@@ -189,7 +189,7 @@ function PlanPanel({
   const [launchingAll, setLaunchingAll] = useState(false);
 
   return (
-    <aside className="w-[440px] shrink-0 flex flex-col rounded-md bg-[#020408]/85 backdrop-blur-md glow-box overflow-hidden">
+    <aside className="w-[440px] shrink-0 flex flex-col rounded-xl glow-box overflow-hidden">
       <div className="p-4 border-b border-cyan-500/15 flex items-center justify-between">
         <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-emerald-400" /> Business Plan

@@ -659,13 +659,11 @@ export default function VirtualOffice() {
           gap: 10,
           justifyContent: "center",
           position: "relative",
-          backgroundImage: "url('/dungeon-map.webp')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundImage:
+            "linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
         }}
       >
-        {/* dark tint so neon pops against the warm stone */}
-        <div style={{ position: "absolute", inset: 0, background: "rgba(2,2,12,0.55)", pointerEvents: "none", zIndex: 0 }} />
         {depts.map((dept) => (
           <OfficeRoom
             key={dept}

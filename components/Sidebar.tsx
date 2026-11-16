@@ -45,10 +45,9 @@ export default function Sidebar() {
     <motion.div
       initial={{ x: -80 }}
       animate={{ x: 0 }}
-      className="w-20 bg-[hsl(var(--sidebar-background)/0.95)] backdrop-blur-2xl border-r border-[hsl(var(--sidebar-border))] h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50 scanlines"
+      className="w-20 bg-[#030712]/70 backdrop-blur-2xl border-r border-cyan-400/10 shadow-[inset_-1px_0_0_rgba(34,211,238,0.06)] h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50"
     >
-      <div className="absolute inset-0 starfield opacity-10 pointer-events-none" />
-
+      
       {/* Logo */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
@@ -57,9 +56,9 @@ export default function Sidebar() {
         className="relative mb-8 group"
       >
         <Link href="/">
-          <div className="w-12 h-12 rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_hsl(var(--neon-magenta)/0.4)]">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 via-sky-500 to-emerald-400 flex items-center justify-center relative overflow-hidden shadow-[0_0_24px_rgba(34,211,238,0.45)]">
             <Terminal className="w-6 h-6 text-background relative z-10" />
-            <div className="absolute inset-0 bg-white/10 animate-pulse" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-white/20" />
           </div>
         </Link>
       </motion.div>
@@ -92,25 +91,26 @@ export default function Sidebar() {
             >
               <Link
                 href={item.href}
-                className={`relative w-14 h-14 flex items-center justify-center rounded transition-all duration-300 group ${
+                aria-label={item.name}
+                aria-current={isActive ? 'page' : undefined}
+                className={`relative w-12 h-12 flex items-center justify-center rounded-xl transition-colors duration-200 group ${
                   isActive
-                    ? 'bg-[hsl(var(--neon-purple)/0.15)] border border-[hsl(var(--neon-purple)/0.5)] shadow-[0_0_15px_hsl(var(--neon-purple)/0.2)]'
-                    : 'border border-transparent hover:border-[hsl(var(--neon-cyan)/0.3)] hover:bg-[hsl(var(--neon-cyan)/0.05)]'
+                    ? 'bg-cyan-400/12 border border-cyan-400/45 shadow-[0_0_18px_-4px_rgba(34,211,238,0.6)]'
+                    : 'border border-transparent hover:border-cyan-400/25 hover:bg-cyan-400/[0.06]'
                 }`}
               >
-                {isActive && <div className="absolute inset-0 rounded bg-[hsl(var(--neon-purple)/0.1)] animate-pulse" />}
 
                 <Icon className={`w-5 h-5 relative z-10 transition-all duration-300 ${
                   isActive
-                    ? 'text-[hsl(var(--neon-purple))] scale-110'
-                    : 'text-muted-foreground group-hover:text-[hsl(var(--neon-cyan))] group-hover:scale-110'
+                    ? 'text-cyan-300'
+                    : 'text-slate-400 group-hover:text-cyan-200'
                 }`} />
 
                 {/* Tooltip */}
                 <motion.span
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: hoveredItem === item.name ? 1 : 0, x: hoveredItem === item.name ? 0 : -10 }}
-                  className="absolute left-full ml-3 px-3 py-1.5 bg-[hsl(var(--sidebar-background)/0.95)] border border-[hsl(var(--neon-cyan)/0.4)] panel-glow-cyan rounded-md text-[10px] text-white whitespace-nowrap z-50 font-bold tracking-widest uppercase"
+                  aria-hidden className="pointer-events-none absolute left-full ml-3 px-3 py-1.5 glass-panel rounded-md text-[11px] text-white whitespace-nowrap z-50 font-semibold tracking-wide"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-[hsl(var(--neon-cyan))]">{item.name}</span>
@@ -119,7 +119,7 @@ export default function Sidebar() {
                 </motion.span>
 
                 {isActive && (
-                  <div className="absolute -right-[1px] top-1/2 -translate-y-1/2 w-[2px] h-8 bg-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple))]" />
+                  <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[3px] h-7 rounded-r bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.9)]" />
                 )}
               </Link>
             </motion.div>
@@ -134,16 +134,15 @@ export default function Sidebar() {
         transition={{ delay: 0.6 }}
         className="mt-auto flex flex-col items-center gap-4 pb-4"
       >
-        <div className="bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))] rounded p-2.5 w-14 flex flex-col items-center gap-2 panel-glow-cyan overflow-hidden relative">
-          <div className="absolute inset-0 scanlines opacity-20" />
-          <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
+        <div className="glass-panel rounded-xl p-2.5 w-14 flex flex-col items-center gap-2 overflow-hidden relative">
+                    <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
           <div className="text-[10px] font-bold font-mono text-white tabular-nums">97%</div>
           <div className="w-full h-1 bg-[hsl(var(--background))] rounded-full overflow-hidden border border-white/5">
             <div className="h-full w-[97%] bg-[hsl(var(--neon-cyan))]" style={{ boxShadow: '0 0 8px hsl(var(--neon-cyan))' }} />
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <Wifi className="w-3 h-3 text-[hsl(var(--neon-purple))]" />
+          <Wifi className="w-3 h-3 text-cyan-300" />
           <span className="text-[9px] font-bold font-mono text-muted-foreground tracking-widest uppercase">5/5</span>
         </div>
         <div className="text-[8px] font-bold font-mono text-muted-foreground/40 tracking-[0.2em] uppercase">v2.5.0</div>
