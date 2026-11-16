@@ -1,63 +1,91 @@
-# CYBEREMPIRE - Deep Space Command Center
+# CYBEREMPIRE — AI Agent Village
 
-✦ All changes for the Deep Space Command Center transformation have been successfully pushed to your GitHub repository.
+A Next.js dashboard that presents an AI workforce as a gamified command center. It brings together agent profiles and activity, task assignment and execution, infrastructure monitoring, AI-powered chat and recommendations, and an **Automaton Colony** where agents must earn their own (simulated) compute to survive.
 
-## 🚀 v0.2.0: Neural Expansion & Security
+## Stack
 
-### 🔒 Security & Stability
-*   **Credential Protection:** `.env` is now secured and removed from Git tracking.
-*   **Portability:** Replaced hardcoded local paths with environment variables.
-*   **Resilience:** Integrated **Error Boundaries** to protect the UI from 3D/AI stream failures.
+- **Language:** TypeScript / TSX, CSS (Tailwind CSS 4)
+- **Framework:** Next.js 16 (App Router), React 19, Node.js API routes
+- **Libraries:** Vercel AI SDK (Google, OpenAI, Anthropic, DeepSeek, xAI), React Three Fiber / Three.js for 3D views, Framer Motion, Radix UI components
 
-### 🤖 Hybrid Intelligence
-*   **Unified Model Factory:** Support for **Gemini 1.5 Pro**, **DeepSeek Chat/Reasoner**, **Claude 3.5**, and **GPT-4o**.
-*   **Smart Routing:** Centralized model management for infrastructure and agent tasks.
+## Quick start
 
-### 🎮 Advanced Gamification
-*   **XP System v2:** Defined Level 1-7 progression with unlockable perks.
-*   **New Operative:** Added **Rank Rocket** (SEO Strategist) to the Creative Studio.
-
----
-
-## 🚀 Deep Space Transformation Summary
-
-**Commit Message:** `🚀 Transform into Deep Space Command Center: 20 gamified AI agents, 3D space pods, and Deepseek/Gemini integration`
-
-### 📤 Summary of Push
-*   **20+ specialized AI agents** with XP/Level systems and mission directives.
-*   **3D Floating Pod architecture** for departmental separation (Revenue, Finance, Creative, Tech, Command).
-*   **Deepseek (Chat/Reasoner) and Gemini 1.5 Flash** backend integration for hybrid intelligence.
-*   **Real-time Mission Log HUD** for live agent activity tracking.
-*   **Game-like UI visuals** including 3D health bars, thought bubbles, and particle effects.
-
-Your latest build is now live on GitHub. You can pull these changes on any machine or deploy them directly to your hosting provider! 🚀🌌
-
----
-
-## 🫀 Automaton Colony
-
-Village agents now have to earn their own (simulated) compute: survival tiers, heartbeat, constitution, SOUL.md and self-replication, based on [Conway-Research/automaton](https://github.com/Conway-Research/automaton). Open `/?s=automaton`. See [docs/automaton.md](docs/automaton.md).
-
----
-
-## Getting Started
-
-First, run the development server:
+Requires Node.js 20 or later.
 
 ```bash
+npm install
+cp .env.example .env
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-## Built with v0
+The app starts without any API keys. To enable the AI features, add at least one provider key to `.env`: `GOOGLE_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY` or `XAI_API_KEY`. Without a key, AI endpoints return `503` with a message naming the keys to set.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+| Script | What it does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Production build (includes type checking) |
+| `npm start` | Serve the production build |
+| `npm run lint` | ESLint |
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_WlDsotmSqaEbbC8uwCbjSL2nWOrX)
+## Sections
 
-<a href="https://v0.app/chat/api/kiro/clone/Manzueti/v0-ai-agent-village" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+Navigate with the sidebar. Every section lives at `/?s=<name>`.
+
+| Section | `?s=` | What it shows |
+|---|---|---|
+| Home | — | Landing screen |
+| CyberEmpire | `cyberempire` | Main enterprise dashboard and Hermes chat |
+| Tasks | `tasks` | Kanban task board: create from templates, auto-assign to the best agent, run with AI |
+| Ecosystem | `village` | Agent pods, mission log, 2D virtual office and 3D visualizer |
+| Infrastructure | `infrastructure` | Isometric infrastructure map, node details, AI analysis |
+| AI Control | `ai-control` | Operator oversight and decision log |
+| Automaton | `automaton` | Survival simulation: credits, tiers, constitution, SOUL.md, replication ([docs](docs/automaton.md)) |
+| COE | `coe` | Center of Excellence for sending directives to agents |
+
+## How it's organized
+
+```text
+app/
+  page.tsx            Home screen and ?s= section router
+  <section>/page.tsx  One folder per section (see table above)
+  api/                AI, agent, task, infrastructure, automaton and Hermes endpoints
+components/
+  village/            Agent pods, ecosystem visualizations, mission log
+  infrastructure/     Isometric map, node panels, decision log
+  tasks/              Task board, cards, task creation
+  ai/                 Hermes chat
+  ui/                 Shared UI primitives (shadcn/Radix)
+lib/
+  ai-models.ts        Provider selection, model-ID normalization, fallback, error statuses
+  data.ts             Agent roster
+  infrastructure-data.ts  Infrastructure nodes, zones, health
+  tasks/              Task types and agent-assignment scoring
+  automaton/          Colony engine, survival tiers, constitution
+  game/               XP and level progression
+hooks/                Client hooks (tasks, automaton colony)
+docs/                 Feature docs
+```
+
+**AI provider fallback.** Each agent has a preferred model. `lib/ai-models.ts` maps retired model IDs to current ones. If the preferred provider has no key, it falls back in this order: Google → OpenAI → Anthropic → DeepSeek → xAI.
+
+## What's real and what's simulated
+
+This is a demo and prototyping app, not a production operations backend.
+
+| Feature | State |
+|---|---|
+| AI chat, analysis, task execution, directives | Real AI responses when a key is set |
+| Tasks | Kept in server memory. Reset on restart and not shared between serverless instances |
+| Automaton Colony | Simulated credits, saved in the browser's `localStorage`. No real money or wallets |
+| Agent roster, infrastructure nodes, health metrics | Static sample data |
+| XP endpoint, infrastructure "execute" actions | Compute or describe the result, but save and change nothing |
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md). On Vercel, set your provider keys as environment variables. Vercel Analytics only loads on Vercel.
+
+## Changelog
+
+See [CHANGES.md](CHANGES.md).
