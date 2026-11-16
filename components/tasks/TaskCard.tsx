@@ -2,10 +2,8 @@
 
 import { Task } from '@/lib/tasks/types';
 import { motion } from 'framer-motion';
-import { 
-  AlertCircle, CheckCircle2, Clock, 
-  MoreVertical, User, Zap, Star
-} from 'lucide-react';
+import { MoreVertical, User, Zap, Star } from 'lucide-react';
+
 import { employees } from '@/lib/data';
 
 interface TaskCardProps {

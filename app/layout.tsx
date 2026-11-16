@@ -41,7 +41,8 @@ export default function RootLayout({
             </div>
           </main>
         </div>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {/* Vercel Analytics only exists on Vercel deployments; elsewhere its script 404s. */}
+        {process.env.VERCEL && <Analytics />}
       </body>
     </html>
   )

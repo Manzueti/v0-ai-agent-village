@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import { employees } from '@/lib/data';
-import { Employee } from '@/lib/types';
-import { 
-  Send, Bot, Terminal, Zap, Shield, Brain, Activity, Target, CheckCircle2, ChevronRight, Play, Loader2, Database, Factory, Sparkles, Command, Cpu
-} from 'lucide-react';
+
+import { Shield, Activity, Target, CheckCircle2, Play, Loader2, Database, Sparkles, Command } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 type ExecutionLog = {

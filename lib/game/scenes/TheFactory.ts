@@ -84,7 +84,7 @@ export class TheFactory extends Phaser.Scene {
         this.trailTexture.setBlendMode(Phaser.BlendModes.ADD);
 
         // Procedural Floor Texture (Circuit Pattern)
-        const circuit = this.createCircuitFloor();
+        this.createCircuitFloor();
 
         // Environment
         this.createEnvironment();

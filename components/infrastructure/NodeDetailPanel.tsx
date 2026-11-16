@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { InfraNode, AIOperator, NodeConnection } from '@/lib/types';
-import { X, Server, Database, Shield, Activity, GitBranch, RefreshCw, AlertTriangle, Play, Pause, Zap, Terminal, Power } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { X, Shield, Activity, GitBranch, RefreshCw, AlertTriangle, Play, Zap, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface NodeDetailPanelProps {
   node: InfraNode;
@@ -26,15 +26,6 @@ export default function NodeDetailPanel({
 }: NodeDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'redundancy' | 'ai'>('metrics');
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'healthy': return 'text-[hsl(var(--neon-green))]';
-      case 'warning': return 'text-[hsl(var(--neon-yellow))]';
-      case 'critical': return 'text-[hsl(var(--neon-magenta))]';
-      case 'failover': return 'text-[hsl(var(--neon-purple))]';
-      default: return 'text-muted-foreground';
-    }
-  };
 
   const getStatusBg = (status: string) => {
     switch (status) {

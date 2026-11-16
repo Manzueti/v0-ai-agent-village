@@ -5,21 +5,13 @@ import { operators, zones, recentDecisions, systemHealth, nodes } from '@/lib/in
 import { detectAnomalies } from '@/lib/ai-operators';
 import HermesChat from '@/components/ai/HermesChat';
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
-import { Bot, Activity, AlertTriangle, CheckCircle, Zap, Shield, Play, Pause, Settings, TrendingUp, Brain, Factory, Cpu, Radio, X, Terminal } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Activity, AlertTriangle, Zap, Shield, Play, Pause, Settings, TrendingUp, Brain, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function AIControlPage() {
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const anomalies = detectAnomalies(nodes);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'running': return 'text-[hsl(var(--neon-green))]';
-      case 'paused': return 'text-[hsl(var(--neon-yellow))]';
-      case 'error': return 'text-[hsl(var(--neon-magenta))]';
-      default: return 'text-muted-foreground';
-    }
-  };
 
   const getStatusBg = (status: string) => {
     switch (status) {

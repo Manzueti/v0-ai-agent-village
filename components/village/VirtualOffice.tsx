@@ -240,7 +240,7 @@ function RoomFurniture({ dept, color, w, h }: { dept: Dept; color: string; w: nu
 
 // ─── Corner stats ─────────────────────────────────────────────────────────────
 
-function CornerStats({ dept, color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
+function CornerStats({ color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
   const running = agents.filter((a) => a.status === "running");
   const eff = running.length
     ? Math.round(running.reduce((s, a) => s + a.successRate, 0) / running.length)
@@ -280,7 +280,7 @@ function CornerStats({ dept, color, agents }: { dept: Dept; color: string; agent
 
 // ─── Activity queue ───────────────────────────────────────────────────────────
 
-function ActivityQueue({ dept, color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
+function ActivityQueue({ color, agents }: { dept: Dept; color: string; agents: typeof employees }) {
   const items = agents.slice(0, 4);
   return (
     <div

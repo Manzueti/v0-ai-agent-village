@@ -1,7 +1,7 @@
 import nextConfig from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 
-export default [
+const eslintConfig = [
   ...nextConfig,
   {
     plugins: { "@typescript-eslint": tseslint.plugin },
@@ -11,3 +11,5 @@ export default [
     },
   },
 ];
+
+export default eslintConfig;

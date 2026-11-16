@@ -1,6 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Task, TASK_TEMPLATES } from '@/lib/tasks/types';
 
+/** POST to the tasks API; throws on an error response instead of returning the error body as a task. */
+async function postTasks(body: Record<string, unknown>): Promise<Task> {
+  const response = await fetch('/api/agents/tasks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.error ?? `Request failed (${response.status})`);
+  return data as Task;
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -10,7 +22,7 @@ export function useTasks() {
     try {
       const response = await fetch('/api/agents/tasks');
       const data = await response.json();
-      setTasks(data);
+      if (Array.isArray(data)) setTasks(data);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
     } finally {
@@ -22,14 +34,9 @@ export function useTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
-  const createTask = async (templateId: string, customizations: any = {}) => {
+  const createTask = async (templateId: string, customizations: Partial<Task> = {}) => {
     try {
-      const response = await fetch('/api/agents/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create_from_template', templateId, customizations }),
-      });
-      const newTask = await response.json();
+      const newTask = await postTasks({ action: 'create_from_template', templateId, customizations });
       setTasks(prev => [...prev, newTask]);
       return newTask;
     } catch (error) {
@@ -39,12 +46,7 @@ export function useTasks() {
 
   const autoAssign = async (taskId: string) => {
     try {
-      const response = await fetch('/api/agents/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'auto_assign', taskId }),
-      });
-      const updatedTask = await response.json();
+      const updatedTask = await postTasks({ action: 'auto_assign', taskId });
       setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
       return updatedTask;
     } catch (error) {
@@ -54,12 +56,7 @@ export function useTasks() {
 
   const updateStatus = async (taskId: string, status: string) => {
     try {
-      const response = await fetch('/api/agents/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update_status', taskId, status }),
-      });
-      const updatedTask = await response.json();
+      const updatedTask = await postTasks({ action: 'update_status', taskId, status });
       setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
       return updatedTask;
     } catch (error) {

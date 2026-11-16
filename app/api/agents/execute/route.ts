@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, errorStatus } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
 
@@ -30,7 +30,7 @@ Keep it concise and game-like.`;
     const modelInstance = getModelInstance(agent.aiModel);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: modelInstance,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -39,6 +39,6 @@ Keep it concise and game-like.`;
   } catch (error: Error | unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error executing agent task:', errorMessage);
-    return new Response(`Failed to execute agent task: ${errorMessage}`, { status: 500 });
+    return new Response(`Failed to execute agent task: ${errorMessage}`, { status: errorStatus(error) });
   }
 }

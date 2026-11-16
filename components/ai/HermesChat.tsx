@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Sparkles, Zap, Terminal, Command } from 'lucide-react';
+import { Bot, User, Loader2, Zap, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {

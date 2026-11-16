@@ -1,5 +1,5 @@
 import { Employee } from '../types';
-import { Task, TaskPriority, TaskComplexity, TaskTemplate, TASK_TEMPLATES } from './types';
+import { Task, TASK_TEMPLATES } from './types';
 import { employees } from '../data';
 
 export function calculateAgentScore(agent: Employee, task: Task): number {

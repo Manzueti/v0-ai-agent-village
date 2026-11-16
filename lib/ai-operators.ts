@@ -1,4 +1,4 @@
-import { InfraNode, AIDecision, SystemHealth, ZoneId } from './types';
+import { InfraNode, ZoneId } from './types';
 import { nodes, systemHealth, getNodesByZone, getOperatorForZone, getNodePair } from './infrastructure-data';
 
 /**

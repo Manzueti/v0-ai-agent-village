@@ -1,15 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { employees as initialEmployees } from '@/lib/data';
 import { Employee, AgentStatus } from '@/lib/types';
-import {
-  Activity, Box, Boxes, Cpu, Database, Factory, Gauge, Hammer, Layers, Network,
-  Package, Settings, ShoppingCart, Sparkles, Terminal, Workflow, Wrench, Zap,
-  Send, ChevronRight, Coins, FlaskConical, Pickaxe, Truck, MessageSquare, Bell,
-  Trophy, Target, Flame, Star, Award, CheckCircle2, Circle, X, Power, Play, Pause,
-  Clock, CheckCircle, Wifi, Radio, Brain, FileCode, Shield, Users
-} from "lucide-react";
+import { Activity, Cpu, Database, Factory, Gauge, Hammer, Network, Settings, ShoppingCart, Terminal, Zap, Coins, FlaskConical, Pickaxe, Truck, MessageSquare, Bell, Trophy, X, Power, Clock, CheckCircle, Brain, Shield, Users } from "lucide-react";
+
 import StylizedAvatar from "@/components/village/StylizedAvatar";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -553,7 +548,7 @@ function AgentDetailPanel({
       });
       const data = await response.json();
       if (data.response) setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Failed to connect to Hermes Matrix.' }]);
     } finally {
       setIsThinking(false);

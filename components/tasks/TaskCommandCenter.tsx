@@ -4,15 +4,13 @@ import { useTasks } from '@/hooks/use-tasks';
 import TaskBoard from './TaskBoard';
 import TaskCreator from './TaskCreator';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Target, Activity, Layout, 
-  RefreshCw, Layers, Brain
-} from 'lucide-react';
+import { Target, RefreshCw, Brain } from 'lucide-react';
+
 import { useState } from 'react';
 
 export default function TaskCommandCenter() {
   const { 
-    tasks, loading, refresh, 
+    tasks, loading,
     createTask, autoAssign, 
     updateStatus, executeTask 
   } = useTasks();
@@ -28,19 +26,23 @@ export default function TaskCommandCenter() {
     updateStatus(taskId, 'in_progress');
 
     const response = await executeTask(taskId);
-    if (response && response.body) {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const text = decoder.decode(value);
-        setExecutionOutput(prev => prev ? { ...prev, content: prev.content + text } : null);
-      }
-      
-      updateStatus(taskId, 'completed');
+    if (!response || !response.ok || !response.body) {
+      // e.g. no AI provider key configured (503) or network failure
+      const reason = response ? await response.text().catch(() => '') : 'Network error';
+      setExecutionOutput({ taskId, content: reason || `Execution failed (${response?.status})` });
+      updateStatus(taskId, 'failed');
+      return;
     }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const text = decoder.decode(value, { stream: true });
+      setExecutionOutput(prev => prev ? { ...prev, content: prev.content + text } : null);
+    }
+    updateStatus(taskId, 'completed');
   };
 
   return (
@@ -85,7 +87,6 @@ export default function TaskCommandCenter() {
             tasks={tasks} 
             onAutoAssign={autoAssign} 
             onExecute={handleExecute}
-            onStatusChange={updateStatus}
           />
         )}
       </div>
