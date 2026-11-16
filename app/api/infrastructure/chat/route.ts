@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, infrastructureContext, model = 'gemini-1.5-flash' } = await request.json() as {
+    const { messages, infrastructureContext, model = 'gemini-flash-latest' } = await request.json() as {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>;
       infrastructureContext?: string;
       model?: string;

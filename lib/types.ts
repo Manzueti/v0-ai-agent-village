@@ -62,11 +62,18 @@ export type RevenueMetrics = {
 };
 
 export type AIModel =
+  | 'gemini-flash-latest'
+  | 'gemini-pro-latest'
+  | 'deepseek-chat'
+  | 'deepseek-reasoner'
+  | 'claude-sonnet-5-5'
+  | 'claude-haiku-5-5'
+  | 'gpt-5-mini'
+  | 'grok-4.3'
+  // Legacy IDs (still accepted; mapped to current models in lib/ai-models.ts)
   | 'gemini-1.5-flash'
   | 'gemini-1.5-pro'
   | 'gemini-2.5-flash'
-  | 'deepseek-chat'
-  | 'deepseek-reasoner'
   | 'claude-3-5-sonnet'
   | 'claude-3-opus'
   | 'gpt-4o'

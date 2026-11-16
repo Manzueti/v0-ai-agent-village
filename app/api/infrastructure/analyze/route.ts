@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { nodes, health, zoneId, query, model = 'gemini-1.5-flash' } = await request.json() as {
+    const { nodes, health, zoneId, query, model = 'gemini-flash-latest' } = await request.json() as {
       nodes: InfraNode[];
       health: SystemHealth;
       zoneId?: string;

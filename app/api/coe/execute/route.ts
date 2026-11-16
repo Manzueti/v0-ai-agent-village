@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { instruction, agentName, agentRole, systemPrompt, model = 'gemini-1.5-flash' } = await request.json() as {
+    const { instruction, agentName, agentRole, systemPrompt, model = 'gemini-flash-latest' } = await request.json() as {
       instruction: string;
       agentName: string;
       agentRole: string;

@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, nodeId, node, replicaNode, operatorId, reason, model = 'gemini-1.5-flash' } = await request.json() as {
+    const { action, nodeId, node, replicaNode, operatorId, reason, model = 'gemini-flash-latest' } = await request.json() as {
       action: 'failover' | 'scale' | 'restart' | 'heal' | 'reroute';
       nodeId: string;
       node: InfraNode;

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    const model = getModelInstance('gemini-1.5-flash');
+    const model = getModelInstance('gemini-flash-latest');
     const { text } = await generateText({
       model: model as any,
       system: 'You are the Hermes Neural Agent, the central intelligence of the CyberEmpire infrastructure. You provide concise, expert guidance on system operations. Your personality is stoic and efficient.',
