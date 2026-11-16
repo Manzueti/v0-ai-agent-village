@@ -5,12 +5,13 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Home, Server, Brain, Settings,
-  Activity, Terminal, Wifi, Target, Trees, Factory, HeartPulse
+  Activity, Terminal, Wifi, Target, Trees, Factory, HeartPulse, Rocket
 } from 'lucide-react';
 import { useState } from 'react';
 
 const NAV_ITEMS = [
   { name: 'Home',           href: '/',                     section: '',               icon: Home,     shortcut: '⌘1' },
+  { name: 'Business Builder', href: '/?s=builder',        section: 'builder',        icon: Rocket,   shortcut: '⌘B' },
   { name: 'CyberEmpire',   href: '/?s=cyberempire',       section: 'cyberempire',    icon: Factory,  shortcut: '⌘2' },
   { name: 'Tasks',          href: '/?s=tasks',             section: 'tasks',          icon: Target,   shortcut: '⌘T' },
   { name: 'Ecosystem',      href: '/?s=village',           section: 'village',        icon: Trees,    shortcut: '⌘3' },
@@ -30,6 +31,7 @@ const PATH_TO_SECTION: Record<string, string> = {
   '/ai-control':     'ai-control',
   '/infrastructure': 'infrastructure',
   '/automaton':      'automaton',
+  '/builder':        'builder',
 };
 
 export default function Sidebar() {

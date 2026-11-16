@@ -1,5 +1,5 @@
 import { Employee } from '../types';
-import { Task, TASK_TEMPLATES } from './types';
+import { Task, TaskPriority, TASK_TEMPLATES } from './types';
 import { employees } from '../data';
 
 export function calculateAgentScore(agent: Employee, task: Task): number {
@@ -78,5 +78,35 @@ export function createTaskFromTemplate(templateId: string, customizations: Parti
     xpReward: template.xpReward,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+  };
+}
+
+/** Build a task that doesn't come from a template (e.g. a Business Builder milestone). */
+export function createCustomTask(input: {
+  title: string;
+  description: string;
+  department: string;
+  priority?: TaskPriority;
+  subTasks?: string[];
+}): Task {
+  const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const priority = input.priority ?? 'medium';
+  const now = new Date().toISOString();
+  return {
+    id: taskId,
+    title: input.title.slice(0, 120),
+    description: input.description.slice(0, 600),
+    status: 'pending',
+    priority,
+    complexity: priority === 'critical' || priority === 'high' ? 'high' : 'medium',
+    department: input.department,
+    subTasks: (input.subTasks ?? []).slice(0, 8).map((title, i) => ({
+      id: `${taskId}-sub-${i}`,
+      title: title.slice(0, 120),
+      completed: false,
+    })),
+    xpReward: { low: 100, medium: 250, high: 400, critical: 600 }[priority],
+    createdAt: now,
+    updatedAt: now,
   };
 }

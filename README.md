@@ -36,6 +36,7 @@ Navigate with the sidebar. Every section lives at `/?s=<name>`.
 | Section | `?s=` | What it shows |
 |---|---|---|
 | Home | — | Landing screen |
+| Business Builder | `builder` | Chat with an AI co-founder to start or grow a business. A live plan panel fills in, and milestones can be handed to village agents on the Task board |
 | CyberEmpire | `cyberempire` | Main enterprise dashboard and Hermes chat |
 | Tasks | `tasks` | Kanban task board: create from templates, auto-assign to the best agent, run with AI |
 | Ecosystem | `village` | Agent pods, mission log, 2D virtual office and 3D visualizer |
@@ -78,6 +79,7 @@ This is a demo and prototyping app, not a production operations backend.
 |---|---|
 | AI chat, analysis, task execution, directives | Real AI responses when a key is set |
 | Tasks | Kept in server memory. Reset on restart and not shared between serverless instances |
+| Business Builder chats and plans | Saved in the browser's `localStorage` |
 | Automaton Colony | Simulated credits, saved in the browser's `localStorage`. No real money or wallets |
 | Agent roster, infrastructure nodes, health metrics | Static sample data |
 | XP endpoint, infrastructure "execute" actions | Compute or describe the result, but save and change nothing |

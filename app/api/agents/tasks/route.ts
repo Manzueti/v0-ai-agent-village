@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorStatus } from '@/lib/ai-models';
-import { createTaskFromTemplate, findBestAgent } from '@/lib/tasks/engine';
+import { createCustomTask, createTaskFromTemplate, findBestAgent } from '@/lib/tasks/engine';
 import { Task, TaskStatus } from '@/lib/tasks/types';
 
 const TASK_STATUSES: TaskStatus[] = ['pending', 'assigned', 'in_progress', 'review', 'completed', 'failed'];
@@ -26,6 +26,26 @@ export async function POST(req: NextRequest) {
           return NextResponse.json(newTask);
         }
         return NextResponse.json({ error: 'Template not found' }, { status: 404 });
+
+      case 'create_custom': {
+        const { title, description, department, priority } = body;
+        if (typeof title !== 'string' || !title.trim() || typeof department !== 'string') {
+          return NextResponse.json({ error: 'title and department are required' }, { status: 400 });
+        }
+        const PRIORITIES = ['low', 'medium', 'high', 'critical'];
+        const task = createCustomTask({
+          title: title.trim(),
+          description: typeof description === 'string' ? description : '',
+          department,
+          priority: PRIORITIES.includes(priority) ? priority : 'medium',
+        });
+        if (body.autoAssign) {
+          const agent = findBestAgent(task);
+          if (agent) { task.assignedTo = agent.id; task.status = 'assigned'; }
+        }
+        tasks.push(task);
+        return NextResponse.json(task);
+      }
 
       case 'auto_assign':
         const taskToAssign = tasks.find(t => t.id === taskId);
