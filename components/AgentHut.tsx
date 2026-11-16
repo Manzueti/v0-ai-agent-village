@@ -20,9 +20,9 @@ export default function AgentHut({ agent, onSelect, onToggleStatus }: Props) {
   const roofClass = roofColors[agent.role] || 'from-gray-600 to-gray-800';
 
   const statusBadge = {
-    running: 'bg-green-500 border-green-900 text-white animate-pulse',
+    running: 'bg-green-500 border-green-900 text-foreground animate-pulse',
     paused: 'bg-yellow-500 border-yellow-900 text-black',
-    error: 'bg-red-500 border-red-900 text-white',
+    error: 'bg-red-500 border-red-900 text-foreground',
     idle: 'bg-slate-400 border-slate-700 text-black',
   };
 
@@ -52,7 +52,7 @@ export default function AgentHut({ agent, onSelect, onToggleStatus }: Props) {
 
         {/* Name Plate */}
         <div className={`mt-2 bg-gradient-to-r ${roofClass} px-3 py-0.5 rounded-md border-2 border-black shadow-md`}>
-          <h3 className="text-white font-bold text-xs text-center tracking-wide uppercase" style={{ textShadow: '1px 1px 0 #000' }}>
+          <h3 className="text-foreground font-bold text-xs text-center tracking-wide uppercase" style={{ textShadow: '1px 1px 0 #000' }}>
             {agent.name}
           </h3>
         </div>

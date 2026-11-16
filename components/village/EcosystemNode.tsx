@@ -36,13 +36,13 @@ const RoboticWorker = ({ color, isWorking }: { color: string, isWorking: boolean
     <group ref={groupRef}>
       {/* Torso */}
       <Box args={[0.6, 0.8, 0.4]} position={[0, 0.4, 0]}>
-        <meshStandardMaterial color="#2a2c35" metalness={0.8} roughness={0.2} />
+        <meshStandardMaterial color="#2a2a2a" metalness={0.8} roughness={0.2} />
       </Box>
       
       {/* Head */}
       <group position={[0, 1, 0]} ref={headRef}>
         <Box args={[0.4, 0.4, 0.4]}>
-          <meshStandardMaterial color="#1a1c25" metalness={1} roughness={0.1} />
+          <meshStandardMaterial color="#1a1a1a" metalness={1} roughness={0.1} />
         </Box>
         {/* Visor */}
         <mesh position={[0, 0, 0.21]}>
@@ -54,23 +54,23 @@ const RoboticWorker = ({ color, isWorking }: { color: string, isWorking: boolean
       {/* Left Arm */}
       <group position={[-0.4, 0.7, 0]} ref={lArmRef}>
         <Cylinder args={[0.05, 0.05, 0.6]} position={[0, -0.2, 0]} rotation={[0, 0, 0]}>
-          <meshStandardMaterial color="#2a2c35" />
+          <meshStandardMaterial color="#2a2a2a" />
         </Cylinder>
       </group>
 
       {/* Right Arm */}
       <group position={[0.4, 0.7, 0]} ref={rArmRef}>
         <Cylinder args={[0.05, 0.05, 0.6]} position={[0, -0.2, 0]} rotation={[0, 0, 0]}>
-          <meshStandardMaterial color="#2a2c35" />
+          <meshStandardMaterial color="#2a2a2a" />
         </Cylinder>
       </group>
 
       {/* Legs (Fixed) */}
       <Cylinder args={[0.08, 0.08, 0.4]} position={[-0.15, 0, 0]}>
-        <meshStandardMaterial color="#1a1c25" />
+        <meshStandardMaterial color="#1a1a1a" />
       </Cylinder>
       <Cylinder args={[0.08, 0.08, 0.4]} position={[0.15, 0, 0]}>
-        <meshStandardMaterial color="#1a1c25" />
+        <meshStandardMaterial color="#1a1a1a" />
       </Cylinder>
       
       {/* Small Glowing Core */}
@@ -83,13 +83,13 @@ const RoboticWorker = ({ color, isWorking }: { color: string, isWorking: boolean
 
 export default function EcosystemNode({ agent, position }: Props) {
   const colorMap: Record<string, string> = {
-    'Revenue Hub': '#00ffff',
-    'Finance Vault': '#ffaa00',
-    'Creative Studio': '#cc44ff',
-    'Tech Nexus': '#0088ff',
+    'Revenue Hub': '#c6b4ea',
+    'Finance Vault': '#d6a85b',
+    'Creative Studio': '#9b7dda',
+    'Tech Nexus': '#8b6fc9',
     'Command Deck': '#ffffff'
   };
-  const color = colorMap[agent.department] || "#00ffff";
+  const color = colorMap[agent.department] || "#c6b4ea";
 
   return (
     <group position={position}>
@@ -106,18 +106,18 @@ export default function EcosystemNode({ agent, position }: Props) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[7px] text-white font-bold uppercase tracking-widest mb-2 whitespace-nowrap"
+                className="bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded text-[7px] text-foreground font-bold uppercase tracking-widest mb-2 whitespace-nowrap"
               >
                 PROCCESSING_NEURAL_DATA
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="bg-[#03010a]/95 backdrop-blur-xl border border-white/10 p-2 rounded-lg shadow-2xl flex flex-col items-center w-full">
+          <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 p-2 rounded-lg shadow-2xl flex flex-col items-center w-full">
             <div className="flex items-center gap-2 w-full mb-1">
                <span className="text-[12px]">{agent.avatar}</span>
                <div className="flex flex-col overflow-hidden">
-                 <span className="text-[9px] font-black text-white uppercase tracking-tighter truncate">
+                 <span className="text-[9px] font-black text-foreground uppercase tracking-tighter truncate">
                   {agent.name}
                  </span>
                  <span className="text-[6px] text-muted-foreground uppercase tracking-widest leading-none">

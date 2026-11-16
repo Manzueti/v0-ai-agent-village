@@ -59,7 +59,7 @@ export default function AIDecisionLog({ decisions, operators, maxItems = 10 }: A
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[hsl(var(--background)/0.5)]">
         <div className="flex items-center gap-3">
           <Terminal className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-          <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Decision Log</span>
+          <span className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase">Decision Log</span>
         </div>
         <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{decisions.length} TOTAL_EVENTS</span>
       </div>
@@ -91,7 +91,7 @@ export default function AIDecisionLog({ decisions, operators, maxItems = 10 }: A
                   {/* Header Row */}
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black text-white tracking-tight uppercase">
+                      <span className="text-[11px] font-black text-foreground tracking-tight uppercase">
                         {operator?.name || 'Unknown'}
                       </span>
                       <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border text-[8px] font-black uppercase tracking-widest ${actionColor}`}>
@@ -132,7 +132,7 @@ export default function AIDecisionLog({ decisions, operators, maxItems = 10 }: A
       {/* Footer */}
       {decisions.length > maxItems && (
         <div className="p-3 bg-[hsl(var(--background)/0.3)] border-t border-white/5 text-center">
-          <button className="text-[9px] font-black text-[hsl(var(--neon-cyan))] hover:text-white transition-colors uppercase tracking-[0.3em]">
+          <button className="text-[9px] font-black text-[hsl(var(--neon-cyan))] hover:text-foreground transition-colors uppercase tracking-[0.3em]">
             Access Archives ({decisions.length})
           </button>
         </div>

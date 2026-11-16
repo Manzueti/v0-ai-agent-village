@@ -62,7 +62,7 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
     }
 
     if (simState === 'night') {
-      baseTheme.bg = 'bg-[hsl(248_60%_4%)/0.8]';
+      baseTheme.bg = 'bg-[hsl(0_0%_4%)/0.8]';
       baseTheme.border = 'border-white/5';
     } else if (simState === 'emergency') {
       baseTheme.color = 'hsl(var(--neon-magenta))';
@@ -210,13 +210,13 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
             className="absolute inset-0 bg-[hsl(var(--background)/0.7)] z-40 p-8 flex flex-col justify-center scanlines"
           >
             <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-2">
-              <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Unit_Data</span>
-              <button onClick={(e) => { e.stopPropagation(); setShowStats(false); }} className="text-muted-foreground hover:text-white transition-colors">✕</button>
+              <span className="text-[10px] font-black text-foreground uppercase tracking-[0.4em]">Unit_Data</span>
+              <button onClick={(e) => { e.stopPropagation(); setShowStats(false); }} className="text-muted-foreground hover:text-foreground transition-colors">✕</button>
             </div>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Level {agent.level}</span>
-                <span className="text-[9px] font-black text-white tabular-nums">{agent.xp} / {agent.nextLevelXp} XP</span>
+                <span className="text-[9px] font-black text-foreground tabular-nums">{agent.xp} / {agent.nextLevelXp} XP</span>
               </div>
               <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                 <motion.div 
@@ -241,7 +241,7 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
             </div>
             <button 
               onClick={handleReboot}
-              className="mt-10 w-full py-3 bg-[hsl(var(--neon-cyan)/0.1)] hover:bg-[hsl(var(--neon-cyan)/0.2)] border border-[hsl(var(--neon-cyan)/0.3)] rounded text-[9px] font-black text-white flex items-center justify-center gap-3 transition-all tracking-[0.3em] uppercase"
+              className="mt-10 w-full py-3 bg-[hsl(var(--neon-cyan)/0.1)] hover:bg-[hsl(var(--neon-cyan)/0.2)] border border-[hsl(var(--neon-cyan)/0.3)] rounded text-[9px] font-black text-foreground flex items-center justify-center gap-3 transition-all tracking-[0.3em] uppercase"
             >
               <RefreshCw className={`w-4 h-4 ${isRebooting ? 'animate-spin' : ''}`} />
               RECALIBRATE
@@ -256,7 +256,7 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
           <div className="w-1.5 h-1.5 rounded-full bg-current pulse-dot shadow-[0_0_8px_currentColor]" style={{ color: theme.color }} />
           <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.3em]">{agent.office.toUpperCase()}</span>
         </div>
-        <span className="text-lg font-black text-white tracking-tight text-center leading-none mb-2">{agent.name.toUpperCase()}</span>
+        <span className="text-lg font-black text-foreground tracking-tight text-center leading-none mb-2">{agent.name.toUpperCase()}</span>
         <div className={`text-[9px] font-black ${theme.color} uppercase tracking-[0.2em] bg-white/5 border border-white/5 px-3 py-1 rounded-full backdrop-blur-sm`}>{agent.role}</div>
       </div>
 
@@ -269,7 +269,7 @@ export default function AgentPod({ agent, simState, isGlobalSyncing }: AgentPodP
       <div className="absolute top-5 left-8 flex gap-2">
         {simState === 'emergency' && <AlertTriangle className="w-3.5 h-3.5 text-[hsl(var(--neon-magenta))] animate-pulse shadow-[0_0_8px_currentColor]" />}
         {simState === 'night' && <Moon className="w-3.5 h-3.5 text-[hsl(var(--neon-purple))] shadow-[0_0_8px_currentColor]" />}
-        <Info className="w-3.5 h-3.5 text-muted-foreground/40 hover:text-white transition-colors" />
+        <Info className="w-3.5 h-3.5 text-muted-foreground/40 hover:text-foreground transition-colors" />
       </div>
 
       <div className={`absolute inset-0 bg-gradient-to-b from-current to-transparent h-1/4 w-full -translate-y-full animate-scan pointer-events-none opacity-20 shadow-[0_0_20px_currentColor]`} style={{ color: theme.color }} />

@@ -47,7 +47,7 @@ export default function MissionLog() {
       <div className="p-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Terminal className="w-4 h-4 text-cyan-400" />
-          <span className="text-xs font-black text-white tracking-[0.3em] uppercase">Mission Log</span>
+          <span className="text-xs font-black text-foreground tracking-[0.3em] uppercase">Mission Log</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -71,12 +71,12 @@ export default function MissionLog() {
             >
               <div className="flex justify-between items-start mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-black text-white uppercase">{update.agentName}</span>
+                  <span className="text-[9px] font-black text-foreground uppercase">{update.agentName}</span>
                   <span className="text-[7px] text-muted-foreground uppercase tracking-widest">[{update.department}]</span>
                 </div>
                 <span className="text-[7px] text-muted-foreground tabular-nums">{update.timestamp}</span>
               </div>
-              <p className="text-[10px] text-white/80 leading-relaxed tracking-wide">
+              <p className="text-[10px] text-foreground/80 leading-relaxed tracking-wide">
                 <span className="text-cyan-500 mr-2">{">"}</span>
                 {update.update}
               </p>

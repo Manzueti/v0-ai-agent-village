@@ -60,7 +60,7 @@ export default function NodeDetailPanel({
         <div className="flex items-center gap-5 relative z-10">
           <div className={`w-3 h-3 rounded-full ${getStatusBg(node.status)} ${node.status === 'healthy' ? 'pulse-dot shadow-[0_0_8px_currentColor]' : ''}`} style={{ color: getStatusBg(node.status).replace('bg-', '') }} />
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight uppercase leading-none mb-2">{node.name}</h2>
+            <h2 className="text-2xl font-black text-foreground tracking-tight uppercase leading-none mb-2">{node.name}</h2>
             <p className="text-[10px] font-black text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase">{node.type.replace('-', '_')}</p>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function NodeDetailPanel({
           onClick={onClose}
           className="p-2.5 hover:bg-white/5 rounded transition-colors group relative z-10"
         >
-          <X className="w-8 h-8 text-muted-foreground group-hover:text-white transition-colors" />
+          <X className="w-8 h-8 text-muted-foreground group-hover:text-foreground transition-colors" />
         </button>
       </div>
 
@@ -107,7 +107,7 @@ export default function NodeDetailPanel({
                   {node.status}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-[10px] font-black text-white tracking-[0.2em] uppercase">
+              <div className="flex items-center gap-3 text-[10px] font-black text-foreground tracking-[0.2em] uppercase">
                 <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                 <span>Uptime: <span className="tabular-nums">{node.metrics.uptime}%</span></span>
               </div>
@@ -115,7 +115,7 @@ export default function NodeDetailPanel({
 
             {/* Metrics */}
             <div className="space-y-6">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3">
                 <Terminal className="w-4 h-4 text-[hsl(var(--neon-purple))]" /> Neural Load Metrics
               </h3>
               
@@ -128,7 +128,7 @@ export default function NodeDetailPanel({
                   <div key={metric.label} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{metric.label}</span>
-                      <span className="text-[10px] font-black text-white tabular-nums">{metric.value}%</span>
+                      <span className="text-[10px] font-black text-foreground tabular-nums">{metric.value}%</span>
                     </div>
                     <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
                       <motion.div 
@@ -149,7 +149,7 @@ export default function NodeDetailPanel({
 
             {/* Connections */}
             <div className="space-y-4">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3">
                 <GitBranch className="w-4 h-4 text-[hsl(var(--neon-green))]" /> Active Neural Streams
               </h3>
               <div className="space-y-2">
@@ -163,7 +163,7 @@ export default function NodeDetailPanel({
                         conn.status === 'active' ? 'bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]' :
                         conn.status === 'degraded' ? 'bg-[hsl(var(--neon-yellow))] shadow-[0_0_8px_hsl(var(--neon-yellow))]' : 'bg-[hsl(var(--neon-magenta))]'
                       }`} />
-                      <span className="text-[11px] font-black text-white tracking-tight uppercase group-hover:text-[hsl(var(--neon-cyan))] transition-colors">
+                      <span className="text-[11px] font-black text-foreground tracking-tight uppercase group-hover:text-[hsl(var(--neon-cyan))] transition-colors">
                         {conn.from === node.id ? conn.to : conn.from}
                       </span>
                     </div>
@@ -200,14 +200,14 @@ export default function NodeDetailPanel({
             {/* Paired Node */}
             {replicaNode && (
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">
+                <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase">
                   {node.isPrimary ? 'Replica_Mirror_Instance' : 'Primary_Upstream_Node'}
                 </h3>
                 <div className="bg-white/5 border border-white/5 rounded-md p-6 panel-glow-purple">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-2 rounded-full ${getStatusBg(replicaNode.status)} shadow-[0_0_8px_currentColor]`} style={{ color: getStatusBg(replicaNode.status).replace('bg-', '') }} />
-                      <span className="text-sm font-black text-white tracking-tight uppercase">{replicaNode.name}</span>
+                      <span className="text-sm font-black text-foreground tracking-tight uppercase">{replicaNode.name}</span>
                     </div>
                     <span className={`text-[10px] font-black uppercase tracking-widest ${
                       replicaNode.status === 'healthy' ? 'text-[hsl(var(--neon-green))]' : 'text-[hsl(var(--neon-yellow))]'
@@ -224,11 +224,11 @@ export default function NodeDetailPanel({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[hsl(var(--background)/0.5)] rounded p-4 border border-white/5">
                       <div className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-[0.3em] mb-1">Mirror_CPU</div>
-                      <div className="text-sm font-black text-white tabular-nums">{replicaNode.metrics.cpu}%</div>
+                      <div className="text-sm font-black text-foreground tabular-nums">{replicaNode.metrics.cpu}%</div>
                     </div>
                     <div className="bg-[hsl(var(--background)/0.5)] rounded p-4 border border-white/5">
                       <div className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-[0.3em] mb-1">Mirror_MEM</div>
-                      <div className="text-sm font-black text-white tabular-nums">{replicaNode.metrics.memory}%</div>
+                      <div className="text-sm font-black text-foreground tabular-nums">{replicaNode.metrics.memory}%</div>
                     </div>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export default function NodeDetailPanel({
 
             {/* Failover Actions */}
             <div className="space-y-4 pt-4">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Redundancy Control Operations</h3>
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase">Redundancy Control Operations</h3>
               <div className="grid grid-cols-1 gap-4">
                 <button
                   onClick={() => onFailover?.(node.id)}
@@ -267,7 +267,7 @@ export default function NodeDetailPanel({
                   {operator.avatar}
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-2">{operator.name}</h3>
+                  <h3 className="text-xl font-black text-foreground tracking-tight uppercase leading-none mb-2">{operator.name}</h3>
                   <div className="text-[10px] font-black text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase">{operator.role}</div>
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function NodeDetailPanel({
                   }`} />
                   <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">{operator.status}</span>
                 </div>
-                <span className="text-white/10">|</span>
+                <span className="text-foreground/10">|</span>
                 <span className="text-[9px] font-black text-[hsl(var(--neon-cyan))] uppercase tracking-[0.3em]">{operator.aiModel}</span>
               </div>
               
@@ -293,7 +293,7 @@ export default function NodeDetailPanel({
             {/* Last Decision */}
             {operator.lastDecision && (
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Latest Neural Protocol</h3>
+                <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase">Latest Neural Protocol</h3>
                 <div className="bg-white/5 border border-white/5 rounded-md p-6 panel-glow-purple scanlines">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-black text-[hsl(var(--neon-cyan))] uppercase tracking-[0.3em]">
@@ -319,7 +319,7 @@ export default function NodeDetailPanel({
 
             {/* AI Actions */}
             <div className="space-y-4">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3">
                 <Zap className="w-4 h-4 text-[hsl(var(--neon-yellow))]" /> AI Directive Execution
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -353,7 +353,7 @@ function DirectiveButton({ icon: Icon, label, color }: any) {
   return (
     <button className="flex flex-col items-center gap-3 p-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md transition-all group">
       <Icon className={`w-5 h-5 ${colors[color]} group-hover:scale-110 transition-transform`} />
-      <span className="text-[9px] font-black text-muted-foreground group-hover:text-white uppercase tracking-[0.2em]">{label}</span>
+      <span className="text-[9px] font-black text-muted-foreground group-hover:text-foreground uppercase tracking-[0.2em]">{label}</span>
     </button>
   );
 }

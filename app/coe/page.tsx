@@ -113,7 +113,7 @@ export default function COEPlatform() {
               <Target className="w-6 h-6 text-background" />
             </div>
             <div>
-              <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">Center of Excellence</span>
+              <span className="text-foreground font-black tracking-[0.2em] uppercase text-sm block leading-none">Center of Excellence</span>
               <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">CYBEREMPIRE Global Directive Matrix</span>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function COEPlatform() {
       <main className="relative z-10 flex-1 flex p-8 gap-8 overflow-hidden h-[calc(100vh-100px)]">
         {/* Left Panel - Agents */}
         <div className="w-80 flex flex-col gap-4 h-full">
-          <h2 className="text-[10px] font-black text-white font-mono uppercase tracking-[0.3em] flex items-center gap-3 px-2">
+          <h2 className="text-[10px] font-black text-foreground font-mono uppercase tracking-[0.3em] flex items-center gap-3 px-2">
             <Shield className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
             Target Selection
           </h2>
@@ -156,7 +156,7 @@ export default function COEPlatform() {
                     {agent.avatar}
                   </div>
                   <div className="min-w-0">
-                    <h3 className={`font-black text-sm tracking-tight leading-none mb-1 ${selectedAgentId === agent.id ? 'text-[hsl(var(--neon-purple))]' : 'text-white'}`}>
+                    <h3 className={`font-black text-sm tracking-tight leading-none mb-1 ${selectedAgentId === agent.id ? 'text-[hsl(var(--neon-purple))]' : 'text-foreground'}`}>
                       {agent.name.toUpperCase()}
                     </h3>
                     <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest truncate">{agent.role}</p>
@@ -181,10 +181,10 @@ export default function COEPlatform() {
                     {selectedAgent.avatar}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-white tracking-tight leading-none mb-2">{selectedAgent.name.toUpperCase()}</h2>
+                    <h2 className="text-2xl font-black text-foreground tracking-tight leading-none mb-2">{selectedAgent.name.toUpperCase()}</h2>
                     <div className="flex items-center gap-3">
                       <span className="text-[hsl(var(--neon-cyan))] text-[10px] font-black tracking-[0.3em] uppercase">LVL_{selectedAgent.level}</span>
-                      <span className="text-white/10">|</span>
+                      <span className="text-foreground/10">|</span>
                       <span className="text-muted-foreground text-[10px] font-black tracking-[0.3em] uppercase">{selectedAgent.office.toUpperCase()}</span>
                     </div>
                   </div>
@@ -205,7 +205,7 @@ export default function COEPlatform() {
 
           {/* Instruction Input */}
           <div className="bg-[hsl(var(--card)/0.4)] backdrop-blur-md rounded-md p-6 border border-white/5 flex flex-col flex-1 min-h-[300px] relative overflow-hidden scanlines panel-glow-purple">
-            <h2 className="text-[10px] font-black text-white font-mono uppercase tracking-[0.3em] flex items-center gap-3 mb-6 shrink-0 relative z-10">
+            <h2 className="text-[10px] font-black text-foreground font-mono uppercase tracking-[0.3em] flex items-center gap-3 mb-6 shrink-0 relative z-10">
               <Command className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
               New Operational Directive
             </h2>
@@ -214,7 +214,7 @@ export default function COEPlatform() {
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
                 placeholder={`Dispatch high-level instructions to ${selectedAgent?.name}...`}
-                className="flex-1 w-full bg-[hsl(var(--background)/0.6)] border border-white/5 rounded-md p-6 text-sm text-white font-mono placeholder:text-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-purple)/0.4)] transition-all resize-none mb-6 custom-scrollbar scrollbar-hide shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
+                className="flex-1 w-full bg-[hsl(var(--background)/0.6)] border border-white/5 rounded-md p-6 text-sm text-foreground font-mono placeholder:text-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-purple)/0.4)] transition-all resize-none mb-6 custom-scrollbar scrollbar-hide shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
               />
               <div className="flex justify-end shrink-0">
                 <button
@@ -238,7 +238,7 @@ export default function COEPlatform() {
 
         {/* Right Panel - Execution Logs */}
         <div className="w-[420px] flex flex-col gap-4 h-full">
-          <h2 className="text-[10px] font-black text-white font-mono uppercase tracking-[0.3em] flex items-center gap-3 px-2 shrink-0">
+          <h2 className="text-[10px] font-black text-foreground font-mono uppercase tracking-[0.3em] flex items-center gap-3 px-2 shrink-0">
             <Activity className="w-4 h-4 text-[hsl(var(--neon-green))]" />
             Neural Execution Log
           </h2>
@@ -262,7 +262,7 @@ export default function COEPlatform() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-4 relative z-10">
-                    <span className="text-xs font-black text-white tracking-tight uppercase">{log.agentName}</span>
+                    <span className="text-xs font-black text-foreground tracking-tight uppercase">{log.agentName}</span>
                     <span className="text-[9px] font-black text-muted-foreground tracking-widest tabular-nums opacity-60">
                       {log.timestamp.toLocaleTimeString()}
                     </span>

@@ -101,7 +101,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
           <Terminal className="w-5 h-5 text-background" />
         </div>
         <div>
-          <h2 className="text-[11px] font-black text-white tracking-[0.3em] uppercase">Hermes Neural Hub</h2>
+          <h2 className="text-[11px] font-black text-foreground tracking-[0.3em] uppercase">Hermes Neural Hub</h2>
           <p className="text-[9px] text-[hsl(var(--neon-cyan))] font-black uppercase tracking-[0.2em]">Neural Processing Node // v2.5.0</p>
         </div>
         <div className="ml-auto flex items-center gap-3 px-3 py-1 bg-[hsl(var(--neon-green)/0.05)] border border-[hsl(var(--neon-green)/0.2)] rounded">
@@ -135,7 +135,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
               >
                 <div className="flex items-center gap-3 mb-2 opacity-50 text-[8px] font-black uppercase tracking-[0.3em]">
                   <span>{message.role === 'user' ? 'Local_Terminal' : 'Hermes_Core'}</span>
-                  <span className="text-white/10">|</span>
+                  <span className="text-foreground/10">|</span>
                   <span className="tabular-nums">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                 </div>
                 <p className="whitespace-pre-wrap">{message.content}</p>
@@ -180,7 +180,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
               <button
                 key={index}
                 onClick={() => setInput(question)}
-                className="text-[9px] font-black px-4 py-2 bg-white/5 border border-white/10 hover:border-[hsl(var(--neon-cyan)/0.5)] hover:bg-[hsl(var(--neon-cyan)/0.1)] text-muted-foreground hover:text-white rounded transition-all uppercase tracking-widest"
+                className="text-[9px] font-black px-4 py-2 bg-white/5 border border-white/10 hover:border-[hsl(var(--neon-cyan)/0.5)] hover:bg-[hsl(var(--neon-cyan)/0.1)] text-muted-foreground hover:text-foreground rounded transition-all uppercase tracking-widest"
               >
                 {question}
               </button>
@@ -199,7 +199,7 @@ export default function HermesChat({ className = '' }: HermesChatProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="DISPATCH COMMAND..."
-              className="w-full bg-[hsl(var(--background)/0.6)] border border-white/10 rounded-md px-5 py-4 text-xs font-mono text-white placeholder-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)] transition-all shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
+              className="w-full bg-[hsl(var(--background)/0.6)] border border-white/10 rounded-md px-5 py-4 text-xs font-mono text-foreground placeholder-muted-foreground/20 focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)] transition-all shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
               disabled={isLoading}
             />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/20 pointer-events-none uppercase tracking-widest">

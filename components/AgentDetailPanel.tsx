@@ -51,12 +51,12 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
               {agent.avatar}
             </div>
             <div>
-              <h2 className="text-2xl font-black tracking-tight leading-none text-white mb-2 uppercase">
+              <h2 className="text-2xl font-black tracking-tight leading-none text-foreground mb-2 uppercase">
                 {agent.name}
               </h2>
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-black text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase">{agent.role.toUpperCase()}</span>
-                <span className="text-white/10">|</span>
+                <span className="text-foreground/10">|</span>
                 <span className={`text-[10px] font-black tracking-[0.3em] uppercase ${agent.status === 'running' ? 'text-[hsl(var(--neon-green))]' : 'text-[hsl(var(--neon-yellow))]'}`}>
                   {agent.status.toUpperCase()}
                 </span>
@@ -67,7 +67,7 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
             onClick={onClose}
             className="p-3 bg-white/5 rounded border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group relative z-10"
           >
-            <X className="w-6 h-6 text-muted-foreground group-hover:text-white" />
+            <X className="w-6 h-6 text-muted-foreground group-hover:text-foreground" />
           </button>
         </div>
 
@@ -107,7 +107,7 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
                     <Zap className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
                     <span className="text-[10px] font-black text-muted-foreground tracking-[0.3em] uppercase">Token Allocation</span>
                   </div>
-                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest">
+                  <span className="text-[10px] font-black text-foreground tabular-nums tracking-widest">
                     {agent.tokenUsage.used.toLocaleString()} / {agent.tokenUsage.limit.toLocaleString()}
                   </span>
                 </div>
@@ -123,7 +123,7 @@ export default function AgentDetailPanel({ agent, onClose, onUpdateAgent, onTogg
                     <Cpu className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                     <span className="text-[10px] font-black text-muted-foreground tracking-[0.3em] uppercase">Neural Concurrency</span>
                   </div>
-                  <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{agent.concurrency.current} / {agent.concurrency.max} Threads</span>
+                  <span className="text-[10px] font-black text-foreground tabular-nums tracking-widest">{agent.concurrency.current} / {agent.concurrency.max} Threads</span>
                 </div>
                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                   <div className="h-full bg-[hsl(var(--neon-cyan))]" style={{ width: `${concurrencyPct}%`, boxShadow: '0 0 10px hsl(var(--neon-cyan))' }} />
@@ -289,7 +289,7 @@ function StatBox({ label, value, icon: Icon, color }: any) {
     <div className="bg-[hsl(var(--card)/0.4)] rounded-md p-5 border border-white/5 relative overflow-hidden group flex-1">
       <div className="absolute inset-0 scanlines opacity-10" />
       <Icon className="w-5 h-5 mb-3" style={{ color: colors[color] }} />
-      <div className="text-2xl font-black text-white tabular-nums tracking-tight mb-1">{value}</div>
+      <div className="text-2xl font-black text-foreground tabular-nums tracking-tight mb-1">{value}</div>
       <div className="text-[9px] text-muted-foreground font-black tracking-[0.3em] uppercase">{label}</div>
     </div>
   );
@@ -299,7 +299,7 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
   return (
     <div className="bg-[hsl(var(--card)/0.4)] rounded-md p-5 border border-white/5 flex flex-col items-center gap-3 hover:border-white/20 transition-all">
       {icon}
-      <span className="text-xl font-black text-white tabular-nums">{value}</span>
+      <span className="text-xl font-black text-foreground tabular-nums">{value}</span>
       <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{label}</span>
     </div>
   );
@@ -312,7 +312,7 @@ function RevenueCard({ icon, label, value }: { icon: React.ReactNode; label: str
         {icon}
       </div>
       <div>
-        <span className="text-xl font-black text-white tabular-nums leading-none block mb-1">{value}</span>
+        <span className="text-xl font-black text-foreground tabular-nums leading-none block mb-1">{value}</span>
         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{label}</p>
       </div>
     </div>

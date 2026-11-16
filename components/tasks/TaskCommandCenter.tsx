@@ -50,7 +50,7 @@ export default function TaskCommandCenter() {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <Target className="w-5 h-5 text-[hsl(var(--neon-purple))]" />
-            <h1 className="text-2xl font-black tracking-tight text-white uppercase">Task Command Center</h1>
+            <h1 className="text-2xl font-black tracking-tight text-foreground uppercase">Task Command Center</h1>
           </div>
           <p className="text-xs text-muted-foreground tracking-[0.2em] uppercase opacity-60">Mission Control & Neural Distribution</p>
         </div>
@@ -59,13 +59,13 @@ export default function TaskCommandCenter() {
           <div className="flex bg-white/5 rounded p-1 border border-white/5">
             <button 
               onClick={() => setActiveView('board')}
-              className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${activeView === 'board' ? 'bg-[hsl(var(--neon-purple)/0.2)] text-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple)/0.2)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${activeView === 'board' ? 'bg-[hsl(var(--neon-purple)/0.2)] text-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple)/0.2)]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Kanban
             </button>
             <button 
               onClick={() => setActiveView('matrix')}
-              className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${activeView === 'matrix' ? 'bg-[hsl(var(--neon-purple)/0.2)] text-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple)/0.2)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`px-4 py-1.5 rounded text-[9px] font-black uppercase tracking-widest transition-all ${activeView === 'matrix' ? 'bg-[hsl(var(--neon-purple)/0.2)] text-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple)/0.2)]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Matrix
             </button>
@@ -102,11 +102,11 @@ export default function TaskCommandCenter() {
             <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-[hsl(var(--neon-cyan)/0.1)]">
               <div className="flex items-center gap-2">
                 <Brain className="w-3 h-3 text-[hsl(var(--neon-cyan))]" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">Neural Link Active</span>
+                <span className="text-[10px] font-black text-foreground uppercase tracking-widest">Neural Link Active</span>
               </div>
               <button 
                 onClick={() => setExecutionOutput(null)}
-                className="text-muted-foreground hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ×
               </button>

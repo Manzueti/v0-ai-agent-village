@@ -124,7 +124,7 @@ export class TheFactory extends Phaser.Scene {
             fontSize: '28px',
             fontFamily: 'monospace',
             color: '#ffffff',
-            stroke: '#00f2ff',
+            stroke: '#c6b4ea',
             strokeThickness: 1
         }).setOrigin(0.5);
 
@@ -182,7 +182,7 @@ export class TheFactory extends Phaser.Scene {
         const canvasTexture = this.textures.createCanvas('circuitBG', 128, 128);
         const ctx = canvasTexture?.context;
         if (ctx) {
-            ctx.strokeStyle = '#00f2ff';
+            ctx.strokeStyle = '#c6b4ea';
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {

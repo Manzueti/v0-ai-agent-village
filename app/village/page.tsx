@@ -33,7 +33,7 @@ type ViewMode = 'grid' | 'visualizer' | 'office';
 const TechGrid = () => {
   return (
     <div className="absolute inset-0 pointer-events-none opacity-30">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(130,80,255,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(130,80,255,0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(139,111,201,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(139,111,201,0.15)_1px,transparent_1px)] bg-[size:50px_50px]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_20%,#0a0515_100%)]" />
     </div>
   );
@@ -105,7 +105,7 @@ export default function VillagePage() {
     switch (simState) {
       case 'night':
         return {
-          bg: 'bg-[hsl(248_60%_4%)]',
+          bg: 'bg-[hsl(0_0%_4%)]',
           accent: 'text-[hsl(var(--neon-purple))]',
           glow: 'bg-[hsl(var(--neon-purple)/0.05)]',
           status: 'Neural Recharge',
@@ -115,7 +115,7 @@ export default function VillagePage() {
         };
       case 'emergency':
         return {
-          bg: 'bg-[hsl(350_90%_5%)]',
+          bg: 'bg-[hsl(0_0%_5%)]',
           accent: 'text-[hsl(var(--neon-magenta))]',
           glow: 'bg-[hsl(var(--neon-magenta)/0.1)]',
           status: 'SYSTEM CRITICAL',
@@ -184,7 +184,7 @@ export default function VillagePage() {
               <Trees className="w-6 h-6 text-background" />
             </div>
             <div>
-              <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Ecosystem</span>
+              <span className="text-foreground font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Ecosystem</span>
               <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">CYBEREMPIRE Ecosystem Matrix</span>
             </div>
           </div>
@@ -204,40 +204,40 @@ export default function VillagePage() {
           <div className="flex items-center gap-3 p-1 rounded-md bg-[hsl(var(--secondary)/0.5)] border border-white/5">
             <button 
               onClick={() => setSimState('day')}
-              className={`p-1.5 rounded transition-all ${simState === 'day' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.3)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${simState === 'day' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.3)]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Sun className="w-4 h-4" />
             </button>
             <button 
               onClick={() => setSimState('night')}
-              className={`p-1.5 rounded transition-all ${simState === 'night' ? 'text-[hsl(var(--neon-purple))] bg-[hsl(var(--neon-purple)/0.15)] shadow-[0_0_8px_hsl(var(--neon-purple)/0.3)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${simState === 'night' ? 'text-[hsl(var(--neon-purple))] bg-[hsl(var(--neon-purple)/0.15)] shadow-[0_0_8px_hsl(var(--neon-purple)/0.3)]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Moon className="w-4 h-4" />
             </button>
             <button 
               onClick={toggleEmergency}
-              className={`p-1.5 rounded transition-all ${simState === 'emergency' ? 'text-[hsl(var(--neon-magenta))] bg-[hsl(var(--neon-magenta)/0.15)] shadow-[0_0_8px_hsl(var(--neon-magenta)/0.3)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${simState === 'emergency' ? 'text-[hsl(var(--neon-magenta))] bg-[hsl(var(--neon-magenta)/0.15)] shadow-[0_0_8px_hsl(var(--neon-magenta)/0.3)]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Zap className="w-4 h-4" />
             </button>
             <div className="w-px h-5 bg-white/5 mx-1" />
             <button 
               onClick={syncAll}
-              className={`p-1.5 rounded transition-all ${isSyncing ? 'animate-spin text-[hsl(var(--neon-cyan))]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${isSyncing ? 'animate-spin text-[hsl(var(--neon-cyan))]' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <div className="w-px h-5 bg-white/5 mx-1" />
             <button
               onClick={() => setViewMode(prev => prev === 'visualizer' ? 'grid' : 'visualizer')}
-              className={`p-1.5 rounded transition-all ${viewMode === 'visualizer' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${viewMode === 'visualizer' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)]' : 'text-muted-foreground hover:text-foreground'}`}
               title="Ecosystem Visualizer"
             >
               <Eye className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode(prev => prev === 'office' ? 'grid' : 'office')}
-              className={`p-1.5 rounded transition-all ${viewMode === 'office' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.3)]' : 'text-muted-foreground hover:text-white'}`}
+              className={`p-1.5 rounded transition-all ${viewMode === 'office' ? 'text-[hsl(var(--neon-cyan))] bg-[hsl(var(--neon-cyan)/0.15)] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.3)]' : 'text-muted-foreground hover:text-foreground'}`}
               title="3D Virtual Office"
             >
               <Factory className="w-4 h-4" />
@@ -257,7 +257,7 @@ export default function VillagePage() {
         <div className="max-w-[1600px] mx-auto">
           <div className="mb-12 flex justify-between items-end">
             <div>
-              <h1 className="text-5xl font-black text-white tracking-tight mb-3 uppercase leading-none">
+              <h1 className="text-5xl font-black text-foreground tracking-tight mb-3 uppercase leading-none">
                 {viewMode === 'office' ? 'Virtual Office' : viewMode === 'visualizer' ? 'Ecosystem Overview' : (simState === 'emergency' ? 'Containment Sector' : 'Ecosystem Matrix')}
               </h1>
               <p className="text-muted-foreground font-bold text-[11px] uppercase tracking-[0.3em]">
@@ -345,7 +345,7 @@ export default function VillagePage() {
       </main>
 
       {/* Bottom Nav Footer */}
-      <footer className="fixed bottom-0 left-0 w-full z-50 h-20 bg-[#080816]/90 border-t border-cyan-500/20 backdrop-blur-xl flex items-center justify-between px-8">
+      <footer className="fixed bottom-0 left-0 w-full z-50 h-20 bg-[#0a0a0a]/90 border-t border-cyan-500/20 backdrop-blur-xl flex items-center justify-between px-8">
         <div className="flex items-center gap-8">
           <NavBtn icon={<LayoutGrid className="w-4 h-4" />} label="DASHBOARD" active={true} />
           <NavBtn icon={<Users className="w-4 h-4" />} label="CREW" />
@@ -353,7 +353,7 @@ export default function VillagePage() {
         </div>
 
         {/* Center Station Time */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center border border-cyan-500/30 bg-cyan-950/20 px-8 py-2 rounded-lg shadow-[0_0_20px_rgba(0,255,255,0.1)]">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center border border-cyan-500/30 bg-cyan-950/20 px-8 py-2 rounded-lg shadow-[0_0_20px_rgba(198,180,234,0.1)]">
           <div className="flex items-end gap-3 mb-1">
             <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500 mono">STATION TIME</span>
             <span className="text-cyan-50 font-bold tracking-widest bg-cyan-500/20 px-2 rounded mono text-[8px]">DAY 127</span>
@@ -385,7 +385,7 @@ export default function VillagePage() {
 function NavBtn({ icon, label, active = false, color = "cyan" }: any) {
   return (
     <button className={`flex flex-col items-center gap-1 group cursor-pointer transition-all ${active ? 'text-cyan-400' : 'text-cyan-500/50 hover:text-cyan-300'}`}>
-      <div className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-all ${active ? 'bg-cyan-500/10 border border-cyan-500 shadow-[0_0_15px_rgba(0,255,255,0.2)]' : 'bg-white/5 border border-white/5'}`}>
+      <div className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-all ${active ? 'bg-cyan-500/10 border border-cyan-500 shadow-[0_0_15px_rgba(198,180,234,0.2)]' : 'bg-white/5 border border-white/5'}`}>
         {icon}
       </div>
       <span className="text-[8px] font-black uppercase tracking-[0.1em] mono">{label}</span>

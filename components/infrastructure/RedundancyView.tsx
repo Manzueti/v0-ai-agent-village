@@ -65,7 +65,7 @@ export default function RedundancyView({
   return (
     <div className="bg-slate-900 rounded-xl border border-slate-800 p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-cyan-400" />
           Redundancy Pair
         </h3>
@@ -133,7 +133,7 @@ export default function RedundancyView({
                 {step.status === 'failed' && <AlertTriangle className="w-3 h-3 text-red-400" />}
                 <span className={`text-xs ${
                   step.status === 'completed' ? 'text-slate-400' :
-                  step.status === 'running' ? 'text-white' :
+                  step.status === 'running' ? 'text-foreground' :
                   step.status === 'failed' ? 'text-red-400' : 'text-slate-600'
                 }`}>
                   {step.name}
@@ -149,7 +149,7 @@ export default function RedundancyView({
         <button
           onClick={() => onFailover?.(primary.id)}
           disabled={replica.status !== 'healthy'}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-foreground rounded-lg transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           <span className="text-sm font-medium">Initiate Failover</span>
@@ -197,7 +197,7 @@ function NodeCard({
         </span>
       </div>
       
-      <div className="text-sm font-medium text-white truncate mb-2">
+      <div className="text-sm font-medium text-foreground truncate mb-2">
         {node.name}
       </div>
       

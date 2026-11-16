@@ -84,13 +84,13 @@ export default function InfrastructurePage() {
       <div className="fixed right-0 top-0 bottom-0 w-1 bg-[#1a1a1a] z-50 border-l border-[#333]" />
 
       {/* Heavy Steel Header */}
-      <div className="relative z-20 border-b-4 border-[#1a1a1a] bg-[#050505]">
+      <div className="relative z-20 border-b-4 border-[#1a1a1a] bg-[#0a0a0a]">
         <div className="px-10 py-6 flex items-center justify-between">
           <div className="flex items-center gap-12">
             <div className="flex items-center gap-6">
               <div className="h-14 w-14 bg-[#111] border-2 border-[#333] rounded-sm flex items-center justify-center shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] relative group">
                 <div className="absolute inset-0 bg-[hsl(var(--neon-cyan)/0.05)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Factory className="w-8 h-8 text-white" />
+                <Factory className="w-8 h-8 text-foreground" />
                 {/* Rivet details */}
                 <div className="absolute top-1 left-1 w-1 h-1 bg-[#333] rounded-full" />
                 <div className="absolute top-1 right-1 w-1 h-1 bg-[#333] rounded-full" />
@@ -98,7 +98,7 @@ export default function InfrastructurePage() {
                 <div className="absolute bottom-1 right-1 w-1 h-1 bg-[#333] rounded-full" />
               </div>
               <div>
-                <span className="text-white font-black tracking-[0.5em] uppercase text-xl block leading-none">WAREHOUSE_COMPUTE_01</span>
+                <span className="text-foreground font-black tracking-[0.5em] uppercase text-xl block leading-none">WAREHOUSE_COMPUTE_01</span>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-[10px] text-[#444] tracking-[0.3em] uppercase font-bold bg-[#111] px-2 py-0.5 border border-[#222]">CLUSTER_S7G</span>
                   <span className="text-[10px] text-[hsl(var(--neon-cyan))] tracking-[0.3em] uppercase font-black animate-pulse">LIVE_STREAM</span>
@@ -110,7 +110,7 @@ export default function InfrastructurePage() {
               <div className="flex flex-col">
                 <span className="text-[9px] text-[#555] uppercase tracking-[0.4em] mb-2">POWER_DISTRIBUTION</span>
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-black text-white tabular-nums tracking-tighter">{computeLoad.toFixed(1)}%</span>
+                  <span className="text-2xl font-black text-foreground tabular-nums tracking-tighter">{computeLoad.toFixed(1)}%</span>
                   <div className="flex gap-1">
                     {[...Array(12)].map((_, i) => (
                       <div key={i} className={`w-1.5 h-4 ${i < computeLoad/8.3 ? 'bg-[hsl(var(--neon-cyan))] shadow-[0_0_8px_hsl(var(--neon-cyan)/0.5)]' : 'bg-[#111]'}`} />
@@ -122,7 +122,7 @@ export default function InfrastructurePage() {
                 <span className="text-[9px] text-[#555] uppercase tracking-[0.4em] mb-2">THERMAL_MGMT</span>
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-sm bg-[hsl(var(--neon-green))] shadow-[0_0_10px_hsl(var(--neon-green))]" />
-                  <span className="text-sm font-black text-white uppercase tracking-widest">32.4°C :: NOMINAL</span>
+                  <span className="text-sm font-black text-foreground uppercase tracking-widest">32.4°C :: NOMINAL</span>
                 </div>
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function InfrastructurePage() {
               <span className="text-[9px] text-[#444] uppercase tracking-widest mb-1">RACK_IDENTIFIER</span>
               <div className="flex items-center gap-3 px-4 py-2 bg-[#080808] border border-[#222] rounded-sm">
                 <Cpu className="w-4 h-4 text-[#555]" />
-                <span className="text-[11px] text-white font-black uppercase tracking-widest">NODE_NORTH_7</span>
+                <span className="text-[11px] text-foreground font-black uppercase tracking-widest">NODE_NORTH_7</span>
               </div>
             </div>
             <button 
@@ -172,7 +172,7 @@ export default function InfrastructurePage() {
           {/* Industrial Terminal Toggle */}
           <button
             onClick={() => setShowDecisionLog(!showDecisionLog)}
-            className="absolute top-10 left-10 px-8 py-4 bg-[#050505] border-2 border-[#222] text-[11px] font-black text-[#555] hover:text-white hover:border-white transition-all uppercase tracking-[0.5em] flex items-center gap-4 group shadow-2xl"
+            className="absolute top-10 left-10 px-8 py-4 bg-[#0a0a0a] border-2 border-[#222] text-[11px] font-black text-[#555] hover:text-foreground hover:border-white transition-all uppercase tracking-[0.5em] flex items-center gap-4 group shadow-2xl"
           >
             <div className="w-2 h-2 bg-[#333] rounded-full group-hover:bg-[hsl(var(--neon-cyan))] shadow-[0_0_8px_currentColor]" />
             {showDecisionLog ? 'SUSPEND_IO' : 'ENGAGE_IO'}
@@ -181,19 +181,19 @@ export default function InfrastructurePage() {
           {/* Heavy Metal Guardian Panel */}
           <div className="absolute top-10 right-10">
             <div className={`
-              px-10 py-6 bg-[#050505] border-l-4 border-y border-r border-[#1a1a1a] flex items-center gap-8 shadow-2xl relative overflow-hidden
+              px-10 py-6 bg-[#0a0a0a] border-l-4 border-y border-r border-[#1a1a1a] flex items-center gap-8 shadow-2xl relative overflow-hidden
               ${hermesStatus?.healthy ? 'border-l-[hsl(var(--neon-cyan))]' : 'border-l-red-600'}
             `}>
               <div className="absolute top-0 right-0 p-1 opacity-20">
                 <div className="w-4 h-4 border-t border-r border-[#333]" />
               </div>
               <div className="p-4 bg-[#0a0a0a] border border-[#222] relative">
-                <Shield className={`w-10 h-10 ${hermesStatus?.healthy ? 'text-white' : 'text-red-600'} transition-colors duration-1000`} />
+                <Shield className={`w-10 h-10 ${hermesStatus?.healthy ? 'text-foreground' : 'text-red-600'} transition-colors duration-1000`} />
                 {hermesStatus?.healthy && <div className="absolute inset-0 bg-[hsl(var(--neon-cyan))] opacity-10 blur-xl animate-pulse" />}
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[#444]">SECURITY_GATE</span>
-                <span className="text-2xl font-black text-white tracking-[0.2em] mt-1">
+                <span className="text-2xl font-black text-foreground tracking-[0.2em] mt-1">
                   {hermesStatus ? (hermesStatus.healthy ? 'VERIFIED' : 'BREACH') : 'SYNCING'}
                 </span>
               </div>
@@ -201,8 +201,8 @@ export default function InfrastructurePage() {
           </div>
 
           {/* Industrial Legend - Server Rack Style */}
-          <div className="absolute bottom-12 left-12 bg-[#050505] border-2 border-[#1a1a1a] p-10 shadow-2xl">
-            <div className="text-[12px] font-black text-white tracking-[0.6em] uppercase mb-8 border-b-2 border-[#111] pb-6 flex items-center gap-5">
+          <div className="absolute bottom-12 left-12 bg-[#0a0a0a] border-2 border-[#1a1a1a] p-10 shadow-2xl">
+            <div className="text-[12px] font-black text-foreground tracking-[0.6em] uppercase mb-8 border-b-2 border-[#111] pb-6 flex items-center gap-5">
               <Boxes className="w-5 h-5 text-[#555]" />
               MANIFEST_V4.2
             </div>
@@ -210,15 +210,15 @@ export default function InfrastructurePage() {
               <LegendItem color="#ffffff" label="PRIORITY_ASSET" />
               <LegendItem color="#333333" label="STANDBY_BUFFER" />
               <LegendItem color="hsl(var(--neon-cyan))" label="TRANSFER_FLOW" />
-              <LegendItem color="#cc0000" label="HARDWARE_FAULT" />
+              <LegendItem color="#c4554c" label="HARDWARE_FAULT" />
               <div className="h-px bg-[#111] my-8" />
               <div className="flex items-center gap-6 group">
                 <div className="w-10 h-1 bg-[#1a1a1a] border border-[#333] group-hover:border-[hsl(var(--neon-cyan)/0.5)] transition-colors" />
-                <span className="text-[10px] font-black text-[#444] group-hover:text-white uppercase tracking-[0.4em] transition-colors">STEEL_CONDUIT</span>
+                <span className="text-[10px] font-black text-[#444] group-hover:text-foreground uppercase tracking-[0.4em] transition-colors">STEEL_CONDUIT</span>
               </div>
               <div className="flex items-center gap-6 group">
                 <div className="w-10 h-0.5 bg-[hsl(var(--neon-cyan))] shadow-[0_0_10px_hsl(var(--neon-cyan))] group-hover:shadow-[0_0_20px_hsl(var(--neon-cyan))]" />
-                <span className="text-[10px] font-black text-[#444] group-hover:text-white uppercase tracking-[0.4em] transition-colors">ELECTRIC_ACCENT</span>
+                <span className="text-[10px] font-black text-[#444] group-hover:text-foreground uppercase tracking-[0.4em] transition-colors">ELECTRIC_ACCENT</span>
               </div>
             </div>
           </div>
@@ -233,10 +233,10 @@ export default function InfrastructurePage() {
               exit={{ x: 450, opacity: 0 }}
               className="w-[450px] border-l-4 border-[#1a1a1a] bg-[#020202] overflow-hidden flex flex-col shadow-2xl"
             >
-              <div className="p-8 border-b border-[#1a1a1a] bg-[#050505] flex items-center justify-between">
+              <div className="p-8 border-b border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-between">
                 <div className="flex items-center gap-5">
                   <div className="w-3 h-3 bg-[hsl(var(--neon-cyan))] animate-flicker shadow-[0_0_10px_hsl(var(--neon-cyan))]" />
-                  <h3 className="text-[13px] font-black text-white tracking-[0.7em] uppercase">
+                  <h3 className="text-[13px] font-black text-foreground tracking-[0.7em] uppercase">
                     DATA_BUS_01
                   </h3>
                 </div>
@@ -271,10 +271,10 @@ export default function InfrastructurePage() {
       )}
 
       {/* Industrial Footer */}
-      <footer className="relative z-20 h-16 border-t-4 border-[#1a1a1a] bg-[#050505] flex items-center justify-between px-12">
+      <footer className="relative z-20 h-16 border-t-4 border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-between px-12">
         <div className="flex gap-12 text-[10px] font-black tracking-[0.6em] text-[#333] uppercase items-center">
           <span className="flex items-center gap-4 hover:text-[#555] transition-colors"><Drill className="w-4 h-4" /> HEAVY_UNIT_PROC</span>
-          <span className="text-white flex items-center gap-4 bg-[#0a0a0a] px-4 py-1.5 border border-[#1a1a1a]">
+          <span className="text-foreground flex items-center gap-4 bg-[#0a0a0a] px-4 py-1.5 border border-[#1a1a1a]">
             <div className="w-2 h-2 bg-[hsl(var(--neon-green))] shadow-[0_0_8px_hsl(var(--neon-green))]" /> 
             CORE_GRID_STABLE
           </span>

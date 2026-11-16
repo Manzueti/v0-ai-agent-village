@@ -84,14 +84,14 @@ const SECTIONS = [
 // ── Shared bits ───────────────────────────────────────────────────────────────
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--neon-cyan))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]';
-const glass = 'rounded-xl border border-white/10 bg-[hsl(var(--card)/0.55)] backdrop-blur-md';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+const glass = 'rounded-[var(--radius)] border border-border bg-card';
 
 function SectionHeading({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="mb-8 max-w-2xl">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[hsl(var(--neon-cyan))]">{eyebrow}</p>
-      <h2 id={id} className="mt-2 text-2xl md:text-3xl font-bold tracking-tight text-white text-balance">{title}</h2>
+      <p className="text-sm font-medium text-primary">{eyebrow}</p>
+      <h2 id={id} className="mt-2 text-2xl md:text-3xl font-semibold tracking-tight text-foreground text-balance">{title}</h2>
       {children && <p className="font-body mt-3 text-base leading-relaxed text-muted-foreground">{children}</p>}
     </div>
   );
@@ -117,13 +117,13 @@ export function HomeSection() {
         {/* Hero */}
         <section aria-labelledby="hero-title" className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-center pt-6">
           <motion.div {...rise()}>
-            <p className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--neon-green)/0.35)] bg-[hsl(var(--neon-green)/0.08)] px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-[hsl(var(--neon-green))]">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--neon-green)/0.35)] bg-[hsl(var(--neon-green)/0.08)] px-3 py-1 text-xs font-medium text-[hsl(var(--neon-green))]">
               <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--neon-green))]" />
               {active} of {employees.length} agents running
             </p>
-            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight text-white text-balance">
+            <h1 id="hero-title" className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.05] tracking-tight text-foreground text-balance">
               An autonomous workforce that{' '}
-              <span className="text-[hsl(var(--neon-cyan))]">earns its own compute.</span>
+              <span className="text-muted-foreground">earns its own compute.</span>
             </h1>
             <p className="font-body mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               {employees.length} AI agents across {DEPARTMENTS.length} departments run a continuous think, act, observe loop.
@@ -132,13 +132,13 @@ export function HomeSection() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/?s=village"
-                className={`inline-flex min-h-11 items-center gap-2 rounded-lg bg-[hsl(var(--neon-cyan))] px-6 py-3 text-sm font-bold text-[hsl(var(--background))] transition-colors duration-200 hover:bg-[hsl(var(--neon-cyan)/0.85)] ${focusRing}`}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90 ${focusRing}`}
               >
                 Open the ecosystem <ArrowRight aria-hidden className="h-4 w-4" />
               </Link>
               <Link
                 href="/?s=tasks"
-                className={`inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-white/5 ${focusRing}`}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-input bg-secondary px-6 py-3 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-accent ${focusRing}`}
               >
                 Assign a task
               </Link>
@@ -155,8 +155,8 @@ export function HomeSection() {
           <motion.dl {...rise()} className={`${glass} grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px overflow-hidden bg-white/10`}>
             {METRICS.map((m) => (
               <div key={m.label} className="bg-[hsl(var(--card)/0.9)] p-5">
-                <dt className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{m.label}</dt>
-                <dd className="mt-2 text-2xl font-bold tabular-nums text-white">{m.value}</dd>
+                <dt className="text-sm text-muted-foreground">{m.label}</dt>
+                <dd className="mt-2 text-2xl font-semibold tabular-nums text-foreground">{m.value}</dd>
               </div>
             ))}
           </motion.dl>
@@ -172,12 +172,12 @@ export function HomeSection() {
             {LOOP.map(({ icon: Icon, title, desc }, i) => (
               <motion.li key={title} {...rise(i * 0.06)} className={`${glass} p-6`}>
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-lg bg-[hsl(var(--neon-cyan)/0.12)] text-[hsl(var(--neon-cyan))]">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground">
                     <Icon aria-hidden className="h-5 w-5" />
                   </span>
-                  <span className="text-xs font-bold tabular-nums text-muted-foreground">0{i + 1}</span>
+                  <span className="text-xs font-semibold tabular-nums text-muted-foreground">0{i + 1}</span>
                 </div>
-                <h3 className="mt-5 text-lg font-bold text-white">{title}</h3>
+                <h3 className="mt-5 text-lg font-semibold text-foreground">{title}</h3>
                 <p className="font-body mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
               </motion.li>
             ))}
@@ -195,12 +195,12 @@ export function HomeSection() {
               return (
                 <motion.div key={t} {...rise(i * 0.06)} className={`${glass} p-6`} style={{ borderTop: `3px solid hsl(${tier.color})` }}>
                   <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="text-lg font-bold text-white">{tier.label}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{tier.label}</h3>
                     <span className="text-sm tabular-nums text-muted-foreground">
-                      <span className="text-2xl font-bold text-white">{tierCounts[t]}</span> agents
+                      <span className="text-2xl font-semibold text-foreground">{tierCounts[t]}</span> agents
                     </span>
                   </div>
-                  <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em]" style={{ color: `hsl(${tier.color})` }}>{tier.rule}</p>
+                  <p className="mt-1 text-xs font-medium" style={{ color: `hsl(${tier.color})` }}>{tier.rule}</p>
                   <p className="font-body mt-4 text-sm leading-relaxed text-muted-foreground">{tier.behavior}</p>
                 </motion.div>
               );
@@ -216,12 +216,12 @@ export function HomeSection() {
               <motion.li key={href} {...rise(i * 0.05)}>
                 <Link
                   href={href}
-                  className={`${glass} group flex h-full flex-col p-6 transition-colors duration-200 hover:border-[hsl(var(--neon-cyan)/0.5)] hover:bg-[hsl(var(--card)/0.8)] ${focusRing}`}
+                  className={`${glass} group flex h-full flex-col p-6 transition-colors duration-200 hover:border-input hover:bg-secondary ${focusRing}`}
                 >
-                  <Icon aria-hidden className="h-6 w-6 text-[hsl(var(--neon-cyan))]" />
-                  <h3 className="mt-4 text-base font-bold text-white">{title}</h3>
+                  <Icon aria-hidden className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
+                  <h3 className="mt-4 text-base font-semibold text-foreground">{title}</h3>
                   <p className="font-body mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-[hsl(var(--neon-cyan))]">
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
                     Open <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transform-none" />
                   </span>
                 </Link>
@@ -248,8 +248,8 @@ function RosterPanel() {
   return (
     <div className={`${glass} p-6`}>
       <div className="flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-white">
-          <Gauge aria-hidden className="h-4 w-4 text-[hsl(var(--neon-cyan))]" /> Budget by department
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Gauge aria-hidden className="h-4 w-4 text-muted-foreground" /> Budget by department
         </h2>
         <span className="text-xs text-muted-foreground">Roster snapshot</span>
       </div>
@@ -261,9 +261,9 @@ function RosterPanel() {
           return (
             <li key={dept}>
               <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="font-bold text-white">{dept}</span>
+                <span className="font-semibold text-foreground">{dept}</span>
                 <span className="tabular-nums text-muted-foreground">
-                  {team.length} agents · <span className="text-white">{pct}%</span> left
+                  {team.length} agents · <span className="text-foreground">{pct}%</span> left
                 </span>
               </div>
               <div

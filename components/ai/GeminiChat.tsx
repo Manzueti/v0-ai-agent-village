@@ -117,10 +117,10 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-          <Sparkles className="w-5 h-5 text-white" />
+          <Sparkles className="w-5 h-5 text-foreground" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-white">Gemini AI Assistant</h2>
+          <h2 className="text-sm font-semibold text-foreground">Gemini AI Assistant</h2>
           <p className="text-xs text-slate-400">Infrastructure Control Center</p>
         </div>
         <div className="ml-auto flex items-center gap-1">
@@ -138,14 +138,14 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
           >
             {message.role === 'assistant' && (
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
+                <Bot className="w-4 h-4 text-foreground" />
               </div>
             )}
             
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                 message.role === 'user'
-                  ? 'bg-cyan-600 text-white'
+                  ? 'bg-cyan-600 text-foreground'
                   : 'bg-slate-800 text-slate-100'
               }`}
             >
@@ -166,7 +166,7 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
         {isLoading && messages[messages.length - 1]?.role === 'user' && (
           <div className="flex gap-3">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-              <Bot className="w-4 h-4 text-white" />
+              <Bot className="w-4 h-4 text-foreground" />
             </div>
             <div className="bg-slate-800 rounded-2xl px-4 py-3">
               <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
@@ -204,13 +204,13 @@ export default function GeminiChat({ className = '' }: GeminiChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your infrastructure..."
-            className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-foreground placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="px-4 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+            className="px-4 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-foreground rounded-xl transition-colors"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

@@ -41,9 +41,8 @@ export default function Sidebar() {
     <motion.div
       initial={{ x: -80 }}
       animate={{ x: 0 }}
-      className="w-20 bg-[hsl(var(--sidebar-background)/0.95)] backdrop-blur-2xl border-r border-[hsl(var(--sidebar-border))] h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50 scanlines"
+      className="w-20 bg-[hsl(var(--sidebar-background))] border-r border-[hsl(var(--sidebar-border))] h-screen flex flex-col items-center py-6 gap-2 flex-shrink-0 relative overflow-hidden z-50"
     >
-      <div className="absolute inset-0 starfield opacity-10 pointer-events-none" />
 
       {/* Logo */}
       <motion.div
@@ -53,9 +52,8 @@ export default function Sidebar() {
         className="relative mb-8 group"
       >
         <Link href="/">
-          <div className="w-12 h-12 rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] flex items-center justify-center relative overflow-hidden shadow-[0_0_15px_hsl(var(--neon-magenta)/0.4)]">
-            <Terminal className="w-6 h-6 text-background relative z-10" />
-            <div className="absolute inset-0 bg-white/10 animate-pulse" />
+          <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center relative overflow-hidden">
+            <Terminal className="w-5 h-5 text-primary-foreground relative z-10" />
           </div>
         </Link>
       </motion.div>
@@ -65,10 +63,10 @@ export default function Sidebar() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex items-center gap-1.5 px-2 py-1 rounded bg-[hsl(var(--neon-green)/0.1)] border border-[hsl(var(--neon-green)/0.3)] mb-6"
+        className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[hsl(var(--neon-green)/0.1)] mb-6"
       >
-        <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] pulse-dot shadow-[0_0_8px_hsl(var(--neon-green))]" />
-        <span className="text-[8px] font-mono text-[hsl(var(--neon-green))] uppercase tracking-[0.2em] font-bold">ONLINE</span>
+        <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))] pulse-dot" />
+        <span className="text-[10px] font-medium text-[hsl(var(--neon-green))]">Online</span>
       </motion.div>
 
       {/* Navigation */}
@@ -88,34 +86,32 @@ export default function Sidebar() {
             >
               <Link
                 href={item.href}
-                className={`relative w-14 h-14 flex items-center justify-center rounded transition-all duration-300 group ${
+                className={`relative w-11 h-11 flex items-center justify-center rounded-full transition-colors duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   isActive
-                    ? 'bg-[hsl(var(--neon-purple)/0.15)] border border-[hsl(var(--neon-purple)/0.5)] shadow-[0_0_15px_hsl(var(--neon-purple)/0.2)]'
-                    : 'border border-transparent hover:border-[hsl(var(--neon-cyan)/0.3)] hover:bg-[hsl(var(--neon-cyan)/0.05)]'
+                    ? 'bg-[hsl(var(--sidebar-accent))]'
+                    : 'hover:bg-[hsl(var(--sidebar-accent)/0.6)]'
                 }`}
               >
-                {isActive && <div className="absolute inset-0 rounded bg-[hsl(var(--neon-purple)/0.1)] animate-pulse" />}
-
                 <Icon className={`w-5 h-5 relative z-10 transition-all duration-300 ${
                   isActive
-                    ? 'text-[hsl(var(--neon-purple))] scale-110'
-                    : 'text-muted-foreground group-hover:text-[hsl(var(--neon-cyan))] group-hover:scale-110'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground group-hover:text-foreground'
                 }`} />
 
                 {/* Tooltip */}
                 <motion.span
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: hoveredItem === item.name ? 1 : 0, x: hoveredItem === item.name ? 0 : -10 }}
-                  className="absolute left-full ml-3 px-3 py-1.5 bg-[hsl(var(--sidebar-background)/0.95)] border border-[hsl(var(--neon-cyan)/0.4)] panel-glow-cyan rounded-md text-[10px] text-white whitespace-nowrap z-50 font-bold tracking-widest uppercase"
+                  className="absolute left-full ml-3 px-3 py-1.5 bg-popover border border-border rounded-full text-xs text-foreground whitespace-nowrap z-50 font-medium shadow-lg pointer-events-none"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-[hsl(var(--neon-cyan))]">{item.name}</span>
+                    <span>{item.name}</span>
                     <span className="text-muted-foreground/60">{item.shortcut}</span>
                   </div>
                 </motion.span>
 
                 {isActive && (
-                  <div className="absolute -right-[1px] top-1/2 -translate-y-1/2 w-[2px] h-8 bg-[hsl(var(--neon-purple))] shadow-[0_0_10px_hsl(var(--neon-purple))]" />
+                  <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-primary" />
                 )}
               </Link>
             </motion.div>
@@ -130,12 +126,11 @@ export default function Sidebar() {
         transition={{ delay: 0.6 }}
         className="mt-auto flex flex-col items-center gap-4 pb-4"
       >
-        <div className="bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))] rounded p-2.5 w-14 flex flex-col items-center gap-2 panel-glow-cyan overflow-hidden relative">
-          <div className="absolute inset-0 scanlines opacity-20" />
-          <Activity className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-          <div className="text-[10px] font-bold font-mono text-white tabular-nums">97%</div>
+        <div className="bg-[hsl(var(--secondary)/0.5)] border border-[hsl(var(--border))] rounded-[var(--radius)] p-2.5 w-14 flex flex-col items-center gap-2 overflow-hidden relative">
+          <Activity className="w-4 h-4 text-muted-foreground" />
+          <div className="text-[10px] font-bold font-mono text-foreground tabular-nums">97%</div>
           <div className="w-full h-1 bg-[hsl(var(--background))] rounded-full overflow-hidden border border-white/5">
-            <div className="h-full w-[97%] bg-[hsl(var(--neon-cyan))]" style={{ boxShadow: '0 0 8px hsl(var(--neon-cyan))' }} />
+            <div className="h-full w-[97%] bg-primary" />
           </div>
         </div>
         <div className="flex items-center gap-1.5">

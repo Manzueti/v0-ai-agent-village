@@ -48,7 +48,7 @@ export default function AIControlPage() {
               <Brain className="w-5 h-5 text-background" />
             </div>
             <div>
-              <span className="text-white font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Control Center</span>
+              <span className="text-foreground font-black tracking-[0.2em] uppercase text-sm block leading-none">AI Control Center</span>
               <span className="text-[9px] text-muted-foreground tracking-[0.2em] uppercase font-bold">CYBEREMPIRE Neural Oversight</span>
             </div>
           </div>
@@ -57,22 +57,22 @@ export default function AIControlPage() {
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-[hsl(var(--neon-green))]" />
-              <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{systemHealth.overall}% HEALTH</span>
+              <span className="text-[10px] font-black text-foreground tabular-nums tracking-widest">{systemHealth.overall}% HEALTH</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-              <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{operators.filter(o => o.status === 'running').length}/{operators.length} ACTIVE</span>
+              <span className="text-[10px] font-black text-foreground tabular-nums tracking-widest">{operators.filter(o => o.status === 'running').length}/{operators.length} ACTIVE</span>
             </div>
             <div className="flex items-center gap-2">
               <AlertTriangle className={`w-4 h-4 ${anomalies.length > 0 ? 'text-[hsl(var(--neon-magenta))]' : 'text-muted-foreground/30'}`} />
-              <span className="text-[10px] font-black text-white tabular-nums tracking-widest">{anomalies.length} ANOMALIES</span>
+              <span className="text-[10px] font-black text-foreground tabular-nums tracking-widest">{anomalies.length} ANOMALIES</span>
             </div>
           </div>
         </div>
 
         <div className="px-4 py-1.5 bg-[hsl(var(--neon-purple)/0.05)] border border-[hsl(var(--neon-purple)/0.2)] rounded-md">
           <span className="text-[hsl(var(--neon-purple))] font-black text-[9px] tracking-[0.2em] uppercase">LINK_STATUS: </span>
-          <span className="text-white font-black text-[10px] tabular-nums tracking-widest">SECURE_TUNNEL</span>
+          <span className="text-foreground font-black text-[10px] tabular-nums tracking-widest">SECURE_TUNNEL</span>
         </div>
       </header>
 
@@ -81,7 +81,7 @@ export default function AIControlPage() {
         {/* Left Panel - Operators */}
         <div className="w-80 border-r border-white/5 bg-[hsl(var(--card)/0.4)] backdrop-blur-xl flex flex-col scanlines">
           <div className="p-4 border-b border-white/5 bg-[hsl(var(--background)/0.5)]">
-            <h2 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3">
+            <h2 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3">
               <Shield className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
               Neural Operators
             </h2>
@@ -104,7 +104,7 @@ export default function AIControlPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-black text-white tracking-tight leading-none">{operator.name.toUpperCase()}</span>
+                      <span className="text-sm font-black text-foreground tracking-tight leading-none">{operator.name.toUpperCase()}</span>
                       <div className={`w-1.5 h-1.5 rounded-full ${getStatusBg(operator.status)} ${operator.status === 'running' ? 'pulse-dot' : 'opacity-40'}`} />
                     </div>
                     <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">{operator.role}</div>
@@ -130,7 +130,7 @@ export default function AIControlPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-[hsl(var(--background)/0.5)] rounded p-3 border border-white/5">
                         <div className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1">Usage</div>
-                        <div className="text-[11px] font-black text-white tabular-nums tracking-widest">
+                        <div className="text-[11px] font-black text-foreground tabular-nums tracking-widest">
                           {(operator.tokenUsage.used / 1000).toFixed(1)}K Units
                         </div>
                       </div>
@@ -155,7 +155,7 @@ export default function AIControlPage() {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-[hsl(var(--background))] hover:bg-white/5 border border-white/10 rounded font-black text-[9px] text-white tracking-[0.3em] uppercase transition-all">
+                      <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-[hsl(var(--background))] hover:bg-white/5 border border-white/10 rounded font-black text-[9px] text-foreground tracking-[0.3em] uppercase transition-all">
                         {operator.status === 'running' ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                         {operator.status === 'running' ? 'Suspend' : 'Resume'}
                       </button>
@@ -180,7 +180,7 @@ export default function AIControlPage() {
           {/* Anomalies */}
           {anomalies.length > 0 && (
             <div className="p-6 border-b border-white/5">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3 mb-6">
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3 mb-6">
                 <AlertTriangle className="w-4 h-4 text-[hsl(var(--neon-yellow))]" />
                 Active Anomalies
               </h3>
@@ -197,7 +197,7 @@ export default function AIControlPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-black text-white tracking-tight uppercase">{anomaly.nodeName}</span>
+                      <span className="text-[11px] font-black text-foreground tracking-tight uppercase">{anomaly.nodeName}</span>
                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
                         anomaly.severity === 'high' ? 'text-[hsl(var(--neon-magenta))]' :
                         anomaly.severity === 'medium' ? 'text-[hsl(var(--neon-yellow))]' : 'text-muted-foreground'
@@ -217,7 +217,7 @@ export default function AIControlPage() {
 
           {/* System Health Overview */}
           <div className="p-6 border-b border-white/5">
-            <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-3 mb-6">
+            <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-3 mb-6">
               <TrendingUp className="w-4 h-4 text-[hsl(var(--neon-green))]" />
               Sector Health
             </h3>
@@ -238,7 +238,7 @@ export default function AIControlPage() {
                       style={{ width: `${zone.health}%` }}
                     />
                   </div>
-                  <span className="text-[10px] font-black text-white tabular-nums w-10 text-right">{zone.health}%</span>
+                  <span className="text-[10px] font-black text-foreground tabular-nums w-10 text-right">{zone.health}%</span>
                 </div>
               ))}
             </div>
@@ -247,7 +247,7 @@ export default function AIControlPage() {
           {/* Decision Log */}
           <div className="flex-1 overflow-hidden flex flex-col">
             <div className="p-4 border-b border-white/5 bg-[hsl(var(--background)/0.5)]">
-              <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase flex items-center gap-2">
+              <h3 className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                 Protocol Execution
               </h3>
