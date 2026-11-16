@@ -8,33 +8,33 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: 248 60% 6%;
-  --foreground: 270 30% 92%;
+  --background: 222 47% 3%;
+  --foreground: 180 100% 95%;
 
-  --card: 255 45% 10%;
-  --card-foreground: 270 30% 92%;
+  --card: 222 47% 5%;
+  --card-foreground: 180 100% 95%;
 
-  --popover: 255 45% 10%;
-  --popover-foreground: 270 30% 92%;
+  --popover: 222 47% 5%;
+  --popover-foreground: 180 100% 95%;
 
-  --primary: 285 90% 65%;
-  --primary-foreground: 248 60% 6%;
+  --primary: 186 100% 50%; /* Neon Cyan */
+  --primary-foreground: 222 47% 3%;
 
-  --secondary: 255 35% 16%;
-  --secondary-foreground: 270 30% 92%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 180 100% 90%;
 
-  --muted: 255 30% 14%;
-  --muted-foreground: 260 20% 65%;
+  --muted: 217 33% 12%;
+  --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: 195 100% 55%;
-  --accent-foreground: 248 60% 6%;
+  --accent: 142 76% 36%; /* Tactical Matrix Green */
+  --accent-foreground: 222 47% 3%;
 
-  --destructive: 350 90% 60%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
 
-  --border: 260 40% 22%;
-  --input: 260 40% 22%;
-  --ring: 285 90% 65%;
+  --border: 186 100% 20%;
+  --input: 217 33% 15%;
+  --ring: 186 100% 50%;
 
   --neon-cyan: 190 100% 55%;
   --neon-magenta: 320 100% 60%;
@@ -44,16 +44,16 @@
   --neon-orange: 25 100% 60%;
   --neon-pink: 335 95% 65%;
 
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 
-  --sidebar-background: 250 50% 8%;
-  --sidebar-foreground: 270 30% 88%;
-  --sidebar-primary: 285 90% 65%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 255 35% 14%;
-  --sidebar-accent-foreground: 270 30% 92%;
-  --sidebar-border: 260 40% 18%;
-  --sidebar-ring: 285 90% 65%;
+  --sidebar-background: 222 47% 4%;
+  --sidebar-foreground: 180 100% 92%;
+  --sidebar-primary: 186 100% 50%;
+  --sidebar-primary-foreground: 222 47% 3%;
+  --sidebar-accent: 217 33% 12%;
+  --sidebar-accent-foreground: 180 100% 95%;
+  --sidebar-border: 186 100% 15%;
+  --sidebar-ring: 186 100% 50%;
 }
 
 @theme inline {
@@ -97,13 +97,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    @apply bg-[#020408] text-[#e2e8f0] font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200;
     background-image:
-      radial-gradient(ellipse at 20% 0%, hsl(285 80% 25% / 0.35), transparent 50%),
-      radial-gradient(ellipse at 80% 100%, hsl(220 80% 25% / 0.35), transparent 55%),
-      radial-gradient(ellipse at 50% 50%, hsl(255 50% 10%), hsl(248 60% 4%));
+      radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
     background-attachment: fixed;
+    min-height: 100vh;
   }
 }
 
@@ -228,11 +227,10 @@
 }
 
 .cyber-grid {
-  background-image: 
-    linear-gradient(rgba(6, 182, 212, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
-  background-size: 40px 40px;
-  position: relative;
+  background-size: 30px 30px;
+  background-image:
+    linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
   pointer-events: none;
 }
 
@@ -420,18 +418,16 @@
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: #020408;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.3);
+  background: #0e3746;
   border-radius: 3px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.5);
+  background: #06b6d4;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -546,7 +542,7 @@
 .panel-glow-purple { box-shadow: 0 0 0 1px hsl(var(--neon-purple) / 0.6), 0 0 24px hsl(var(--neon-purple) / 0.3), inset 0 0 30px hsl(var(--neon-purple) / 0.1); }
 .panel-glow-orange { box-shadow: 0 0 0 1px hsl(var(--neon-orange) / 0.6), 0 0 24px hsl(var(--neon-orange) / 0.25), inset 0 0 30px hsl(var(--neon-orange) / 0.08); }
 .panel-glow-yellow { box-shadow: 0 0 0 1px hsl(var(--neon-yellow) / 0.6), 0 0 24px hsl(var(--neon-yellow) / 0.25), inset 0 0 30px hsl(var(--neon-yellow) / 0.08); }
-.text-glow { text-shadow: 0 0 8px currentColor, 0 0 18px currentColor; }
+.text-glow { text-shadow: 0 0 10px color-mix(in srgb, currentColor 50%, transparent); }
 .scanlines::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, hsl(0 0% 0% / 0.15) 2px, hsl(0 0% 0% / 0.15) 3px);
@@ -616,3 +612,32 @@
 .hub-badge-error { background: rgba(239, 68, 68, 0.1); color: var(--hub-accent-red); border: 1px solid rgba(239, 68, 68, 0.15); }
 .hub-badge-paused { background: rgba(245, 158, 11, 0.1); color: var(--hub-accent-yellow); border: 1px solid rgba(245, 158, 11, 0.15); }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Terminal panel utilities
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.scanline {
+  position: relative;
+  overflow: hidden;
+}
+.scanline::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.glow-box {
+  box-shadow: 0 0 20px -4px rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.glow-box-active {
+  box-shadow: 0 0 25px 0px rgba(6, 182, 212, 0.35);
+  border: 1px solid rgba(6, 182, 212, 0.6);
+}
