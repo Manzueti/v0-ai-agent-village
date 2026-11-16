@@ -1,6 +1,6 @@
 "use client";
 
-import { OrbitControls, PerspectiveCamera, Stars, Sparkles, Float } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Stars, Sparkles } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from "@react-three/postprocessing";
 import EcosystemNode from "./EcosystemNode";
@@ -15,19 +15,20 @@ function seededUnit(seed: number) {
   return value - Math.floor(value);
 }
 
+const SECTORS = [
+  { id: 'Revenue Hub', type: 'cyan', title: 'REVENUE HUB', pos: [-35, 0, -35] },
+  { id: 'Finance Vault', type: 'orange', title: 'FINANCE VAULT', pos: [35, 0, -35] },
+  { id: 'Creative Studio', type: 'purple', title: 'CREATIVE STUDIO', pos: [-35, 0, 35] },
+  { id: 'Tech Nexus', type: 'blue', title: 'TECH NEXUS', pos: [35, 0, 35] },
+  { id: 'Command Deck', type: 'white', title: 'COMMAND DECK', pos: [0, 10, 0] },
+] as const;
+
 export default function EcosystemCanvas() {
-  const sectors = [
-    { id: 'Revenue Hub', type: 'cyan', title: 'REVENUE HUB', pos: [-35, 0, -35] },
-    { id: 'Finance Vault', type: 'orange', title: 'FINANCE VAULT', pos: [35, 0, -35] },
-    { id: 'Creative Studio', type: 'purple', title: 'CREATIVE STUDIO', pos: [-35, 0, 35] },
-    { id: 'Tech Nexus', type: 'blue', title: 'TECH NEXUS', pos: [35, 0, 35] },
-    { id: 'Command Deck', type: 'white', title: 'COMMAND DECK', pos: [0, 10, 0] },
-  ] as const;
 
   // Map employees to sectors
   const employeesWithSectors = useMemo(() => {
     return employees.map((agent, index) => {
-      const sector = sectors.find(s => s.id === agent.department) || sectors[0];
+      const sector = SECTORS.find(s => s.id === agent.department) || SECTORS[0];
       
       // Stable position within the sector [ROOM_SIZE=40].
       const offsetX = (seededUnit(index + 1) - 0.5) * 30;
@@ -73,7 +74,7 @@ export default function EcosystemCanvas() {
             <Sparkles count={500} scale={100} size={4} speed={1} opacity={0.2} color="#00ffff" />
 
             {/* Station Sectors (Floating Pods) */}
-            {sectors.map((s) => (
+            {SECTORS.map((s) => (
               <StationSector 
                 key={s.id} 
                 position={s.pos as any} 

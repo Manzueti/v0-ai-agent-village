@@ -3,7 +3,7 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { Float, MeshTransmissionMaterial, Text, Cylinder, Box, Torus, Ring } from "@react-three/drei";
+import { Float, Text, Cylinder, Box, Torus } from "@react-three/drei";
 
 const REVENUE_BAR_HEIGHTS = [1.4, 2.8, 1.9, 3.6, 2.3] as const;
 

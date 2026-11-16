@@ -1,9 +1,8 @@
 import { streamText } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
+
 import type { NextRequest } from 'next/server';
 import { InfraNode, SystemHealth } from '@/lib/types';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, errorStatus } from '@/lib/ai-models';
 
 export const runtime = 'nodejs';
 
@@ -33,7 +32,7 @@ Analysis goals:
     const modelInstance = getModelInstance(model);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: modelInstance,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -42,6 +41,6 @@ Analysis goals:
   } catch (error: Error | unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error analyzing infrastructure:', errorMessage);
-    return new Response(`Failed to analyze infrastructure: ${errorMessage}`, { status: 500 });
+    return new Response(`Failed to analyze infrastructure: ${errorMessage}`, { status: errorStatus(error) });
   }
 }

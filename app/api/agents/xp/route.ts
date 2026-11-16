@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorStatus } from '@/lib/ai-models';
 import { employees as initialEmployees } from '@/lib/data';
 import { addXp } from '@/lib/game/xp-system';
 
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
       newLevel: updatedAgent.level,
       nextLevelXp: updatedAgent.nextLevelXp
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: errorStatus(error) });
   }
 }

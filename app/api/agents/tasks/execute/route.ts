@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, errorStatus } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
 
@@ -31,14 +31,15 @@ Speak in character according to your personality.`;
     const modelInstance = getModelInstance(agent.aiModel);
 
     const result = streamText({
-      model: modelInstance as any,
+      model: modelInstance,
       system: systemPrompt,
       prompt: `Begin execution of task ${taskId}: ${taskTitle}`,
     });
 
     return result.toTextStreamResponse();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in task execution:', error);
-    return new Response(`Failed to execute task: ${error.message}`, { status: 500 });
+    return new Response(`Failed to execute task: ${message}`, { status: errorStatus(error) });
   }
 }

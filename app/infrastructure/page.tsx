@@ -2,12 +2,12 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { InfraNode, InfraZone } from '@/lib/types';
-import { nodes, connections, zones, operators, recentDecisions, systemHealth, getNodePair, getConnectionsForNode, getOperatorForZone } from '@/lib/infrastructure-data';
+import { nodes, connections, zones, operators, recentDecisions, getNodePair, getConnectionsForNode, getOperatorForZone } from '@/lib/infrastructure-data';
 import IsometricMap from '@/components/infrastructure/IsometricMap';
-import HealthBar from '@/components/infrastructure/HealthBar';
+
 import AIDecisionLog from '@/components/infrastructure/AIDecisionLog';
 import NodeDetailPanel from '@/components/infrastructure/NodeDetailPanel';
-import { Shield, ShieldAlert, ShieldCheck, Terminal, Server, Activity, Cpu, HardDrive, Factory, Box, Drill, Zap, Boxes } from 'lucide-react';
+import { Shield, Cpu, Factory, Drill, Boxes } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function InfrastructurePage() {
@@ -30,7 +30,7 @@ export default function InfrastructurePage() {
         const res = await fetch('/api/hermes/doctor');
         const data = await res.json();
         setHermesStatus({ healthy: data.healthy, issues: data.issuesCount });
-      } catch (e) {
+      } catch {
         setHermesStatus({ healthy: false, issues: -1 });
       }
     };

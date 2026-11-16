@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased] - 2026-11-16
+
+### ✨ Business Builder
+- New section (`/?s=builder`, rocket icon): chat with an AI co-founder (The Sovereign, The Catalyst, The Oracle, The Architect or Sophia Ross). Each uses its own model.
+- A live business-plan panel updates after every reply: name, tagline, stage, readiness, problem, customer, solution, revenue model, pricing tiers, channels, risks and milestones.
+- Milestones can be assigned one by one or all at once. Each becomes a task on the Task board, auto-assigned to the best-matching village agent.
+- Several businesses can be kept and switched between, saved in the browser.
+- New API: `POST /api/builder/chat` (streaming), `POST /api/builder/plan` (structured output), plus a `create_custom` action on `/api/agents/tasks`.
+
+### 🐛 Fixes
+- **Tasks:** a task whose execution fails (e.g. no AI key) now moves to *Downtime* and shows the reason. Before, it was marked *Done*. Failed API calls no longer replace a task card with an error object. The API now rejects unknown task statuses.
+- **API routes:** malformed or incomplete request bodies return `400` instead of crashing with `500`, and a missing AI provider key returns `503`. Two routes used to crash with `Cannot read properties of undefined`.
+- **Analytics:** Vercel Analytics only loads on Vercel. Elsewhere it 404'd on every page.
+- **3D ecosystem:** fixed a React hook dependency warning in `EcosystemCanvas`.
+
+### 🧹 Cleanup
+- Removed unused components and modules: `AgentDetailPanel`, `AgentHut`, `RedundancyView`, `HealthBar`, `GeminiChat`, `theme-provider`, `lib/failover-simulation.ts`.
+- Removed leftover files: empty `Untitled-*.n8n`, the legacy `.eslintrc.json` (replaced by `eslint.config.mjs`), the unused `styles/globals.css` and the v0 placeholder images.
+- `tsconfig.tsbuildinfo` is no longer tracked and is now gitignored.
+- Lint warnings cut from 157 to 15 (unused imports and variables, stray `any` casts).
+
 ## [0.2.0] - 2026-05-11
 
 ### 🔒 Security

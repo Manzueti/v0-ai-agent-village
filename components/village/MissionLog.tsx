@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Zap, Shield, Target, TrendingUp, Cpu } from 'lucide-react';
+import { Terminal, Zap, Shield, Cpu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface MissionUpdate {

@@ -2,13 +2,11 @@
 
 import { Task, TaskStatus } from '@/lib/tasks/types';
 import TaskCard from './TaskCard';
-import { motion } from 'framer-motion';
 
 interface TaskBoardProps {
   tasks: Task[];
   onAutoAssign: (id: string) => void;
   onExecute: (id: string) => void;
-  onStatusChange: (id: string, status: TaskStatus) => void;
 }
 
 const COLUMNS: { id: TaskStatus; label: string; color: string }[] = [
@@ -20,7 +18,7 @@ const COLUMNS: { id: TaskStatus; label: string; color: string }[] = [
   { id: 'failed', label: 'Downtime', color: 'hsl(var(--neon-red))' },
 ];
 
-export default function TaskBoard({ tasks, onAutoAssign, onExecute, onStatusChange }: TaskBoardProps) {
+export default function TaskBoard({ tasks, onAutoAssign, onExecute }: TaskBoardProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 overflow-x-auto pb-6 custom-scrollbar scrollbar-hide">
       {COLUMNS.map((col) => {

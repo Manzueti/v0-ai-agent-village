@@ -3,14 +3,7 @@
 import { Employee } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Terminal, Monitor, Coffee, Laptop, 
-  Database, Briefcase, Zap, Brain,
-  DollarSign, TrendingUp, Shield, 
-  Edit3, Rocket, BarChart3, Target,
-  Cpu, Code, Lock, Search, RefreshCw,
-  AlertTriangle, Info, Moon, Factory
-} from 'lucide-react';
+import { Terminal, Monitor, Database, Zap, Brain, DollarSign, TrendingUp, Shield, Edit3, Rocket, BarChart3, Target, Cpu, Code, Lock, Search, RefreshCw, AlertTriangle, Info, Moon } from 'lucide-react';
 
 import StylizedAvatar from './StylizedAvatar';
 

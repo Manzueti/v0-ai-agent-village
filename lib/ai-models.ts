@@ -107,10 +107,25 @@ export function getModelInstance(requestedModelId: string) {
   }
 }
 
+/** Thrown by API routes when the request body is missing required fields. */
+export class BadRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BadRequestError';
+  }
+}
+
+/** HTTP status for an error thrown inside an API route. */
+export function errorStatus(error: unknown): number {
+  if (error instanceof NoAIProviderError) return 503; // not configured, not a crash
+  if (error instanceof BadRequestError || error instanceof SyntaxError) return 400; // bad/invalid JSON body
+  return 500;
+}
+
 /** Standard error response for API routes. */
 export function aiErrorResponse(error: unknown, prefix: string) {
   const message = error instanceof Error ? error.message : 'Unknown error';
-  const status = error instanceof NoAIProviderError ? 503 : 500;
+  const status = errorStatus(error);
   console.error(`${prefix}:`, message);
   return new Response(JSON.stringify({ error: `${prefix}: ${message}` }), {
     status,

@@ -1,12 +1,13 @@
 'use client';
 
+import type { Task } from '@/lib/tasks/types';
 import { useState } from 'react';
-import { TASK_TEMPLATES, TaskTemplate } from '@/lib/tasks/types';
-import { Plus, Zap, Target, Layout } from 'lucide-react';
+import { TASK_TEMPLATES } from '@/lib/tasks/types';
+import { Plus, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TaskCreatorProps {
-  onCreate: (templateId: string, customizations?: any) => void;
+  onCreate: (templateId: string, customizations?: Partial<Task>) => void;
 }
 
 export default function TaskCreator({ onCreate }: TaskCreatorProps) {

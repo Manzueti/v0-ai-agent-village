@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, BadRequestError, errorStatus } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -24,12 +24,14 @@ Your capabilities:
 
 You speak in a professional, concise manner. Priority: system stability.`;
 
+    if (!Array.isArray(messages)) throw new BadRequestError('messages must be an array');
+
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
     
     const modelInstance = getModelInstance(model);
     
     const result = streamText({
-      model: modelInstance as any,
+      model: modelInstance,
       system: systemPrompt,
       prompt: lastUserMessage?.content || 'Hello',
     });
@@ -38,6 +40,6 @@ You speak in a professional, concise manner. Priority: system stability.`;
   } catch (error: Error | unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error in infrastructure chat:', errorMessage);
-    return new Response(`Failed to process chat message: ${errorMessage}`, { status: 500 });
+    return new Response(`Failed to process chat message: ${errorMessage}`, { status: errorStatus(error) });
   }
 }

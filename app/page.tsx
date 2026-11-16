@@ -16,6 +16,8 @@ const CyberEmpirePage = dynamic(() => import('./cyberempire/page'),    { ssr: fa
 const COEPage         = dynamic(() => import('./coe/page'),            { ssr: false });
 const AIControlPage   = dynamic(() => import('./ai-control/page'),     { ssr: false });
 const InfraPage       = dynamic(() => import('./infrastructure/page'), { ssr: false });
+const AutomatonPage   = dynamic(() => import('./automaton/page'),      { ssr: false });
+const BuilderPage     = dynamic(() => import('./builder/page'),        { ssr: false });
 
 const SECTIONS: Record<string, React.ComponentType> = {
   village:        VillagePage,
@@ -24,6 +26,8 @@ const SECTIONS: Record<string, React.ComponentType> = {
   coe:            COEPage,
   'ai-control':   AIControlPage,
   infrastructure: InfraPage,
+  automaton:      AutomatonPage,
+  builder:        BuilderPage,
 };
 
 // ── Section router ────────────────────────────────────────────────────────────
@@ -88,19 +92,16 @@ function HomeSection() {
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden scanlines font-mono">
-      <div className="fixed inset-0 cyber-grid opacity-20 pointer-events-none" />
-      <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[hsl(var(--neon-cyan)/0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[hsl(var(--neon-magenta)/0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '2s' }} />
 
       <div className="container mx-auto px-6 py-24 relative z-10">
         {/* Header */}
         <header className="flex justify-between items-start mb-20">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] grid place-items-center shadow-[0_0_25px_hsl(var(--neon-magenta)/0.5)]">
+            <div className="h-14 w-14 rounded rounded-xl bg-gradient-to-br from-cyan-400 via-sky-500 to-emerald-400 grid place-items-center shadow-[0_0_28px_rgba(34,211,238,0.45)]">
               <Factory className="h-7 w-7 text-background" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></h1>
+              <h1 className="text-2xl font-black tracking-[0.4em] uppercase text-white">CYBER<span className="text-cyan-300">EMPIRE</span></h1>
               <p className="text-[10px] text-muted-foreground tracking-widest uppercase font-bold">Autonomous Enterprise Hub // v2.5.0</p>
             </div>
           </motion.div>
@@ -119,14 +120,14 @@ function HomeSection() {
             </div>
             <h2 className="text-6xl lg:text-8xl font-black tracking-tight mb-8 leading-[0.9]">
               MANAGE THE <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--neon-cyan))] via-[hsl(var(--neon-purple))] to-[hsl(var(--neon-magenta))]">FUTURE</span> <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-emerald-300">FUTURE</span> <br />
               OF WORK.
             </h2>
             <p className="text-muted-foreground text-xl mb-12 max-w-xl leading-relaxed">
               Coordinate an autonomous AI workforce of 20+ agents across specialized space pods. Manage revenue, design, and infrastructure from the ultimate Deep Space Command Center.
             </p>
             <div className="flex flex-wrap gap-6">
-              <Link href="/?s=village" className="px-10 py-5 bg-[hsl(var(--neon-purple))] text-background font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-purple)/0.9)] transition-all shadow-[0_0_30px_hsl(var(--neon-purple)/0.5)] transform hover:scale-105 active:scale-95">
+              <Link href="/?s=village" className="px-10 py-5 bg-cyan-400 text-slate-950 font-black tracking-widest uppercase rounded-lg hover:bg-cyan-300 transition-colors shadow-[0_0_30px_rgba(34,211,238,0.45)]">
                 Initialize Command
               </Link>
               <Link href="/?s=infrastructure" className="px-10 py-5 bg-transparent border border-[hsl(var(--neon-cyan)/0.5)] text-[hsl(var(--neon-cyan))] font-black tracking-widest uppercase rounded hover:bg-[hsl(var(--neon-cyan)/0.1)] transition-all transform hover:scale-105 active:scale-95">

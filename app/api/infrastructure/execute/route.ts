@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, BadRequestError, errorStatus } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
 
@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
       reason?: string;
       model?: string;
     };
+
+    if (!action || !nodeId) throw new BadRequestError('action and nodeId are required');
 
     const systemPrompt = `You are an AI infrastructure execution engine. You validate and execute infrastructure operations while ensuring zero downtime.
 
@@ -48,7 +50,7 @@ Please validate the action, execute it, and report the outcome.`;
     const modelInstance = getModelInstance(model);
     
     const result = streamText({
-      model: modelInstance as any,
+      model: modelInstance,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -57,6 +59,6 @@ Please validate the action, execute it, and report the outcome.`;
   } catch (error: Error | unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error executing infrastructure action:', errorMessage);
-    return new Response(`Failed to execute action: ${errorMessage}`, { status: 500 });
+    return new Response(`Failed to execute action: ${errorMessage}`, { status: errorStatus(error) });
   }
 }

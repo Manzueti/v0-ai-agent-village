@@ -1,7 +1,7 @@
 'use client';
 
 import { AIDecision, AIOperator } from '@/lib/types';
-import { Bot, CheckCircle, Clock, XCircle, ArrowRight, RefreshCw, AlertTriangle, Shield, Zap, GitBranch, Terminal } from 'lucide-react';
+import { Bot, CheckCircle, Clock, XCircle, ArrowRight, RefreshCw, AlertTriangle, Zap, GitBranch, Terminal } from 'lucide-react';
 
 interface AIDecisionLogProps {
   decisions: AIDecision[];

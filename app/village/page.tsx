@@ -14,13 +14,8 @@ const NEURAL_RAIN_DROPS = Array.from({ length: 30 }, (_, index) => ({
   delay: ((index * 23) % 20) / 10,
 }));
 
-import { 
-  Trees, Cloud, Sun, Wind, 
-  ChevronRight, Brain, Activity, Terminal,
-  Moon, Zap, ShieldAlert, RefreshCw, Factory,
-  Eye, LayoutGrid, Users, Settings
-} from 'lucide-react';
-import Link from 'next/link';
+import { Trees, Sun, Wind, Activity, Terminal, Moon, Zap, ShieldAlert, RefreshCw, Factory, Eye, LayoutGrid, Users, Settings } from 'lucide-react';
+
 import { useState, useEffect, useMemo } from 'react';
 
 // --- Types ---
@@ -68,7 +63,7 @@ export default function VillagePage() {
   const [weather, setWeather] = useState<WeatherState>('clear');
   const [isSyncing, setIsSyncing] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showLog, setShowLog] = useState(true);
+  const [showLog] = useState(true);
 
   // ... (rest of the state logic)
 
@@ -382,7 +377,7 @@ export default function VillagePage() {
   );
 }
 
-function NavBtn({ icon, label, active = false, color = "cyan" }: any) {
+function NavBtn({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean; color?: string }) {
   return (
     <button className={`flex flex-col items-center gap-1 group cursor-pointer transition-all ${active ? 'text-cyan-400' : 'text-cyan-500/50 hover:text-cyan-300'}`}>
       <div className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-all ${active ? 'bg-cyan-500/10 border border-cyan-500 shadow-[0_0_15px_rgba(0,255,255,0.2)]' : 'bg-white/5 border border-white/5'}`}>
