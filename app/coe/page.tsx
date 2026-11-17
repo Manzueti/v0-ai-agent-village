@@ -63,10 +63,8 @@ export default function COEPlatform() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             instruction: newLog.instruction,
-            agentName: selectedAgent.name,
-            agentRole: selectedAgent.role,
-            systemPrompt: selectedAgent.systemPrompt,
-            model: selectedAgent.aiModel
+            agentId: selectedAgent.id,
+            agentName: selectedAgent.name
           })
         });
 

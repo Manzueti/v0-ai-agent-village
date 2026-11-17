@@ -1,11 +1,12 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
+import { withApiGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { taskId, taskTitle, taskDescription, agentId } = await request.json();
 
@@ -32,6 +33,7 @@ Speak in character according to your personality.`;
 
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: systemPrompt,
       prompt: `Begin execution of task ${taskId}: ${taskTitle}`,
     });
@@ -42,3 +44,5 @@ Speak in character according to your personality.`;
     return new Response(`Failed to execute task: ${error.message}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

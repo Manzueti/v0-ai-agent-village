@@ -75,8 +75,30 @@ export function availableProviders(): ModelProvider[] {
   return FALLBACK_ORDER.filter((p) => !!apiKeyFor(p));
 }
 
+/**
+ * Models the server will actually call. Request bodies can name any model, so
+ * anything outside this list is replaced with its provider's default (or the
+ * Google default when the provider is unknown). This stops callers from
+ * picking an expensive model on our keys.
+ */
+const ALLOWED_MODELS = new Set<string>([...Object.values(DEFAULT_MODELS), 'deepseek-reasoner']);
+
+/** Upper bound on generated tokens per request, to cap cost per call. */
+export const MAX_OUTPUT_TOKENS = 1024;
+
+function allowedModelId(requested: unknown): string {
+  if (typeof requested !== 'string' || !requested) return DEFAULT_MODELS.google;
+  let normalized: string;
+  try {
+    normalized = normalizeModelId(requested);
+  } catch {
+    return DEFAULT_MODELS.google; // unknown provider prefix
+  }
+  return ALLOWED_MODELS.has(normalized) ? normalized : DEFAULT_MODELS[providerOf(normalized)];
+}
+
 export function getModelInstance(requestedModelId: string) {
-  let modelId = normalizeModelId(requestedModelId);
+  let modelId = allowedModelId(requestedModelId);
   let provider = providerOf(modelId);
 
   // Fallback: requested provider has no key -> use the first provider that does.
@@ -128,5 +150,6 @@ export async function streamWithModel(
     model,
     system: systemPrompt,
     prompt: userPrompt,
+    maxOutputTokens: MAX_OUTPUT_TOKENS,
   });
 }

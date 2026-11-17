@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createTaskFromTemplate, findBestAgent } from '@/lib/tasks/engine';
 import { Task } from '@/lib/tasks/types';
+import { withApiGuard } from '@/lib/api-guard';
 
 // In-memory store for demo purposes. 
 // In a real app, use a database or global state manager.
 let tasks: Task[] = [];
 
-export async function GET() {
+async function handleGET() {
   return NextResponse.json(tasks);
 }
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   try {
     const body = await req.json();
     const { action, templateId, customizations, taskId, agentId } = body;
@@ -52,3 +53,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export const GET = withApiGuard(handleGET);
+export const POST = withApiGuard(handlePOST);

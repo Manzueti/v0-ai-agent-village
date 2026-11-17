@@ -1,11 +1,12 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { InfraNode } from '@/lib/types';
+import { withApiGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { action, nodeId, node, replicaNode, operatorId, reason, model = 'gemini-flash-latest' } = await request.json() as {
       action: 'failover' | 'scale' | 'restart' | 'heal' | 'reroute';
@@ -49,6 +50,7 @@ Please validate the action, execute it, and report the outcome.`;
     
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -60,3 +62,5 @@ Please validate the action, execute it, and report the outcome.`;
     return new Response(`Failed to execute action: ${errorMessage}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

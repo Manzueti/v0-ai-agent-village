@@ -1,10 +1,11 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
+import { withApiGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { messages, infrastructureContext, model = 'gemini-flash-latest' } = await request.json() as {
       messages: Array<{ role: 'user' | 'assistant'; content: string }>;
@@ -30,6 +31,7 @@ You speak in a professional, concise manner. Priority: system stability.`;
     
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: systemPrompt,
       prompt: lastUserMessage?.content || 'Hello',
     });
@@ -41,3 +43,5 @@ You speak in a professional, concise manner. Priority: system stability.`;
     return new Response(`Failed to process chat message: ${errorMessage}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

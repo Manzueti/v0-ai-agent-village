@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { employees as initialEmployees } from '@/lib/data';
 import { addXp } from '@/lib/game/xp-system';
+import { withApiGuard } from '@/lib/api-guard';
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   try {
     const { agentId, xp, taskId } = await req.json();
 
@@ -34,3 +35,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST);

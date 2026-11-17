@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { withApiGuard } from '@/lib/api-guard';
 
-export async function GET() {
+async function handleGET() {
   return NextResponse.json({
     healthy: true,
     mode: 'cloud',
@@ -8,3 +9,5 @@ export async function GET() {
     timestamp: new Date().toISOString(),
   });
 }
+
+export const GET = withApiGuard(handleGET);
