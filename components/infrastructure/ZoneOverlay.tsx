@@ -31,7 +31,7 @@ export default function ZoneOverlay({ zone, operator, isSelected, onClick }: Zon
         className="absolute -top-3 left-4 px-3 py-1 rounded-full text-xs font-bold tracking-wide flex items-center gap-2"
         style={{ backgroundColor: zone.color }}
       >
-        <span className="text-white">{zone.name}</span>
+        <span className="text-foreground">{zone.name}</span>
         <span 
           className={`w-2 h-2 rounded-full ${
             zone.health === 100 ? 'bg-emerald-300' : 
@@ -51,7 +51,7 @@ export default function ZoneOverlay({ zone, operator, isSelected, onClick }: Zon
             style={{ width: `${zone.health}%` }}
           />
         </div>
-        <span className="text-[10px] font-mono text-white/70">{zone.health}%</span>
+        <span className="text-[10px] font-mono text-foreground/70">{zone.health}%</span>
       </div>
       
       {/* AI Operator Badge */}
@@ -61,8 +61,8 @@ export default function ZoneOverlay({ zone, operator, isSelected, onClick }: Zon
             {operator.avatar}
           </div>
           <div>
-            <div className="text-[10px] font-semibold text-white">{operator.name}</div>
-            <div className="text-[8px] text-white/60">{operator.role}</div>
+            <div className="text-[10px] font-semibold text-foreground">{operator.name}</div>
+            <div className="text-[8px] text-foreground/60">{operator.role}</div>
           </div>
           <div 
             className={`w-2 h-2 rounded-full ${
@@ -76,7 +76,7 @@ export default function ZoneOverlay({ zone, operator, isSelected, onClick }: Zon
       
       {/* Zone Description (on hover) */}
       <div className="absolute bottom-2 right-2 opacity-0 hover:opacity-100 transition-opacity">
-        <div className="text-[9px] text-white/50 max-w-[120px] text-right">
+        <div className="text-[9px] text-foreground/50 max-w-[120px] text-right">
           {zone.description}
         </div>
       </div>

@@ -1,20 +1,38 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
+import { withApiGuard } from '@/lib/api-guard';
+import { employees } from '@/lib/data';
+
+const MAX_INSTRUCTION_CHARS = 4000;
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
-    const { instruction, agentName, agentRole, systemPrompt, model = 'gemini-flash-latest' } = await request.json() as {
-      instruction: string;
-      agentName: string;
-      agentRole: string;
-      systemPrompt: string;
-      model?: string;
+    const { instruction, agentId, agentName } = (await request.json()) as {
+      instruction?: unknown;
+      agentId?: unknown;
+      agentName?: unknown;
     };
 
-    const corePrompt = `You are an expert AI Center of Excellence (COE) controller. Your role is to help the ${agentName} (${agentRole}) execute a specific directive and integrate it into their operational framework.
+    if (typeof instruction !== 'string' || !instruction.trim() || instruction.length > MAX_INSTRUCTION_CHARS) {
+      return Response.json(
+        { error: `instruction must be a non-empty string up to ${MAX_INSTRUCTION_CHARS} characters` },
+        { status: 400 }
+      );
+    }
+
+    // The agent's identity, prompt and model come from server-side data only;
+    // the client names the agent but can no longer supply a system prompt or model.
+    const agent =
+      employees.find((e) => e.id === agentId) ?? employees.find((e) => e.name === agentName);
+    if (!agent) {
+      return Response.json({ error: 'Unknown agent' }, { status: 404 });
+    }
+    const { name: agentNameResolved, role: agentRole, systemPrompt, aiModel: model } = agent;
+
+    const corePrompt = `You are an expert AI Center of Excellence (COE) controller. Your role is to help the ${agentNameResolved} (${agentRole}) execute a specific directive and integrate it into their operational framework.
 
 Agent's Core Identity:
 ${systemPrompt}
@@ -34,8 +52,9 @@ Respond in a professional, technical, and authoritative tone, consistent with th
     
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: corePrompt,
-      prompt: `Execute the directive for ${agentName}: ${instruction}`,
+      prompt: `Execute the directive for ${agentNameResolved}: ${instruction}`,
     });
 
     return result.toTextStreamResponse();
@@ -45,3 +64,5 @@ Respond in a professional, technical, and authoritative tone, consistent with th
     return new Response(`Failed to execute COE directive: ${errorMessage}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

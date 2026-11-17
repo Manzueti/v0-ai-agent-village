@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { withCronGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+async function handleGET() {
   console.log('[Cron] System Tick Initiated');
   
   // This is where you would automate agent XP gains, 
@@ -11,6 +12,9 @@ export async function GET() {
   return new NextResponse('Hello Cron!', { status: 200 });
 }
 
-export async function POST() {
+async function handlePOST() {
   return new NextResponse('Hello Cron!', { status: 200 });
 }
+
+export const GET = withCronGuard(handleGET);
+export const POST = withCronGuard(handlePOST);

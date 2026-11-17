@@ -42,14 +42,14 @@ export default function EcosystemCanvas() {
   }, []);
 
   return (
-    <div className="w-full h-[800px] bg-[#03010a] rounded-xl border border-white/10 overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+    <div className="w-full h-[800px] bg-[#0a0a0a] rounded-xl border border-white/10 overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
       <ErrorBoundary fallback={
-        <div className="flex items-center justify-center h-full bg-[#03010a] text-cyan-400 font-mono text-sm tracking-widest uppercase">
+        <div className="flex items-center justify-center h-full bg-[#0a0a0a] text-cyan-400 font-mono text-sm tracking-widest uppercase">
           Neural Visualization Offline - WebGL Error
         </div>
       }>
         <Canvas shadows dpr={[1, 2]}>
-          <color attach="background" args={["#03010a"]} />
+          <color attach="background" args={["#0a0a0a"]} />
           <PerspectiveCamera makeDefault position={[0, 80, 100]} fov={45} />
           <OrbitControls 
             enablePan={true} 
@@ -60,17 +60,17 @@ export default function EcosystemCanvas() {
             makeDefault
           />
 
-          <fogExp2 attach="fog" args={["#03010a", 0.003]} />
+          <fogExp2 attach="fog" args={["#0a0a0a", 0.003]} />
 
           <ambientLight intensity={0.2} />
           <pointLight position={[0, 50, 0]} intensity={3} color="#ffffff" castShadow />
-          <pointLight position={[-50, 20, -50]} intensity={2} color="#00ffff" />
-          <pointLight position={[50, 20, 50]} intensity={2} color="#ff00ff" />
+          <pointLight position={[-50, 20, -50]} intensity={2} color="#c6b4ea" />
+          <pointLight position={[50, 20, 50]} intensity={2} color="#9b7dda" />
 
           <Suspense fallback={null}>
             {/* Global Particles */}
             <Sparkles count={1000} scale={150} size={2} speed={0.5} opacity={0.3} color="#ffffff" />
-            <Sparkles count={500} scale={100} size={4} speed={1} opacity={0.2} color="#00ffff" />
+            <Sparkles count={500} scale={100} size={4} speed={1} opacity={0.2} color="#c6b4ea" />
 
             {/* Station Sectors (Floating Pods) */}
             {sectors.map((s) => (
@@ -113,12 +113,12 @@ export default function EcosystemCanvas() {
       <div className="absolute inset-0 pointer-events-none p-6 flex flex-col justify-between z-20">
         <div className="flex justify-between items-start">
           {/* Top Left Panel */}
-          <div className="bg-black/60 backdrop-blur-md border border-cyan-500/40 p-4 rounded-lg w-64 shadow-[0_0_20px_rgba(0,255,255,0.1)] pointer-events-auto">
+          <div className="bg-black/60 backdrop-blur-md border border-cyan-500/40 p-4 rounded-lg w-64 shadow-[0_0_20px_rgba(198,180,234,0.1)] pointer-events-auto">
             <h3 className="text-cyan-400 font-black text-xs tracking-widest uppercase mb-1">REVENUE HUB</h3>
-            <p className="text-white/40 text-[8px] uppercase tracking-tighter mb-3">Sales & Market Expansion</p>
+            <p className="text-foreground/40 text-[8px] uppercase tracking-tighter mb-3">Sales & Market Expansion</p>
             <div className="space-y-2">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Active Leads</span>
+                <span className="text-foreground/60">Active Leads</span>
                 <span className="text-cyan-400 mono">1,284</span>
               </div>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
@@ -130,10 +130,10 @@ export default function EcosystemCanvas() {
           {/* Top Right Panel */}
           <div className="bg-black/60 backdrop-blur-md border border-orange-500/40 p-4 rounded-lg w-64 shadow-[0_0_20px_rgba(255,170,0,0.1)] pointer-events-auto">
             <h3 className="text-orange-400 font-black text-xs tracking-widest uppercase mb-1">FINANCE VAULT</h3>
-            <p className="text-white/40 text-[8px] uppercase tracking-tighter mb-3">Capital & Risk Management</p>
+            <p className="text-foreground/40 text-[8px] uppercase tracking-tighter mb-3">Capital & Risk Management</p>
             <div className="space-y-2">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Portfolio</span>
+                <span className="text-foreground/60">Portfolio</span>
                 <span className="text-green-400 mono">+12.4%</span>
               </div>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
@@ -147,10 +147,10 @@ export default function EcosystemCanvas() {
           {/* Bottom Left Panel */}
           <div className="bg-black/60 backdrop-blur-md border border-purple-500/40 p-4 rounded-lg w-64 shadow-[0_0_20px_rgba(200,100,255,0.1)] pointer-events-auto">
             <h3 className="text-purple-400 font-black text-xs tracking-widest uppercase mb-1">CREATIVE STUDIO</h3>
-            <p className="text-white/40 text-[8px] uppercase tracking-tighter mb-3">Content & Brand Design</p>
+            <p className="text-foreground/40 text-[8px] uppercase tracking-tighter mb-3">Content & Brand Design</p>
             <div className="space-y-2">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Assets</span>
+                <span className="text-foreground/60">Assets</span>
                 <span className="text-purple-400 mono">412 New</span>
               </div>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
@@ -162,10 +162,10 @@ export default function EcosystemCanvas() {
           {/* Bottom Right Panel */}
           <div className="bg-black/60 backdrop-blur-md border border-blue-500/40 p-4 rounded-lg w-64 shadow-[0_0_20px_rgba(0,150,255,0.1)] pointer-events-auto">
             <h3 className="text-blue-400 font-black text-xs tracking-widest uppercase mb-1">TECH NEXUS</h3>
-            <p className="text-white/40 text-[8px] uppercase tracking-tighter mb-3">IT & Cyber Defense</p>
+            <p className="text-foreground/40 text-[8px] uppercase tracking-tighter mb-3">IT & Cyber Defense</p>
             <div className="space-y-2">
               <div className="flex justify-between text-[10px]">
-                <span className="text-white/60">Security</span>
+                <span className="text-foreground/60">Security</span>
                 <span className="text-green-400 mono">OPTIMAL</span>
               </div>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
@@ -178,7 +178,7 @@ export default function EcosystemCanvas() {
 
       {/* Floating Info Overlay */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 pointer-events-none select-none text-center">
-        <div className="bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/10 shadow-[0_0_30px_rgba(0,255,255,0.2)]">
+        <div className="bg-black/40 backdrop-blur-sm px-6 py-2 rounded-full border border-white/10 shadow-[0_0_30px_rgba(198,180,234,0.2)]">
           <h2 className="text-cyan-400 font-black text-sm tracking-[0.6em] uppercase">CYBEREMPIRE - DEEP SPACE COMMAND</h2>
         </div>
       </div>

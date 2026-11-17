@@ -37,7 +37,7 @@ export default function HealthBar({ health, onRefresh }: HealthBarProps) {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             <Activity className={`w-5 h-5 ${getOverallColor(health.overall)} shadow-[0_0_10px_currentColor]`} />
-            <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase">Matrix_Health</span>
+            <span className="text-[10px] font-black text-foreground tracking-[0.3em] uppercase">Matrix_Health</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -87,7 +87,7 @@ export default function HealthBar({ health, onRefresh }: HealthBarProps) {
             ) : (
               <ShieldCheck className="w-4 h-4 text-[hsl(var(--neon-green))] shadow-[0_0_8px_currentColor]" />
             )}
-            <span className="text-[9px] font-black text-white tracking-[0.2em] uppercase">
+            <span className="text-[9px] font-black text-foreground tracking-[0.2em] uppercase">
               {health.activeFailovers > 0 
                 ? `${health.activeFailovers} Active_Failovers`
                 : 'Node_Security: OPTIMAL'
@@ -97,7 +97,7 @@ export default function HealthBar({ health, onRefresh }: HealthBarProps) {
 
           <div className="flex items-center gap-3">
             <Zap className={`w-4 h-4 ${health.pendingDecisions > 0 ? 'text-[hsl(var(--neon-cyan))] animate-pulse' : 'text-muted-foreground/30'}`} />
-            <span className="text-[9px] font-black text-white tracking-[0.2em] uppercase">
+            <span className="text-[9px] font-black text-foreground tracking-[0.2em] uppercase">
               {health.pendingDecisions} Pending_Directives
             </span>
           </div>
@@ -107,7 +107,7 @@ export default function HealthBar({ health, onRefresh }: HealthBarProps) {
             className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded transition-all group"
             title="Sync Matrix"
           >
-            <RefreshCw className="w-4 h-4 text-muted-foreground group-hover:text-white transition-all group-active:rotate-180" />
+            <RefreshCw className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-all group-active:rotate-180" />
           </button>
         </div>
       </div>

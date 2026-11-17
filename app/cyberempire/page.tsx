@@ -49,7 +49,7 @@ const NeonPanel = ({
     yellow: "var(--neon-yellow)",
   }[color];
   return (
-    <div className={`relative rounded-md bg-[hsl(255_45%_8%/0.85)] backdrop-blur-sm scanlines ${glow} ${className} flex flex-col`}>
+    <div className={`relative rounded-md bg-[hsl(0_0%_8%/0.85)] backdrop-blur-sm scanlines ${glow} ${className} flex flex-col`}>
       <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: `hsl(${colorVar} / 0.4)` }}>
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full pulse-dot" style={{ background: `hsl(${colorVar})`, boxShadow: `0 0 8px hsl(${colorVar})` }} />
@@ -57,7 +57,7 @@ const NeonPanel = ({
           {level && <span className="text-[9px] text-muted-foreground tracking-wider">{level}</span>}
         </div>
         {status && (
-          <span className="text-[9px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-[hsl(140_80%_55%/0.15)] text-[hsl(var(--neon-green))]">
+          <span className="text-[9px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-[hsl(var(--neon-green)/0.15)] text-[hsl(var(--neon-green))]">
             ● {status}
           </span>
         )}
@@ -81,7 +81,7 @@ const NeonPanel = ({
 };
 
 const StatPill = ({ label, value, color }: { label: string; value: string; color: string }) => (
-  <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-[hsl(255_40%_12%/0.7)] border border-[hsl(260_40%_25%)]">
+  <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-[hsl(0_0%_12%/0.7)] border border-[hsl(0_0%_25%)]">
     <span className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</span>
     <span className="text-xs font-bold tabular-nums" style={{ color, textShadow: `0 0 8px ${color}` }}>{value}</span>
   </div>
@@ -98,7 +98,7 @@ interface SidebarItemProps {
 const SidebarItem = ({ icon: Icon, label, active = false, badge, onClick }: SidebarItemProps) => (
   <button 
     onClick={onClick}
-    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded text-left text-xs transition-colors ${active ? "bg-[hsl(285_90%_65%/0.15)] text-[hsl(var(--neon-purple))]" : "text-muted-foreground hover:bg-[hsl(255_35%_16%)] hover:text-foreground"}`}
+    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded text-left text-xs transition-colors ${active ? "bg-[hsl(var(--primary)/0.15)] text-[hsl(var(--neon-purple))]" : "text-muted-foreground hover:bg-[hsl(0_0%_16%)] hover:text-foreground"}`}
   >
     <Icon className="h-3.5 w-3.5" />
     <span className="flex-1 tracking-wide">{label}</span>
@@ -109,7 +109,7 @@ const SidebarItem = ({ icon: Icon, label, active = false, badge, onClick }: Side
 const FactoryGrid = ({ color, density = "med" }: { color: string; density?: "low" | "med" | "high" }) => {
   const cells = density === "high" ? 64 : density === "med" ? 48 : 32;
   return (
-    <div className="grid grid-cols-12 gap-px p-2 rounded bg-[hsl(248_60%_4%)] border" style={{ borderColor: `${color} / 0.3` as any, borderWidth: 1 }}>
+    <div className="grid grid-cols-12 gap-px p-2 rounded-lg bg-[hsl(0_0%_4%)] border border-border">
       {Array.from({ length: cells }).map((_, i) => {
         const r = (i * 37) % 100;
         const filled = r > 30;
@@ -117,9 +117,9 @@ const FactoryGrid = ({ color, density = "med" }: { color: string; density?: "low
         return (
           <div key={i} className="aspect-square rounded-[2px]"
             style={{
-              background: accent ? color : filled ? `${color}` : "hsl(255 35% 12%)",
+              background: accent ? color : filled ? `${color}` : "hsl(0 0% 12%)",
               opacity: accent ? 0.95 : filled ? 0.18 + ((r % 30) / 100) : 0.4,
-              boxShadow: accent ? `0 0 6px ${color}` : "none",
+              
             }} />
         );
       })}
@@ -165,11 +165,11 @@ const Index = () => {
   const runningCount = agents.filter(a => a.status === 'running').length;
 
   return (
-    <div className="min-h-screen w-full text-foreground relative overflow-hidden font-mono selection:bg-[hsl(var(--neon-magenta))] selection:text-white bg-[hsl(var(--background))]">
+    <div className="min-h-screen w-full text-foreground relative overflow-hidden font-mono selection:bg-[hsl(var(--neon-magenta))] selection:text-foreground bg-[hsl(var(--background))]">
       <div className="absolute inset-0 starfield opacity-60 pointer-events-none" />
 
       {/* Top bar */}
-      <header className="relative z-10 flex items-center justify-between px-4 h-12 border-b border-[hsl(260_40%_18%)] bg-[hsl(250_50%_6%/0.9)] backdrop-blur">
+      <header className="relative z-10 flex items-center justify-between px-4 h-12 border-b border-[hsl(0_0%_18%)] bg-[hsl(0_0%_6%/0.9)] backdrop-blur">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-sm bg-gradient-to-br from-[hsl(var(--neon-magenta))] to-[hsl(var(--neon-purple))] grid place-items-center">
@@ -177,7 +177,7 @@ const Index = () => {
             </div>
             <span className="font-bold text-sm tracking-[0.25em]">CYBER<span className="text-[hsl(var(--neon-magenta))]">EMPIRE</span></span>
           </div>
-          <span className="text-[10px] text-muted-foreground tracking-wider px-2 py-0.5 rounded border border-[hsl(260_40%_22%)]">v0.5.0 — production</span>
+          <span className="text-[10px] text-muted-foreground tracking-wider px-2 py-0.5 rounded border border-[hsl(0_0%_22%)]">v0.5.0 — production</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -194,12 +194,12 @@ const Index = () => {
       <div className="relative z-10 grid grid-cols-[220px_1fr_300px] gap-3 p-3 h-[calc(100vh-3rem)]">
         {/* Sidebar */}
         <aside className="flex flex-col gap-3 overflow-y-auto custom-scrollbar scrollbar-hide">
-          <div className="rounded-md bg-[hsl(255_45%_8%/0.85)] border border-[hsl(var(--neon-cyan)/0.4)] p-3 panel-glow-cyan">
+          <div className="rounded-md bg-[hsl(0_0%_8%/0.85)] border border-[hsl(var(--neon-cyan)/0.4)] p-3 panel-glow-cyan">
             <div className="flex items-baseline gap-2 mb-1">
               <span className="text-2xl font-black tracking-tight text-[hsl(var(--neon-cyan))] text-glow">LV.4</span>
               <span className="text-[10px] tracking-[0.25em] uppercase text-[hsl(var(--neon-cyan))]">Commander</span>
             </div>
-            <div className="h-1.5 rounded bg-[hsl(255_35%_16%)] overflow-hidden mb-1">
+            <div className="h-1.5 rounded bg-[hsl(0_0%_16%)] overflow-hidden mb-1">
               <div className="h-full w-[75%] bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-magenta))]" />
             </div>
             <div className="flex justify-between text-[9px] text-muted-foreground tabular-nums">
@@ -207,7 +207,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="rounded-md bg-[hsl(255_45%_8%/0.85)] border border-[hsl(260_40%_22%)] p-2">
+          <div className="rounded-md bg-[hsl(0_0%_8%/0.85)] border border-[hsl(0_0%_22%)] p-2">
             <div className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground px-2 py-1.5">Operations</div>
             <SidebarItem icon={Gauge} label="Dashboard" active={activeView === 'dashboard'} onClick={() => setActiveView('dashboard')} />
             <SidebarItem icon={Network} label="Neural Matrix" active={activeView === 'agents'} onClick={() => setActiveView('agents')} badge={agents.length.toString()} />
@@ -222,7 +222,7 @@ const Index = () => {
           </div>
 
           {/* Mini Agent List */}
-          <div className="rounded-md bg-[hsl(255_45%_8%/0.85)] border border-white/5 p-3 flex-1 overflow-y-auto scrollbar-hide">
+          <div className="rounded-md bg-[hsl(0_0%_8%/0.85)] border border-white/5 p-3 flex-1 overflow-y-auto scrollbar-hide">
             <div className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-4">Neural Workforce</div>
             <div className="space-y-2">
               {agents.map(agent => (
@@ -239,7 +239,7 @@ const Index = () => {
                     />
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-[10px] text-white font-bold tracking-tight truncate">{agent.name.toUpperCase()}</div>
+                    <div className="text-[10px] text-foreground font-bold tracking-tight truncate">{agent.name.toUpperCase()}</div>
                     <div className="text-[8px] text-muted-foreground uppercase">{agent.role}</div>
                   </div>
                   <div className={`w-1 h-1 rounded-full ${getStatusBg(agent.status)} ${agent.status === 'running' ? 'pulse-dot' : 'opacity-40'}`} />
@@ -263,11 +263,11 @@ const Index = () => {
                 <NeonPanel color="purple" title="Factory II" level="LV.2" status="Active">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <span>HEAT</span><div className="flex-1 h-1 rounded bg-[hsl(255_35%_16%)] overflow-hidden"><div className="h-full w-[62%] bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-magenta))]" /></div>
+                      <span>HEAT</span><div className="flex-1 h-1 rounded bg-[hsl(0_0%_16%)] overflow-hidden"><div className="h-full w-[62%] bg-gradient-to-r from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-magenta))]" /></div>
                       <span className="text-[hsl(var(--neon-yellow))] tabular-nums flicker">62°</span>
                     </div>
                     <div className="relative">
-                      <FactoryGrid color="hsl(285 90% 65%)" />
+                      <FactoryGrid color="hsl(var(--primary))" />
                       <div className="absolute top-2 right-2 h-6 w-6 rounded-full border border-[hsl(var(--neon-green)/0.6)] grid place-items-center">
                         <div className="h-1 w-1 rounded-full bg-[hsl(var(--neon-green))] blip" />
                       </div>
@@ -278,16 +278,16 @@ const Index = () => {
                 <NeonPanel color="cyan" title="Assembly" level="LV.1" status="Active" avatarColor="hsl(var(--neon-cyan))">
                   <div className="space-y-2">
                     <div className="grid grid-cols-3 gap-1.5 text-[9px]">
-                      <div className="px-1.5 py-1 rounded bg-[hsl(255_35%_12%)] border border-white/5">
+                      <div className="px-1.5 py-1 rounded bg-[hsl(0_0%_12%)] border border-white/5">
                         <div className="text-muted-foreground uppercase">Rate</div>
                         <div className="text-[hsl(var(--neon-cyan))] tabular-nums font-bold">128/s</div>
                       </div>
-                      <div className="px-1.5 py-1 rounded bg-[hsl(255_35%_12%)] border border-white/5">
+                      <div className="px-1.5 py-1 rounded bg-[hsl(0_0%_12%)] border border-white/5">
                         <div className="text-muted-foreground uppercase">Queue</div>
                         <div className="text-[hsl(var(--neon-yellow))] tabular-nums font-bold">14</div>
                       </div>
                     </div>
-                    <FactoryGrid color="hsl(190 100% 55%)" density="high" />
+                    <FactoryGrid color="hsl(var(--neon-cyan))" density="high" />
                   </div>
                 </NeonPanel>
 
@@ -295,7 +295,7 @@ const Index = () => {
                   <div className="space-y-1.5 text-[10px]">
                     <div className="flex justify-between"><span className="text-muted-foreground">Cash</span><span className="text-[hsl(var(--neon-yellow))] tabular-nums font-bold">$1,392.04</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Burn</span><span className="tabular-nums">$84.20</span></div>
-                    <div className="h-1.5 rounded bg-[hsl(255_35%_16%)] overflow-hidden mt-2">
+                    <div className="h-1.5 rounded bg-[hsl(0_0%_16%)] overflow-hidden mt-2">
                       <div className="h-full w-[68%] bg-gradient-to-r from-[hsl(var(--neon-orange))] to-[hsl(var(--neon-yellow))]" />
                     </div>
                   </div>
@@ -307,7 +307,7 @@ const Index = () => {
                       <Truck className="h-3 w-3 text-[hsl(var(--neon-yellow))]" />
                       <span className="text-muted-foreground">Fleet: 8 / 12</span>
                     </div>
-                    <FactoryGrid color="hsl(330 100% 60%)" density="low" />
+                    <FactoryGrid color="hsl(var(--neon-magenta))" density="low" />
                   </div>
                 </NeonPanel>
 
@@ -328,7 +328,7 @@ const Index = () => {
                   <div className="flex items-center justify-between mb-4 px-2">
                     <div className="flex items-center gap-3">
                       <Users className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
-                      <h2 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Neural Personnel Registry</h2>
+                      <h2 className="text-[11px] font-black text-foreground uppercase tracking-[0.4em]">Neural Personnel Registry</h2>
                     </div>
                     <div className="flex items-center gap-4 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))]" /> Online</div>
@@ -345,7 +345,7 @@ const Index = () => {
                           relative group p-2.5 rounded border transition-all duration-300 flex flex-col items-center
                           ${selectedAgentId === agent.id 
                             ? 'bg-[hsl(var(--neon-cyan)/0.1)] border-[hsl(var(--neon-cyan)/0.4)] panel-glow-cyan' 
-                            : 'bg-[hsl(255_45%_8%/0.5)] border-white/5 hover:border-white/20 hover:bg-white/5'}
+                            : 'bg-[hsl(0_0%_8%/0.5)] border-white/5 hover:border-white/20 hover:bg-white/5'}
                         `}
                       >
                         <div className="w-12 h-12 mb-2 relative">
@@ -356,7 +356,7 @@ const Index = () => {
                           />
                           <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[hsl(var(--background))] ${getStatusBg(agent.status)} ${agent.status === 'running' ? 'pulse-dot shadow-[0_0_8px_currentColor]' : ''}`} />
                         </div>
-                        <div className="text-[10px] font-black text-white truncate w-full uppercase mb-0.5 tracking-tighter">{agent.name}</div>
+                        <div className="text-[10px] font-black text-foreground truncate w-full uppercase mb-0.5 tracking-tighter">{agent.name}</div>
                         <div className="text-[7px] text-muted-foreground uppercase tracking-widest truncate w-full mb-1.5 opacity-60 font-bold">{agent.role}</div>
                         
                         {/* Micro Progress Bar */}
@@ -399,7 +399,7 @@ const Index = () => {
                     key={agent.id}
                     onClick={() => setSelectedAgentId(agent.id)}
                     className={`
-                      relative rounded-md bg-[hsl(255_45%_8%/0.85)] border-2 p-6 cursor-pointer group transition-all duration-300
+                      relative rounded-md bg-[hsl(0_0%_8%/0.85)] border-2 p-6 cursor-pointer group transition-all duration-300
                       ${selectedAgentId === agent.id ? 'border-[hsl(var(--neon-cyan))] panel-glow-cyan bg-white/5' : 'border-white/5 hover:border-white/20'}
                     `}
                   >
@@ -413,7 +413,7 @@ const Index = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="text-white font-black text-lg tracking-tighter leading-none mb-1 group-hover:text-[hsl(var(--neon-cyan))] transition-colors">{agent.name.toUpperCase()}</h3>
+                        <h3 className="text-foreground font-black text-lg tracking-tighter leading-none mb-1 group-hover:text-[hsl(var(--neon-cyan))] transition-colors">{agent.name.toUpperCase()}</h3>
                         <div className="text-[9px] font-black text-muted-foreground tracking-widest uppercase">{agent.role}</div>
                       </div>
                       <div className={`ml-auto w-1.5 h-1.5 rounded-full ${getStatusBg(agent.status)} ${agent.status === 'running' ? 'pulse-dot shadow-[0_0_8px_currentColor]' : 'opacity-40'}`} />
@@ -424,13 +424,13 @@ const Index = () => {
                         <span className="text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                           <Activity className="w-3 h-3 text-[hsl(var(--neon-green))]" /> Success
                         </span>
-                        <span className="text-white font-bold tabular-nums">{agent.successRate}%</span>
+                        <span className="text-foreground font-bold tabular-nums">{agent.successRate}%</span>
                       </div>
                       <div className="flex items-center justify-between text-[10px]">
                         <span className="text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                           <Zap className="w-3 h-3 text-[hsl(var(--neon-purple))]" /> Usage
                         </span>
-                        <span className="text-white font-bold tabular-nums">{Math.round((agent.tokenUsage.used / agent.tokenUsage.limit) * 100)}%</span>
+                        <span className="text-foreground font-bold tabular-nums">{Math.round((agent.tokenUsage.used / agent.tokenUsage.limit) * 100)}%</span>
                       </div>
                       <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                         <span className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-[0.3em]">ID_{agent.id.slice(0, 4)}</span>
@@ -448,7 +448,7 @@ const Index = () => {
 
         {/* Right rail: chat + tickers */}
         <aside className="flex flex-col gap-3 min-h-0">
-          <div className="rounded-md bg-[hsl(255_45%_8%/0.85)] border border-[hsl(var(--neon-purple)/0.4)] panel-glow-purple flex flex-col flex-1 min-h-0 relative overflow-hidden">
+          <div className="rounded-md bg-[hsl(0_0%_8%/0.85)] border border-[hsl(var(--neon-purple)/0.4)] panel-glow-purple flex flex-col flex-1 min-h-0 relative overflow-hidden">
             <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
             <div className="flex items-center justify-between px-3 py-2 border-b border-[hsl(var(--neon-purple)/0.4)] relative z-10">
               <div className="flex items-center gap-2">
@@ -469,12 +469,12 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="rounded-md bg-[hsl(255_45%_8%/0.85)] border border-[hsl(260_40%_22%)] p-3">
+          <div className="rounded-md bg-[hsl(0_0%_8%/0.85)] border border-[hsl(0_0%_22%)] p-3">
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="h-3 w-3 text-[hsl(var(--neon-magenta))]" />
               <span className="text-[10px] tracking-[0.25em] uppercase text-[hsl(var(--neon-magenta))] font-bold">Last Milestone</span>
             </div>
-            <div className="text-[10px] text-white font-bold">$2,000 Revenue Reached</div>
+            <div className="text-[10px] text-foreground font-bold">$2,000 Revenue Reached</div>
             <div className="text-[8px] text-muted-foreground mt-1">Unlocked &ldquo;Two Grand&rdquo; achievement</div>
           </div>
         </aside>
@@ -499,7 +499,7 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Footer ticker */}
-      <footer className="absolute bottom-0 left-0 right-0 h-6 border-t border-[hsl(260_40%_18%)] bg-[hsl(250_50%_5%/0.95)] backdrop-blur overflow-hidden flex items-center">
+      <footer className="absolute bottom-0 left-0 right-0 h-6 border-t border-[hsl(0_0%_18%)] bg-[hsl(0_0%_5%/0.95)] backdrop-blur overflow-hidden flex items-center">
         <div className="flex whitespace-nowrap ticker-track text-[10px] tracking-widest">
           {Array.from({ length: 2 }).map((_, k) => (
             <div key={k} className="flex gap-8 px-4">
@@ -568,7 +568,7 @@ function AgentDetailPanel({
   ] as const;
 
   return (
-    <div className="h-full bg-[hsl(250_50%_4%/0.98)] backdrop-blur-3xl border-l border-white/10 flex flex-col scanlines">
+    <div className="h-full bg-[hsl(0_0%_4%/0.98)] backdrop-blur-3xl border-l border-white/10 flex flex-col scanlines">
       <div className="p-8 border-b border-white/5">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-6">
@@ -580,7 +580,7 @@ function AgentDetailPanel({
               />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-2">{agent.name.toUpperCase()}</h2>
+              <h2 className="text-3xl font-black text-foreground tracking-tight leading-none mb-2">{agent.name.toUpperCase()}</h2>
               <div className="flex items-center gap-3">
                 <span className="text-[hsl(var(--neon-cyan))] text-[10px] font-black tracking-[0.3em] uppercase">{agent.role}</span>
                 <span className={`text-[10px] font-black tracking-[0.3em] uppercase ${agent.status === 'running' ? 'text-[hsl(var(--neon-green))]' : 'text-[hsl(var(--neon-yellow))]'}`}>
@@ -590,7 +590,7 @@ function AgentDetailPanel({
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-all group">
-            <X className="w-8 h-8 text-muted-foreground group-hover:text-white" />
+            <X className="w-8 h-8 text-muted-foreground group-hover:text-foreground" />
           </button>
         </div>
 
@@ -653,7 +653,7 @@ function AgentDetailPanel({
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder="DISPATCH COMMAND..."
-                className="w-full bg-white/5 border border-white/10 rounded p-4 pr-12 font-mono text-xs text-white focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)]"
+                className="w-full bg-white/5 border border-white/10 rounded p-4 pr-12 font-mono text-xs text-foreground focus:outline-none focus:border-[hsl(var(--neon-cyan)/0.5)]"
               />
               <button onClick={handleSendMessage} className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--neon-cyan))]">
                 <Zap className="w-5 h-5" />
@@ -669,21 +669,21 @@ function AgentDetailPanel({
                   <Database className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Total Consumption</span>
                 </div>
-                <span className="text-[11px] text-white font-black tabular-nums">{agent.tokenUsage.used.toLocaleString()} units</span>
+                <span className="text-[11px] text-foreground font-black tabular-nums">{agent.tokenUsage.used.toLocaleString()} units</span>
              </div>
              <div className="bg-white/5 rounded p-5 border border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Shield className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Capacity Limit</span>
                 </div>
-                <span className="text-[11px] text-white font-black tabular-nums">{agent.tokenUsage.limit.toLocaleString()} units</span>
+                <span className="text-[11px] text-foreground font-black tabular-nums">{agent.tokenUsage.limit.toLocaleString()} units</span>
              </div>
              <div className="bg-white/5 rounded p-5 border border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Cpu className="w-4 h-4 text-[hsl(var(--neon-cyan))]" />
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Neural Threads</span>
                 </div>
-                <span className="text-[11px] text-white font-black tabular-nums">{agent.concurrency.current}</span>
+                <span className="text-[11px] text-foreground font-black tabular-nums">{agent.concurrency.current}</span>
              </div>
           </div>
         )}
@@ -740,7 +740,7 @@ function StatBox({ label, value, icon: Icon, color }: StatBoxProps) {
     <div className="bg-[hsl(var(--card)/0.4)] rounded p-5 border border-white/5 relative overflow-hidden">
       <div className="absolute inset-0 scanlines opacity-10" />
       <Icon className="w-5 h-5 mb-3" style={{ color: colors[color] }} />
-      <div className="text-2xl font-black text-white tabular-nums tracking-tight mb-1">{value}</div>
+      <div className="text-2xl font-black text-foreground tabular-nums tracking-tight mb-1">{value}</div>
       <div className="text-[9px] text-muted-foreground font-black tracking-widest uppercase">{label}</div>
     </div>
   );

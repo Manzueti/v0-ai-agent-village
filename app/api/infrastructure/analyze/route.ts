@@ -3,11 +3,12 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { NextRequest } from 'next/server';
 import { InfraNode, SystemHealth } from '@/lib/types';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
+import { withApiGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { nodes, health, zoneId, query, model = 'gemini-flash-latest' } = await request.json() as {
       nodes: InfraNode[];
@@ -34,6 +35,7 @@ Analysis goals:
 
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -45,3 +47,5 @@ Analysis goals:
     return new Response(`Failed to analyze infrastructure: ${errorMessage}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

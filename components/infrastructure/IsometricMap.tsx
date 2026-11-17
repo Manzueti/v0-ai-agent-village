@@ -90,8 +90,8 @@ export default function IsometricMap({
         className="absolute inset-0"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px)
+            linear-gradient(rgba(139,111,201, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139,111,201, 0.03) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
         }}
@@ -171,14 +171,14 @@ export default function IsometricMap({
           className="p-2 hover:bg-slate-800 rounded transition-colors"
           title="Zoom In"
         >
-          <ZoomIn className="w-4 h-4 text-white" />
+          <ZoomIn className="w-4 h-4 text-foreground" />
         </button>
         <button
           onClick={() => handleZoom(-0.1)}
           className="p-2 hover:bg-slate-800 rounded transition-colors"
           title="Zoom Out"
         >
-          <ZoomOut className="w-4 h-4 text-white" />
+          <ZoomOut className="w-4 h-4 text-foreground" />
         </button>
         <div className="w-full h-px bg-slate-700" />
         <button
@@ -186,7 +186,7 @@ export default function IsometricMap({
           className="p-2 hover:bg-slate-800 rounded transition-colors"
           title="Reset View"
         >
-          <Maximize2 className="w-4 h-4 text-white" />
+          <Maximize2 className="w-4 h-4 text-foreground" />
         </button>
       </div>
       

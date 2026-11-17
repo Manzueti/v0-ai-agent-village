@@ -1,11 +1,12 @@
 import { streamText } from 'ai';
-import { getModelInstance } from '@/lib/ai-models';
+import { getModelInstance, MAX_OUTPUT_TOKENS } from '@/lib/ai-models';
 import type { NextRequest } from 'next/server';
 import { employees } from '@/lib/data';
+import { withApiGuard } from '@/lib/api-guard';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { agentId, task } = await request.json() as {
       agentId: string;
@@ -31,6 +32,7 @@ Keep it concise and game-like.`;
 
     const result = streamText({
       model: modelInstance as any,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       system: systemPrompt,
       prompt: userPrompt,
     });
@@ -42,3 +44,5 @@ Keep it concise and game-like.`;
     return new Response(`Failed to execute agent task: ${errorMessage}`, { status: 500 });
   }
 }
+
+export const POST = withApiGuard(handlePOST, { ai: true });

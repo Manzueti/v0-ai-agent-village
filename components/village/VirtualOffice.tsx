@@ -8,10 +8,10 @@ import { employees } from "@/lib/data";
 // ─── Department config ────────────────────────────────────────────────────────
 
 const DEPT_CFG = {
-  "Revenue Hub":    { color: "#ff6a00", shadow: "#ff6a0055", label: "REVENUE HUB",     num: "01", sub: "Sales & Pipeline"         },
-  "Finance Vault":  { color: "#ffcc00", shadow: "#ffcc0055", label: "FINANCE VAULT",   num: "02", sub: "Capital & Risk"            },
-  "Creative Studio":{ color: "#cc44ff", shadow: "#cc44ff55", label: "CREATIVE STUDIO", num: "03", sub: "Content & Brand"           },
-  "Tech Nexus":     { color: "#00cfff", shadow: "#00cfff55", label: "TECH NEXUS",      num: "04", sub: "Engineering & Defense"     },
+  "Revenue Hub":    { color: "#de8f57", shadow: "#ff6a0055", label: "REVENUE HUB",     num: "01", sub: "Sales & Pipeline"         },
+  "Finance Vault":  { color: "#d6a85b", shadow: "#ffcc0055", label: "FINANCE VAULT",   num: "02", sub: "Capital & Risk"            },
+  "Creative Studio":{ color: "#9b7dda", shadow: "#cc44ff55", label: "CREATIVE STUDIO", num: "03", sub: "Content & Brand"           },
+  "Tech Nexus":     { color: "#c6b4ea", shadow: "#00cfff55", label: "TECH NEXUS",      num: "04", sub: "Engineering & Defense"     },
   "Command Deck":   { color: "#00ff88", shadow: "#00ff8855", label: "COMMAND DECK",    num: "05", sub: "Strategic Operations"      },
 } as const;
 
@@ -38,7 +38,7 @@ function PixelSprite({ color, size = 20 }: { color: string; size?: number }) {
       <circle cx="10" cy="5.5" r="5.5" fill={color} />
       {/* Visor */}
       <ellipse cx="10" cy="6.5" rx="3.5" ry="2.5" fill="rgba(0,220,255,0.5)" />
-      <ellipse cx="10" cy="6.5" rx="3.5" ry="2.5" fill="none" stroke="rgba(0,255,255,0.85)" strokeWidth="0.6" />
+      <ellipse cx="10" cy="6.5" rx="3.5" ry="2.5" fill="none" stroke="rgba(198,180,234,0.85)" strokeWidth="0.6" />
       {/* Highlight */}
       <ellipse cx="8.5" cy="4" rx="1.5" ry="1" fill="rgba(255,255,255,0.28)" />
       {/* Glow ring */}
@@ -253,7 +253,7 @@ function CornerStats({ dept, color, agents }: { dept: Dept; color: string; agent
         top: 32,
         left: 6,
         zIndex: 8,
-        background: "rgba(4,4,18,0.82)",
+        background: "rgba(10,10,10,0.82)",
         border: `1px solid ${color}33`,
         borderRadius: 3,
         padding: "5px 7px",
@@ -269,11 +269,11 @@ function CornerStats({ dept, color, agents }: { dept: Dept; color: string; agent
         SYSTEM STATUS
       </div>
       <div>
-        <span style={{ color: "#44ff88" }}>● ONLINE</span>
+        <span style={{ color: "#66c189" }}>● ONLINE</span>
       </div>
       <div>Power <span style={{ color }}>97%</span></div>
       <div>Agents <span style={{ color }}>{running.length}/{agents.length}</span></div>
-      <div>Efficiency <span style={{ color: eff > 80 ? "#44ff88" : "#ffcc00" }}>{eff}%</span></div>
+      <div>Efficiency <span style={{ color: eff > 80 ? "#66c189" : "#d6a85b" }}>{eff}%</span></div>
     </div>
   );
 }
@@ -289,7 +289,7 @@ function ActivityQueue({ dept, color, agents }: { dept: Dept; color: string; age
         bottom: 26,
         right: 6,
         zIndex: 8,
-        background: "rgba(4,4,18,0.82)",
+        background: "rgba(10,10,10,0.82)",
         border: `1px solid ${color}33`,
         borderRadius: 3,
         padding: "4px 7px",
@@ -306,7 +306,7 @@ function ActivityQueue({ dept, color, agents }: { dept: Dept; color: string; age
           <span style={{ color: "#ffffff88", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 60 }}>
             {a.name.split(" ")[0]}
           </span>
-          <span style={{ color: a.status === "running" ? "#44ff88" : "#ff5555", flexShrink: 0 }}>
+          <span style={{ color: a.status === "running" ? "#66c189" : "#e06b61", flexShrink: 0 }}>
             {a.status === "running" ? "ACTIVE" : "IDLE"}
           </span>
         </div>
@@ -341,7 +341,7 @@ function OfficeRoom({
         position: "relative",
         width: ROOM_W,
         height: ROOM_H,
-        background: "rgba(4,4,20,0.72)",
+        background: "rgba(10,10,10,0.72)",
         backdropFilter: "blur(1px)",
         border: `2px solid ${color}`,
         boxShadow: selected
@@ -407,11 +407,11 @@ function OfficeRoom({
               width: 5,
               height: 5,
               borderRadius: "50%",
-              background: "#44ff88",
-              boxShadow: "0 0 5px #44ff88",
+              background: "#66c189",
+              boxShadow: "0 0 5px #66c189",
             }}
           />
-          <span style={{ fontFamily: "monospace", fontSize: 7, color: "#44ff88", letterSpacing: "0.1em" }}>
+          <span style={{ fontFamily: "monospace", fontSize: 7, color: "#66c189", letterSpacing: "0.1em" }}>
             ONLINE
           </span>
         </div>
@@ -499,10 +499,10 @@ function MetricsBar() {
   }, []);
 
   const stats = [
-    { k: "REVENUE", v: `$${revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, c: "#44ff88" },
-    { k: "ORDERS", v: `${orders}`, c: "#00cfff" },
-    { k: "PRODUCTS", v: "14 LIVE", c: "#ffcc00" },
-    { k: "AGENTS", v: `${working}/${employees.length} ACTIVE`, c: "#ff6a00" },
+    { k: "REVENUE", v: `$${revenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, c: "#66c189" },
+    { k: "ORDERS", v: `${orders}`, c: "#c6b4ea" },
+    { k: "PRODUCTS", v: "14 LIVE", c: "#d6a85b" },
+    { k: "AGENTS", v: `${working}/${employees.length} ACTIVE`, c: "#de8f57" },
   ];
 
   return (
@@ -512,7 +512,7 @@ function MetricsBar() {
         alignItems: "center",
         gap: 36,
         padding: "10px 20px",
-        background: "rgba(4,4,20,0.98)",
+        background: "rgba(10,10,10,0.98)",
         borderBottom: "1px solid #ffffff12",
         fontFamily: "monospace",
       }}
@@ -535,7 +535,7 @@ function MetricsBar() {
         <motion.span
           animate={{ opacity: [1, 0, 1] }}
           transition={{ duration: 1.2, repeat: Infinity }}
-          style={{ display: "block", width: 6, height: 6, borderRadius: "50%", background: "#44ff88", boxShadow: "0 0 6px #44ff88" }}
+          style={{ display: "block", width: 6, height: 6, borderRadius: "50%", background: "#66c189", boxShadow: "0 0 6px #66c189" }}
         />
         <span style={{ fontSize: 9, color: "#44ff8888", letterSpacing: "0.2em" }}>LIVE</span>
       </div>
@@ -585,7 +585,7 @@ function DetailBar({ dept, agents }: { dept: Dept; agents: typeof employees }) {
       style={{
         padding: "12px 20px",
         borderTop: `1px solid ${cfg.color}44`,
-        background: "rgba(4,4,20,0.95)",
+        background: "rgba(10,10,10,0.95)",
         fontFamily: "monospace",
         display: "flex",
         gap: 28,
@@ -608,7 +608,7 @@ function DetailBar({ dept, agents }: { dept: Dept; agents: typeof employees }) {
             <div style={{ color: "#ffffffcc", fontSize: 9, marginBottom: 2 }}>
               {agent.avatar} {agent.name.split(" ")[0]}
             </div>
-            <div style={{ fontSize: 7, color: agent.status === "running" ? "#44ff88" : "#ff5555" }}>
+            <div style={{ fontSize: 7, color: agent.status === "running" ? "#66c189" : "#e06b61" }}>
               {agent.status.toUpperCase()}
             </div>
             <div style={{ fontSize: 7, color: cfg.color + "aa", marginTop: 1 }}>
@@ -688,7 +688,7 @@ export default function VirtualOffice() {
         style={{
           padding: "6px 20px",
           borderTop: "1px solid #ffffff08",
-          background: "rgba(4,4,20,0.95)",
+          background: "rgba(10,10,10,0.95)",
           display: "flex",
           justifyContent: "flex-end",
           gap: 20,

@@ -27,44 +27,44 @@ const nodeIcons: Record<string, React.ComponentType<{ className?: string; style?
 
 const statusConfig: Record<string, { color: string; glow: string; border: string }> = {
   healthy: {
-    color: '#10b981',
+    color: '#66c189',
     glow: 'rgba(16, 185, 129, 0.5)',
     border: 'border-emerald-500/50',
   },
   warning: {
-    color: '#f59e0b',
+    color: '#d6a85b',
     glow: 'rgba(245, 158, 11, 0.5)',
     border: 'border-amber-500/50',
   },
   critical: {
-    color: '#ef4444',
+    color: '#e06b61',
     glow: 'rgba(239, 68, 68, 0.6)',
     border: 'border-red-500/50',
   },
   offline: {
-    color: '#64748b',
+    color: '#8a8a90',
     glow: 'rgba(100, 116, 139, 0.3)',
     border: 'border-slate-500/50',
   },
   failover: {
-    color: '#3b82f6',
-    glow: 'rgba(59, 130, 246, 0.5)',
+    color: '#8b6fc9',
+    glow: 'rgba(139,111,201, 0.5)',
     border: 'border-blue-500/50',
   },
 };
 
 const zoneGradients: Record<string, { from: string; to: string }> = {
-  'data-center': { from: '#3b82f6', to: '#1d4ed8' },
-  'network': { from: '#8b5cf6', to: '#6d28d9' },
-  'cloud': { from: '#06b6d4', to: '#0891b2' },
-  'security': { from: '#ef4444', to: '#dc2626' },
-  'edge': { from: '#22c55e', to: '#16a34a' },
+  'data-center': { from: '#8b6fc9', to: '#6f56a8' },
+  'network': { from: '#8b6fc9', to: '#8b6fc9' },
+  'cloud': { from: '#c6b4ea', to: '#9b7dda' },
+  'security': { from: '#e06b61', to: '#e06b61' },
+  'edge': { from: '#66c189', to: '#4f9a6c' },
 };
 
 export default function InfraNode({ node, isSelected, onClick, scale = 1 }: InfraNodeProps) {
   const Icon = nodeIcons[node.type] || Server;
   const status = statusConfig[node.status] || statusConfig.healthy;
-  const zoneGradient = zoneGradients[node.zone] || { from: '#64748b', to: '#475569' };
+  const zoneGradient = zoneGradients[node.zone] || { from: '#8a8a90', to: '#5c5c61' };
   
   const nodeWidth = 80 * scale;
   const nodeHeight = 60 * scale;
@@ -150,7 +150,7 @@ export default function InfraNode({ node, isSelected, onClick, scale = 1 }: Infr
           {/* Icon */}
           <div className="flex items-center justify-center h-full">
             <Icon 
-              className="text-white/80 transition-all duration-300 group-hover:text-white group-hover:scale-110" 
+              className="text-foreground/80 transition-all duration-300 group-hover:text-foreground group-hover:scale-110" 
               style={{ width: nodeWidth * 0.4, height: nodeWidth * 0.4 }}
             />
           </div>
@@ -190,7 +190,7 @@ export default function InfraNode({ node, isSelected, onClick, scale = 1 }: Infr
         <div className="glass-strong rounded-lg px-4 py-3 min-w-[180px] shadow-xl">
           {/* Header */}
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm font-semibold text-white">{node.name}</div>
+            <div className="text-sm font-semibold text-foreground">{node.name}</div>
             <div 
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: status.color }}

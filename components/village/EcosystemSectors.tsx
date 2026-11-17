@@ -66,10 +66,10 @@ function useSectorTextures() {
     };
 
     return {
-      cyan: createHexTex('#00ffff'),
-      orange: createHexTex('#ffaa00'),
-      blue: createHexTex('#0088ff'),
-      purple: createHexTex('#cc44ff'),
+      cyan: createHexTex('#c6b4ea'),
+      orange: createHexTex('#d6a85b'),
+      blue: createHexTex('#8b6fc9'),
+      purple: createHexTex('#9b7dda'),
       white: createHexTex('#ffffff')
     };
   }, []);
@@ -162,10 +162,10 @@ export function StationSector({ position, type, title }: SectorProps) {
   const ROOM_SIZE = 40;
 
   const colorMap: Record<string, string> = {
-    cyan: "#00ffff",
-    orange: "#ffaa00",
-    blue: "#0088ff",
-    purple: "#cc44ff",
+    cyan: "#c6b4ea",
+    orange: "#d6a85b",
+    blue: "#8b6fc9",
+    purple: "#9b7dda",
     white: "#ffffff"
   };
 
@@ -178,7 +178,7 @@ export function StationSector({ position, type, title }: SectorProps) {
         {/* Hexagonal Base (Metallic Frame) */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <cylinderGeometry args={[ROOM_SIZE / 2 + 1, ROOM_SIZE / 2 + 1, 1, 6]} />
-          <meshStandardMaterial color="#1a1c25" metalness={1} roughness={0.2} />
+          <meshStandardMaterial color="#1a1a1a" metalness={1} roughness={0.2} />
         </mesh>
 
         {/* Floor Pattern (Hex Grid) */}

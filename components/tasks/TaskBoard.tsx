@@ -31,7 +31,7 @@ export default function TaskBoard({ tasks, onAutoAssign, onExecute, onStatusChan
             <div className="flex items-center justify-between px-2 mb-2">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full" style={{ backgroundColor: col.color, boxShadow: `0 0 8px ${col.color}` }} />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-white/80">{col.label}</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80">{col.label}</h3>
               </div>
               <span className="text-[10px] font-mono text-muted-foreground/40">{colTasks.length}</span>
             </div>

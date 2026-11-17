@@ -37,12 +37,12 @@ export default function TaskCard({ task, onAutoAssign, onExecute }: TaskCardProp
         <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded border ${priorityColors[task.priority]}`}>
           {task.priority}
         </span>
-        <button className="text-muted-foreground hover:text-white transition-colors">
+        <button className="text-muted-foreground hover:text-foreground transition-colors">
           <MoreVertical className="w-3 h-3" />
         </button>
       </div>
 
-      <h4 className="text-xs font-black text-white mb-1 group-hover:text-[hsl(var(--neon-cyan))] transition-colors truncate">
+      <h4 className="text-xs font-black text-foreground mb-1 group-hover:text-[hsl(var(--neon-cyan))] transition-colors truncate">
         {task.title.toUpperCase()}
       </h4>
       <p className="text-[10px] text-muted-foreground line-clamp-2 mb-4 leading-relaxed">

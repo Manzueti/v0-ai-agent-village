@@ -20,13 +20,13 @@ interface StylizedAvatarProps {
 export default function StylizedAvatar({ gender, color, className = '', isWalking = false, isWorking = false }: StylizedAvatarProps) {
   // Use tailwind color names to determine hex colors (rough mapping)
   const getHexColor = (colorClass: string) => {
-    if (colorClass.includes('emerald')) return '#10b981';
-    if (colorClass.includes('amber')) return '#f59e0b';
-    if (colorClass.includes('red')) return '#ef4444';
-    if (colorClass.includes('cyan')) return '#06b6d4';
-    if (colorClass.includes('violet')) return '#8b5cf6';
-    if (colorClass.includes('blue')) return '#3b82f6';
-    return '#64748b';
+    if (colorClass.includes('emerald')) return '#66c189';
+    if (colorClass.includes('amber')) return '#d6a85b';
+    if (colorClass.includes('red')) return '#e06b61';
+    if (colorClass.includes('cyan')) return '#c6b4ea';
+    if (colorClass.includes('violet')) return '#8b6fc9';
+    if (colorClass.includes('blue')) return '#8b6fc9';
+    return '#8a8a90';
   };
 
   const hexColor = getHexColor(color);

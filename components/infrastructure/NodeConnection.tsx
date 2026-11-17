@@ -10,10 +10,10 @@ interface NodeConnectionProps {
 }
 
 const connectionStyles: Record<string, { color: string; dashArray: string; width: number }> = {
-  data: { color: '#22c55e', dashArray: '0', width: 2 },
-  control: { color: '#8b5cf6', dashArray: '5,5', width: 1.5 },
-  backup: { color: '#f59e0b', dashArray: '10,5', width: 1 },
-  vpn: { color: '#06b6d4', dashArray: '3,3', width: 2 },
+  data: { color: '#66c189', dashArray: '0', width: 2 },
+  control: { color: '#8b6fc9', dashArray: '5,5', width: 1.5 },
+  backup: { color: '#d6a85b', dashArray: '10,5', width: 1 },
+  vpn: { color: '#c6b4ea', dashArray: '3,3', width: 2 },
 };
 
 const statusOpacity: Record<string, number> = {
@@ -138,7 +138,7 @@ export default function NodeConnection({ connection, nodes }: NodeConnectionProp
         cx={midX}
         cy={midY}
         r="6"
-        fill="#1e293b"
+        fill="#1c1c1c"
         stroke={style.color}
         strokeWidth="1.5"
       />

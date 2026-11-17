@@ -1,64 +1,70 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 @custom-variant dark (&:is(.dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   CyberEmpire ACADEMY - Ultra-Futuristic Cyberpunk Theme
+   CyberEmpire - Noir theme
+   Palette adapted from Akeru Bot's "Akeru Noir" dark theme (MIT,
+   github.com/opencoredev/akeru-bot): neutral near-black surfaces, one violet
+   accent, pill controls. neon-* tokens are kept for compatibility and now map
+   to muted status colours.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: 248 60% 6%;
-  --foreground: 270 30% 92%;
+  --background: 0 0% 4%;
+  --foreground: 240 5% 96%;
 
-  --card: 255 45% 10%;
-  --card-foreground: 270 30% 92%;
+  --card: 0 0% 7%;
+  --card-foreground: 240 5% 96%;
 
-  --popover: 255 45% 10%;
-  --popover-foreground: 270 30% 92%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 240 5% 96%;
 
-  --primary: 285 90% 65%;
-  --primary-foreground: 248 60% 6%;
+  --primary: 259 45% 61%;
+  --primary-foreground: 256 44% 5%;
 
-  --secondary: 255 35% 16%;
-  --secondary-foreground: 270 30% 92%;
+  --secondary: 0 0% 11%;
+  --secondary-foreground: 240 5% 96%;
 
-  --muted: 255 30% 14%;
-  --muted-foreground: 260 20% 65%;
+  --muted: 0 0% 9%;
+  --muted-foreground: 240 3% 61%;
 
-  --accent: 195 100% 55%;
-  --accent-foreground: 248 60% 6%;
+  --accent: 0 0% 12%;
+  --accent-foreground: 240 5% 96%;
 
-  --destructive: 350 90% 60%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 5 67% 63%;
+  --destructive-foreground: 240 5% 96%;
 
-  --border: 260 40% 22%;
-  --input: 260 40% 22%;
-  --ring: 285 90% 65%;
+  --border: 0 0% 14%;
+  --input: 0 0% 18%;
+  --ring: 259 45% 61%;
 
-  --neon-cyan: 190 100% 55%;
-  --neon-magenta: 320 100% 60%;
-  --neon-yellow: 48 100% 60%;
-  --neon-green: 140 80% 55%;
-  --neon-purple: 270 90% 65%;
-  --neon-orange: 25 100% 60%;
-  --neon-pink: 335 95% 65%;
+  --neon-cyan: 260 56% 81%;
+  --neon-magenta: 259 56% 67%;
+  --neon-yellow: 38 60% 60%;
+  --neon-green: 143 42% 58%;
+  --neon-purple: 259 45% 61%;
+  --neon-orange: 25 67% 61%;
+  --neon-pink: 5 76% 76%;
 
-  --radius: 0.5rem;
+  --radius: 0.875rem;
 
-  --sidebar-background: 250 50% 8%;
-  --sidebar-foreground: 270 30% 88%;
-  --sidebar-primary: 285 90% 65%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 255 35% 14%;
-  --sidebar-accent-foreground: 270 30% 92%;
-  --sidebar-border: 260 40% 18%;
-  --sidebar-ring: 285 90% 65%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 240 5% 96%;
+  --sidebar-primary: 259 45% 61%;
+  --sidebar-primary-foreground: 256 44% 5%;
+  --sidebar-accent: 0 0% 10%;
+  --sidebar-accent-foreground: 240 5% 96%;
+  --sidebar-border: 0 0% 10%;
+  --sidebar-ring: 259 45% 61%;
 }
 
 @theme inline {
-  --font-sans: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -98,12 +104,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, hsl(285 80% 25% / 0.35), transparent 50%),
-      radial-gradient(ellipse at 80% 100%, hsl(220 80% 25% / 0.35), transparent 55%),
-      radial-gradient(ellipse at 50% 50%, hsl(255 50% 10%), hsl(248 60% 4%));
-    background-attachment: fixed;
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
   }
 }
 
@@ -519,15 +522,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    CYBEREMPIRE DASHBOARD CSS (MERGED FROM LOVABLE)
    ═══════════════════════════════════════════════════════════════════════════════ */
-:root {
-  --neon-cyan: 190 100% 55%;
-  --neon-magenta: 320 100% 60%;
-  --neon-yellow: 48 100% 60%;
-  --neon-green: 140 80% 55%;
-  --neon-purple: 270 90% 65%;
-  --neon-orange: 25 100% 60%;
-  --neon-pink: 335 95% 65%;
-}
+/* (neon tokens are defined once, in the Noir :root block above) */
 
 .starfield {
   background-image:
@@ -569,21 +564,21 @@
 
 /* --- AI OPS HUB THEME (EXTRACTED) --- */
 :root {
-  --hub-bg: #0a0c10;
-  --hub-surface: #111418;
-  --hub-surface2: #181c22;
-  --hub-surface3: #1e242c;
-  --hub-surface4: #242c36;
+  --hub-bg: #0a0a0a;
+  --hub-surface: #121212;
+  --hub-surface2: #171717;
+  --hub-surface3: #1c1c1c;
+  --hub-surface4: #232323;
   --hub-border: rgba(255, 255, 255, 0.07);
   --hub-border2: rgba(255, 255, 255, 0.12);
-  --hub-text: #e8ecf0;
-  --hub-text2: #8a95a0;
-  --hub-text3: #4a5560;
-  --hub-accent: #3b82f6;
-  --hub-accent-green: #10b981;
-  --hub-accent-yellow: #f59e0b;
-  --hub-accent-red: #ef4444;
-  --hub-accent-purple: #8b5cf6;
+  --hub-text: #f5f5f6;
+  --hub-text2: #98989d;
+  --hub-text3: #5c5c61;
+  --hub-accent: #8b6fc9;
+  --hub-accent-green: #66c189;
+  --hub-accent-yellow: #d6a85b;
+  --hub-accent-red: #e06b61;
+  --hub-accent-purple: #9b7dda;
 }
 
 .hub-card {
@@ -616,3 +611,287 @@
 .hub-badge-error { background: rgba(239, 68, 68, 0.1); color: var(--hub-accent-red); border: 1px solid rgba(239, 68, 68, 0.15); }
 .hub-badge-paused { background: rgba(245, 158, 11, 0.1); color: var(--hub-accent-yellow); border: 1px solid rgba(245, 158, 11, 0.15); }
 
+
+/* Readable sans for long-form copy (headings and data stay mono) */
+.font-body {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Noir overrides: the old neon effects are switched off here so components keep
+   their class names but render flat, quiet surfaces.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.scanlines::before,
+.scanline-overlay::after,
+.noise-overlay::before,
+.hologram::after,
+.cyber-grid::before { display: none; }
+
+.cyber-grid,
+.starfield,
+.circuit-bg,
+.circuit-lines,
+.hex-cyber { background-image: none !important; }
+
+.text-glow { text-shadow: none; }
+
+.panel-glow-cyan,
+.panel-glow-magenta,
+.panel-glow-purple,
+.panel-glow-orange,
+.panel-glow-yellow {
+  box-shadow: 0 0 0 1px hsl(var(--border)), 0 6px 15px hsl(0 0% 0% / 0.3);
+}
+
+.animate-ultra-glow,
+.animate-neon-pulse,
+.animate-glitch,
+.animate-border-gradient,
+.flicker { animation: none; }
+
+.glass-ultron,
+.glass-ultron-strong,
+.glass-violet {
+  background: hsl(var(--card) / 0.8);
+  border-color: hsl(var(--border));
+  box-shadow: none;
+}
+
+.neon-cyan, .neon-violet, .neon-amber, .neon-red { text-shadow: none; }
+
+.btn-cyber { border-radius: 999px; box-shadow: none; }
+.btn-cyber::before { display: none; }
+
+.hub-card, .hub-kpi { border-radius: var(--radius); }
+.hub-badge { border-radius: 999px; }
+
+::selection { background: hsl(var(--primary) / 0.35); color: hsl(var(--foreground)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot, .ticker-track, .worker, .pipe-flow, .spin-slow, .blip { animation: none; }
+}
+
+/* Tailwind palettes remapped onto the Noir hues so legacy utility classes
+   (text-cyan-400, bg-slate-900, ...) match the theme without per-file edits. */
+@theme {
+  --color-cyan-50: oklch(0.984 0.0404 296.5);
+  --color-cyan-100: oklch(0.968 0.0429 296.5);
+  --color-cyan-200: oklch(0.929 0.0489 296.5);
+  --color-cyan-300: oklch(0.869 0.0582 296.5);
+  --color-cyan-400: oklch(0.704 0.0838 296.5);
+  --color-cyan-500: oklch(0.554 0.0866 296.5);
+  --color-cyan-600: oklch(0.446 0.0699 296.5);
+  --color-cyan-700: oklch(0.372 0.0584 296.5);
+  --color-cyan-800: oklch(0.279 0.044 296.5);
+  --color-cyan-900: oklch(0.208 0.033 296.5);
+  --color-cyan-950: oklch(0.129 0.0208 296.5);
+  --color-sky-50: oklch(0.984 0.0404 296.5);
+  --color-sky-100: oklch(0.968 0.0429 296.5);
+  --color-sky-200: oklch(0.929 0.0489 296.5);
+  --color-sky-300: oklch(0.869 0.0582 296.5);
+  --color-sky-400: oklch(0.704 0.0838 296.5);
+  --color-sky-500: oklch(0.554 0.0866 296.5);
+  --color-sky-600: oklch(0.446 0.0699 296.5);
+  --color-sky-700: oklch(0.372 0.0584 296.5);
+  --color-sky-800: oklch(0.279 0.044 296.5);
+  --color-sky-900: oklch(0.208 0.033 296.5);
+  --color-sky-950: oklch(0.129 0.0208 296.5);
+  --color-blue-50: oklch(0.984 0.0404 296.5);
+  --color-blue-100: oklch(0.968 0.0429 296.5);
+  --color-blue-200: oklch(0.929 0.0489 296.5);
+  --color-blue-300: oklch(0.869 0.0582 296.5);
+  --color-blue-400: oklch(0.704 0.0838 296.5);
+  --color-blue-500: oklch(0.554 0.0866 296.5);
+  --color-blue-600: oklch(0.446 0.0699 296.5);
+  --color-blue-700: oklch(0.372 0.0584 296.5);
+  --color-blue-800: oklch(0.279 0.044 296.5);
+  --color-blue-900: oklch(0.208 0.033 296.5);
+  --color-blue-950: oklch(0.129 0.0208 296.5);
+  --color-indigo-50: oklch(0.984 0.0404 296.5);
+  --color-indigo-100: oklch(0.968 0.0429 296.5);
+  --color-indigo-200: oklch(0.929 0.0489 296.5);
+  --color-indigo-300: oklch(0.869 0.0582 296.5);
+  --color-indigo-400: oklch(0.704 0.0838 296.5);
+  --color-indigo-500: oklch(0.554 0.0866 296.5);
+  --color-indigo-600: oklch(0.446 0.0699 296.5);
+  --color-indigo-700: oklch(0.372 0.0584 296.5);
+  --color-indigo-800: oklch(0.279 0.044 296.5);
+  --color-indigo-900: oklch(0.208 0.033 296.5);
+  --color-indigo-950: oklch(0.129 0.0208 296.5);
+  --color-violet-50: oklch(0.984 0.0546 296.5);
+  --color-violet-100: oklch(0.968 0.0579 296.5);
+  --color-violet-200: oklch(0.929 0.0661 296.5);
+  --color-violet-300: oklch(0.869 0.0786 296.5);
+  --color-violet-400: oklch(0.704 0.1131 296.5);
+  --color-violet-500: oklch(0.554 0.1169 296.5);
+  --color-violet-600: oklch(0.446 0.0943 296.5);
+  --color-violet-700: oklch(0.372 0.0788 296.5);
+  --color-violet-800: oklch(0.279 0.0594 296.5);
+  --color-violet-900: oklch(0.208 0.0445 296.5);
+  --color-violet-950: oklch(0.129 0.028 296.5);
+  --color-purple-50: oklch(0.984 0.0546 296.5);
+  --color-purple-100: oklch(0.968 0.0579 296.5);
+  --color-purple-200: oklch(0.929 0.0661 296.5);
+  --color-purple-300: oklch(0.869 0.0786 296.5);
+  --color-purple-400: oklch(0.704 0.1131 296.5);
+  --color-purple-500: oklch(0.554 0.1169 296.5);
+  --color-purple-600: oklch(0.446 0.0943 296.5);
+  --color-purple-700: oklch(0.372 0.0788 296.5);
+  --color-purple-800: oklch(0.279 0.0594 296.5);
+  --color-purple-900: oklch(0.208 0.0445 296.5);
+  --color-purple-950: oklch(0.129 0.028 296.5);
+  --color-fuchsia-50: oklch(0.984 0.0546 296.5);
+  --color-fuchsia-100: oklch(0.968 0.0579 296.5);
+  --color-fuchsia-200: oklch(0.929 0.0661 296.5);
+  --color-fuchsia-300: oklch(0.869 0.0786 296.5);
+  --color-fuchsia-400: oklch(0.704 0.1131 296.5);
+  --color-fuchsia-500: oklch(0.554 0.1169 296.5);
+  --color-fuchsia-600: oklch(0.446 0.0943 296.5);
+  --color-fuchsia-700: oklch(0.372 0.0788 296.5);
+  --color-fuchsia-800: oklch(0.279 0.0594 296.5);
+  --color-fuchsia-900: oklch(0.208 0.0445 296.5);
+  --color-fuchsia-950: oklch(0.129 0.028 296.5);
+  --color-green-50: oklch(0.984 0.0445 155);
+  --color-green-100: oklch(0.968 0.0472 155);
+  --color-green-200: oklch(0.929 0.0538 155);
+  --color-green-300: oklch(0.869 0.0641 155);
+  --color-green-400: oklch(0.704 0.0922 155);
+  --color-green-500: oklch(0.554 0.0953 155);
+  --color-green-600: oklch(0.446 0.0769 155);
+  --color-green-700: oklch(0.372 0.0642 155);
+  --color-green-800: oklch(0.279 0.0484 155);
+  --color-green-900: oklch(0.208 0.0363 155);
+  --color-green-950: oklch(0.129 0.0228 155);
+  --color-emerald-50: oklch(0.984 0.0445 155);
+  --color-emerald-100: oklch(0.968 0.0472 155);
+  --color-emerald-200: oklch(0.929 0.0538 155);
+  --color-emerald-300: oklch(0.869 0.0641 155);
+  --color-emerald-400: oklch(0.704 0.0922 155);
+  --color-emerald-500: oklch(0.554 0.0953 155);
+  --color-emerald-600: oklch(0.446 0.0769 155);
+  --color-emerald-700: oklch(0.372 0.0642 155);
+  --color-emerald-800: oklch(0.279 0.0484 155);
+  --color-emerald-900: oklch(0.208 0.0363 155);
+  --color-emerald-950: oklch(0.129 0.0228 155);
+  --color-teal-50: oklch(0.984 0.0445 155);
+  --color-teal-100: oklch(0.968 0.0472 155);
+  --color-teal-200: oklch(0.929 0.0538 155);
+  --color-teal-300: oklch(0.869 0.0641 155);
+  --color-teal-400: oklch(0.704 0.0922 155);
+  --color-teal-500: oklch(0.554 0.0953 155);
+  --color-teal-600: oklch(0.446 0.0769 155);
+  --color-teal-700: oklch(0.372 0.0642 155);
+  --color-teal-800: oklch(0.279 0.0484 155);
+  --color-teal-900: oklch(0.208 0.0363 155);
+  --color-teal-950: oklch(0.129 0.0228 155);
+  --color-lime-50: oklch(0.984 0.0445 155);
+  --color-lime-100: oklch(0.968 0.0472 155);
+  --color-lime-200: oklch(0.929 0.0538 155);
+  --color-lime-300: oklch(0.869 0.0641 155);
+  --color-lime-400: oklch(0.704 0.0922 155);
+  --color-lime-500: oklch(0.554 0.0953 155);
+  --color-lime-600: oklch(0.446 0.0769 155);
+  --color-lime-700: oklch(0.372 0.0642 155);
+  --color-lime-800: oklch(0.279 0.0484 155);
+  --color-lime-900: oklch(0.208 0.0363 155);
+  --color-lime-950: oklch(0.129 0.0228 155);
+  --color-amber-50: oklch(0.984 0.0445 78);
+  --color-amber-100: oklch(0.968 0.0472 78);
+  --color-amber-200: oklch(0.929 0.0538 78);
+  --color-amber-300: oklch(0.869 0.0641 78);
+  --color-amber-400: oklch(0.704 0.0922 78);
+  --color-amber-500: oklch(0.554 0.0953 78);
+  --color-amber-600: oklch(0.446 0.0769 78);
+  --color-amber-700: oklch(0.372 0.0642 78);
+  --color-amber-800: oklch(0.279 0.0484 78);
+  --color-amber-900: oklch(0.208 0.0363 78);
+  --color-amber-950: oklch(0.129 0.0228 78);
+  --color-yellow-50: oklch(0.984 0.0445 78);
+  --color-yellow-100: oklch(0.968 0.0472 78);
+  --color-yellow-200: oklch(0.929 0.0538 78);
+  --color-yellow-300: oklch(0.869 0.0641 78);
+  --color-yellow-400: oklch(0.704 0.0922 78);
+  --color-yellow-500: oklch(0.554 0.0953 78);
+  --color-yellow-600: oklch(0.446 0.0769 78);
+  --color-yellow-700: oklch(0.372 0.0642 78);
+  --color-yellow-800: oklch(0.279 0.0484 78);
+  --color-yellow-900: oklch(0.208 0.0363 78);
+  --color-yellow-950: oklch(0.129 0.0228 78);
+  --color-orange-50: oklch(0.984 0.0485 55);
+  --color-orange-100: oklch(0.968 0.0515 55);
+  --color-orange-200: oklch(0.929 0.0588 55);
+  --color-orange-300: oklch(0.869 0.0699 55);
+  --color-orange-400: oklch(0.704 0.1006 55);
+  --color-orange-500: oklch(0.554 0.1039 55);
+  --color-orange-600: oklch(0.446 0.0838 55);
+  --color-orange-700: oklch(0.372 0.0701 55);
+  --color-orange-800: oklch(0.279 0.0528 55);
+  --color-orange-900: oklch(0.208 0.0396 55);
+  --color-orange-950: oklch(0.129 0.0249 55);
+  --color-red-50: oklch(0.984 0.0566 25);
+  --color-red-100: oklch(0.968 0.0601 25);
+  --color-red-200: oklch(0.929 0.0685 25);
+  --color-red-300: oklch(0.869 0.0815 25);
+  --color-red-400: oklch(0.704 0.1173 25);
+  --color-red-500: oklch(0.554 0.1212 25);
+  --color-red-600: oklch(0.446 0.0978 25);
+  --color-red-700: oklch(0.372 0.0817 25);
+  --color-red-800: oklch(0.279 0.0616 25);
+  --color-red-900: oklch(0.208 0.0462 25);
+  --color-red-950: oklch(0.129 0.0291 25);
+  --color-rose-50: oklch(0.984 0.0566 25);
+  --color-rose-100: oklch(0.968 0.0601 25);
+  --color-rose-200: oklch(0.929 0.0685 25);
+  --color-rose-300: oklch(0.869 0.0815 25);
+  --color-rose-400: oklch(0.704 0.1173 25);
+  --color-rose-500: oklch(0.554 0.1212 25);
+  --color-rose-600: oklch(0.446 0.0978 25);
+  --color-rose-700: oklch(0.372 0.0817 25);
+  --color-rose-800: oklch(0.279 0.0616 25);
+  --color-rose-900: oklch(0.208 0.0462 25);
+  --color-rose-950: oklch(0.129 0.0291 25);
+  --color-pink-50: oklch(0.984 0.0566 25);
+  --color-pink-100: oklch(0.968 0.0601 25);
+  --color-pink-200: oklch(0.929 0.0685 25);
+  --color-pink-300: oklch(0.869 0.0815 25);
+  --color-pink-400: oklch(0.704 0.1173 25);
+  --color-pink-500: oklch(0.554 0.1212 25);
+  --color-pink-600: oklch(0.446 0.0978 25);
+  --color-pink-700: oklch(0.372 0.0817 25);
+  --color-pink-800: oklch(0.279 0.0616 25);
+  --color-pink-900: oklch(0.208 0.0462 25);
+  --color-pink-950: oklch(0.129 0.0291 25);
+  --color-slate-50: oklch(0.984 0.004 286);
+  --color-slate-100: oklch(0.968 0.004 286);
+  --color-slate-200: oklch(0.929 0.004 286);
+  --color-slate-300: oklch(0.869 0.004 286);
+  --color-slate-400: oklch(0.704 0.004 286);
+  --color-slate-500: oklch(0.554 0.004 286);
+  --color-slate-600: oklch(0.446 0.004 286);
+  --color-slate-700: oklch(0.372 0.004 286);
+  --color-slate-800: oklch(0.279 0.004 286);
+  --color-slate-900: oklch(0.208 0.004 286);
+  --color-slate-950: oklch(0.129 0.004 286);
+  --color-gray-50: oklch(0.984 0.004 286);
+  --color-gray-100: oklch(0.968 0.004 286);
+  --color-gray-200: oklch(0.929 0.004 286);
+  --color-gray-300: oklch(0.869 0.004 286);
+  --color-gray-400: oklch(0.704 0.004 286);
+  --color-gray-500: oklch(0.554 0.004 286);
+  --color-gray-600: oklch(0.446 0.004 286);
+  --color-gray-700: oklch(0.372 0.004 286);
+  --color-gray-800: oklch(0.279 0.004 286);
+  --color-gray-900: oklch(0.208 0.004 286);
+  --color-gray-950: oklch(0.129 0.004 286);
+  --color-zinc-50: oklch(0.984 0.004 286);
+  --color-zinc-100: oklch(0.968 0.004 286);
+  --color-zinc-200: oklch(0.929 0.004 286);
+  --color-zinc-300: oklch(0.869 0.004 286);
+  --color-zinc-400: oklch(0.704 0.004 286);
+  --color-zinc-500: oklch(0.554 0.004 286);
+  --color-zinc-600: oklch(0.446 0.004 286);
+  --color-zinc-700: oklch(0.372 0.004 286);
+  --color-zinc-800: oklch(0.279 0.004 286);
+  --color-zinc-900: oklch(0.208 0.004 286);
+  --color-zinc-950: oklch(0.129 0.004 286);
+}
